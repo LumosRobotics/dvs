@@ -339,6 +339,7 @@ GuiPane::GuiPane(wxFrame* parent) : wxGLCanvas(parent, getGLAttributes(), wxID_A
                                                        120.0f,
                                                        "Checkbox",
                                                        RGBTripletf(1.0f, 1.0f, 1.0f),
+                                                       set_shader_color_,
                                                        [](const uint64_t id, const bool new_state) {
                                                            std::cout << "Checkbox " << id
                                                                      << " state changed: " << new_state << std::endl;

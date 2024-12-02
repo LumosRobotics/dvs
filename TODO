@@ -24,6 +24,7 @@ Pre release:
 - setCurrentElement -> setActiveElement
 - Should probably rename "element" to view in "setActiveElement", because the plot view is the only type of element that's gonna be state based, all others are going to be handle based
 - Remove "APPENDABLE" and "UPDATEABLE" option for now
+- Enable two callbacks for editable text field, one for when text is changed, and one for when enter is pressed
 
 Post release:
 - Add handle based interface for plot views

@@ -356,6 +356,56 @@ void PutRectangleIntoBuffer(BufferedVector& buffered_vector,
     }
 }
 
+void PutRotatedRectangleIntoBuffer(BufferedVector& buffered_vector,
+                            const float x_top_left,
+                            const float y_top_left,
+                            const float width,
+                            const float height,
+                            const float angle)
+{
+    const size_t start_idx = buffered_vector.idx();
+
+    const float cos_angle = std::cos(-angle);
+    const float sin_angle = std::sin(-angle);
+
+    const auto rotate_pt = [cos_angle, sin_angle](const float x, const float y) -> Vec2f {
+        return Vec2f{x * cos_angle - y * sin_angle, x * sin_angle + y * cos_angle};
+    };
+
+    const Vec2f pos{x_top_left, y_top_left};
+
+    const Vec2f bottom_left = rotate_pt(0.0f, height) + pos;
+    const Vec2f bottom_right = rotate_pt(width, height) + pos;
+
+    const Vec2f top_left = rotate_pt(0.0f, 0.0f) + pos;
+    const Vec2f top_right = rotate_pt(width, 0.0f) + pos;
+
+    /*const Vec2f bottom_left{x_top_left, y_top_left + height};
+    const Vec2f bottom_right{x_top_left + width, y_top_left + height};
+
+    const Vec2f top_left{x_top_left, y_top_left};
+    const Vec2f top_right{x_top_left + width, y_top_left};*/
+
+    using Triangle = std::array<Vec2f, 3>;
+
+    const std::array<Triangle, 2> triangles{Triangle{top_left, top_right, bottom_left},
+                                            Triangle{bottom_left, top_right, bottom_right}};
+
+    size_t idx = start_idx;
+
+    for (const auto& corner_points : triangles)
+    {
+        for (const auto& corner_point : corner_points)
+        {
+            buffered_vector.data()[idx] = corner_point.x;
+            buffered_vector.data()[idx + 1U] = corner_point.y;
+            buffered_vector.incrementIdx(2U);
+
+            idx += 2U;
+        }
+    }
+}
+
 void PutCircleSegmentIntoBuffer(BufferedVector& buffered_vector,
                                 const float x_center,
                                 const float y_center,

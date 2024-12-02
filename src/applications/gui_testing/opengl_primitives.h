@@ -140,7 +140,12 @@ void PutRoundedHexagonIntoBuffer(BufferedVector& buffered_vector,
                                  const float corner_angle,
                                  const float corner_radius,
                                  const size_t num_triangles_per_corner);
-
+void PutRotatedRectangleIntoBuffer(BufferedVector& buffered_vector,
+                            const float x_top_left,
+                            const float y_top_left,
+                            const float width,
+                            const float height,
+                            const float angle);
 // TODO: Should all of these functions just be part of BufferedVector?
 
 #endif  // DVS_OPENGL_PRIMITIVES_H

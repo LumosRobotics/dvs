@@ -197,7 +197,7 @@ public:
     Button(const ButtonConfiguration& button_configuration,
            const std::string label,
            const RGBTripletf& color,
-           const std::function<void(RGBTripletf)> set_shader_color,
+           const std::function<void(RGBTripletf)>& set_shader_color,
            const std::function<void(uint64_t)>& button_pressed_callback,
            const std::function<void(uint64_t)>& button_released_callback);
     ~Button();
