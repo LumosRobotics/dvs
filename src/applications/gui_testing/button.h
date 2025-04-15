@@ -204,7 +204,7 @@ public:
     void mousePressed(wxMouseEvent& event) override;
     void mouseReleased(wxMouseEvent& event) override;
 
-    void render() const override;
+    void childRender() const override;
     void updateVertexBuffer() override;
 };
 

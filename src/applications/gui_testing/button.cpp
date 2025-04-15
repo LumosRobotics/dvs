@@ -243,7 +243,7 @@ void Button::updateVertexBuffer()
     edge_vertex_buffer_.updateBufferData(0, button_edge_buffer_.data(), num_points_to_render_, 2);
 }
 
-void Button::render() const
+void Button::childRender() const
 {
     if (with_edge_)
     {

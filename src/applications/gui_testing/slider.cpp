@@ -229,7 +229,7 @@ void Slider::updateVertexBuffer()
     vertex_buffer_circle_.updateBufferData(0, circle_buffer_.data(), num_circle_points_to_render_, 2);
 }
 
-void Slider::render() const
+void Slider::childRender() const
 {
     set_shader_color_(color_);
     vertex_buffer_line_.render(num_line_points_to_render_);

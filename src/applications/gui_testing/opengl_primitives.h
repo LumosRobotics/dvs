@@ -20,17 +20,17 @@ public:
         delete[] data_;
     }
 
-    float* data()
+    float* data() const
     {
         return data_;
     }
 
-    size_t size()
+    size_t size() const
     {
         return size_;
     }
 
-    size_t idx()
+    size_t idx() const
     {
         return idx_;
     }

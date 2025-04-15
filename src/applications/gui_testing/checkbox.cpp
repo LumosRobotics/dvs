@@ -85,7 +85,7 @@ void Checkbox::changeCheckMarkPoints()
     PutRotatedRectangleIntoBuffer(
         check_mark_buffer_, o_x, o_y, first_rect_width, first_rect_height, M_PI / 4.0f);
 
-    constexpr float sqrt_2 1.41421356237f;
+    constexpr float sqrt_2 = 1.41421356237f;
 
     PutRotatedRectangleIntoBuffer(
         check_mark_buffer_,
@@ -121,7 +121,7 @@ void Checkbox::updateVertexBuffer()
     check_mark_vb_.updateBufferData(0, check_mark_buffer_.data(), num_points_to_render_check_mark_, 2);
 }
 
-void Checkbox::render() const
+void Checkbox::childRender() const
 {
     set_shader_color_(color_);
     vertex_buffer_2_.render(num_points_to_render_);

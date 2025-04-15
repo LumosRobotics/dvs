@@ -13,10 +13,13 @@ GuiElement::GuiElement(const float x,
       width_{width},
       height_{height},
       vertex_buffer_{OGLPrimitiveType::TRIANGLES},
+      vertex_buffer_sizing_rectangles_{OGLPrimitiveType::TRIANGLES},
       name_{name},
       color_{color},
+      sizing_rect_buffer_{6U * 9U * 2U},
       parent_width_{100.0f},
-      parent_height_{100.0f}
+      parent_height_{100.0f},
+      render_sizing_rectangles_{false}
 {
     /*
     Input arguments are in range 0 to something, where 0 is the top left corner.
@@ -35,23 +38,47 @@ GuiElement::GuiElement(const float x,
     // clang-format on
 
     vertex_buffer_.addBuffer(vertices, 6, 2, GL_DYNAMIC_DRAW);
-}
 
-/*
-x = 10, width = 8, margin = 3
-10, 11, 12, 13, 14, 15, 16, 17
-10, 11, 12 left change margin
-                    15, 16, 17 right change margin
-if(pt.x >= x_ && pt.x < x_ + margin)
-{
-    left
-}
-else if (pt.x >= x_ + width - margin && pt.x < x_ + width)
-{
-    right
-}
+    setSizingRectangles();
+    vertex_buffer_sizing_rectangles_.addBuffer(sizing_rect_buffer_.data(), sizing_rect_buffer_.idx() / 2U, 2, GL_DYNAMIC_DRAW);
 
-*/
+    float* color_data = new float[6U * 9U * 3U];
+
+    size_t idx = 0U;
+    const auto fill_color_data = [color_data, &idx](const RGBTripletf& color) {
+        for(size_t k = 0U; k < 2U; k++)
+        {
+            color_data[k * 9U + idx] = color.red;
+            color_data[k * 9U + idx + 1U] = color.green;
+            color_data[k * 9U + idx + 2U] = color.blue;
+
+            color_data[k * 9U + idx + 3U] = color.red;
+            color_data[k * 9U + idx + 4U] = color.green;
+            color_data[k * 9U + idx + 5U] = color.blue;
+
+            color_data[k * 9U + idx + 6U] = color.red;
+            color_data[k * 9U + idx + 7U] = color.green;
+            color_data[k * 9U + idx + 8U] = color.blue;
+        }
+
+        idx += 18U;
+    };
+
+    fill_color_data(RGBTripletf(1.0f, 0.0f, 0.0f));
+    fill_color_data(RGBTripletf(0.0f, 1.0f, 0.0f));
+    fill_color_data(RGBTripletf(1.0f, 0.0f, 0.0f));
+
+    fill_color_data(RGBTripletf(0.0f, 1.0f, 0.0f));
+    fill_color_data(RGBTripletf(0.0f, 0.0f, 0.0f));
+    fill_color_data(RGBTripletf(0.0f, 1.0f, 0.0f));
+
+    fill_color_data(RGBTripletf(1.0f, 0.0f, 0.0f));
+    fill_color_data(RGBTripletf(0.0f, 1.0f, 0.0f));
+    fill_color_data(RGBTripletf(1.0f, 0.0f, 0.0f));
+
+    vertex_buffer_sizing_rectangles_.addBuffer(color_data, sizing_rect_buffer_.idx() / 2U, 3, GL_DYNAMIC_DRAW);
+    delete[] color_data;
+}
 
 ChangeDirection GuiElement::GetDirectionFromMouse(const wxPoint pt) const
 {
@@ -181,7 +208,9 @@ void GuiElement::ChangePositionOrSize(const wxPoint delta_vec, const ChangeDirec
     }
 
     UpdatePositionOrSize(delta_x, delta_y, delta_width, delta_height, change_direction);
+    setSizingRectangles();
 
+    vertex_buffer_sizing_rectangles_.updateBufferData(0, sizing_rect_buffer_.data(), sizing_rect_buffer_.idx() / 2U, 2);
     updateVertexBuffer();
 }
 
@@ -212,6 +241,24 @@ void GuiElement::UpdatePositionOrSize(const float delta_x,
     }
 }
 
+void GuiElement::setSizingRectangles()
+{
+    sizing_rect_buffer_.reset();
+
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_, y_, kEditingMarginSize, kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + kEditingMarginSize, y_, width_ - 2.0f * kEditingMarginSize, kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + width_ - kEditingMarginSize, y_, kEditingMarginSize, kEditingMarginSize);
+
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_, y_ + kEditingMarginSize, kEditingMarginSize, height_ - 2.0f * kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + kEditingMarginSize, y_ + kEditingMarginSize, width_ - 2.0f * kEditingMarginSize, height_ - 2.0f * kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + width_ - kEditingMarginSize, y_ + kEditingMarginSize, kEditingMarginSize, height_ - 2.0f * kEditingMarginSize);
+
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_, y_ + height_ - kEditingMarginSize, kEditingMarginSize, kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + kEditingMarginSize, y_ + height_ - kEditingMarginSize, width_ - 2.0f * kEditingMarginSize, kEditingMarginSize);
+    PutRectangleIntoBuffer(sizing_rect_buffer_, x_ + width_ - kEditingMarginSize, y_ + height_ - kEditingMarginSize, kEditingMarginSize, kEditingMarginSize);
+
+}
+
 void GuiElement::updateVertexBuffer()
 {
     // clang-format off
@@ -238,9 +285,22 @@ void GuiElement::mouseReleased(wxMouseEvent& event)
     std::cout << "Mouse released for element \"" << name_ << "\"" << std::endl;
 }
 
+void GuiElement::renderSizingRectangles() const
+{
+    vertex_buffer_sizing_rectangles_.render(sizing_rect_buffer_.idx() / 2U);
+}
+
+void GuiElement::preRender() const
+{
+    if(render_sizing_rectangles_)
+    {
+        renderSizingRectangles();
+    }
+}
+
 void GuiElement::render() const
 {
-    vertex_buffer_.render(6);
+    childRender();
 }
 
 void GuiElement::UpdateSizeFromParent(const wxSize new_size)

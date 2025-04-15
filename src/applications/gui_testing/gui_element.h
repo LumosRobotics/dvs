@@ -51,9 +51,14 @@ protected:
 
     float parent_width_;
     float parent_height_;
+    bool render_sizing_rectangles_{false};
 
     VertexBuffer vertex_buffer_;
+    VertexBuffer vertex_buffer_sizing_rectangles_;
+    BufferedVector sizing_rect_buffer_;
     RGBTripletf color_;
+
+    void setSizingRectangles();
 
     virtual void updateVertexBuffer();
 
@@ -62,6 +67,8 @@ protected:
                                       const float delta_width,
                                       const float delta_height,
                                       const ChangeDirection change_direction);
+
+    void renderSizingRectangles() const;
 
 public:
     GuiElement() = default;
@@ -75,7 +82,14 @@ public:
     void UpdateSizeFromParent(const wxSize new_size);
     bool PointIsWithin(const wxPoint pt) const;
 
+    void preRender() const;
     virtual void render() const;
+    virtual void childRender() const = 0;
+
+    void setRenderSizingRectangles(const bool value)
+    {
+        render_sizing_rectangles_ = value;
+    }
 
     void mouseEntered(wxMouseEvent& event);
     void mouseExited(wxMouseEvent& event);

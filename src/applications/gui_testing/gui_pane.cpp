@@ -243,6 +243,9 @@ GuiPane::GuiPane(wxFrame* parent) : wxGLCanvas(parent, getGLAttributes(), wxID_A
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable( GL_BLEND );
+
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
     Bind(wxEVT_MENU, &GuiPane::bringElementToFrontCallback, this, EventIds::BRING_TO_FRONT);
@@ -400,7 +403,6 @@ void GuiPane::render(wxPaintEvent& WXUNUSED(evt))
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader_collection_.simple_shader.use();
-    // shader_collection_.simple_shader.base_uniform_handles.vertex_color.setColor(RGBTripletf(0.6f, 0.5f, 0.0f));
 
     for (auto& gui_element_ : gui_elements_)
     {
@@ -409,6 +411,11 @@ void GuiPane::render(wxPaintEvent& WXUNUSED(evt))
             static_cast<int32_t>(gui_element_->GetShaderMode()));
 
         gui_element_->render();
+
+        shader_collection_.simple_shader.base_uniform_handles.alpha.setFloat(0.5f);
+        shader_collection_.simple_shader.base_uniform_handles.vertex_color.setColor(RGBTripletf(0.5f, 0.5f, 0.1f));
+        shader_collection_.simple_shader.uniform_handles.shader_mode.setInt(static_cast<int32_t>(4));
+        gui_element_->preRender();
     }
 
     // glFlush();

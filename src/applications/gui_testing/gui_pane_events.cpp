@@ -28,6 +28,11 @@ void GuiPane::keyPressedCallback(wxKeyEvent& evt)
     {
         control_pressed_ = true;
 
+        for(const auto& element : gui_elements_)
+        {
+            element->setRenderSizingRectangles(true);
+        }
+
         if (interaction_state_ == InteractionState::Hoovering)
         {
             if (current_hovered_element_ != nullptr)
@@ -74,6 +79,11 @@ void GuiPane::keyReleasedCallback(wxKeyEvent& evt)
 {
     if (evt.GetKeyCode() == 308)
     {
+        for(const auto& element : gui_elements_)
+        {
+            element->setRenderSizingRectangles(false);
+        }
+
         control_pressed_ = false;
         if (current_hovered_element_ != nullptr)
         {
@@ -125,6 +135,11 @@ void GuiPane::mouseLeftPressed(wxMouseEvent& event)
             change_direction_at_press_ = current_pressed_element_->GetDirectionFromMouse(event.GetPosition());
             interaction_state_ = InteractionState::EditingObject;
             setCursor(change_direction_at_press_);
+
+            for(const auto& element : gui_elements_)
+            {
+                element->setRenderSizingRectangles(false);
+            }
         }
         else
         {
@@ -165,6 +180,10 @@ void GuiPane::mouseLeftReleased(wxMouseEvent& event)
         {
             const ChangeDirection change_dir = current_hovered_element_->GetDirectionFromMouse(event.GetPosition());
             setCursor(change_dir);
+            for(const auto& element : gui_elements_)
+            {
+                element->setRenderSizingRectangles(true);
+            }
         }
         else
         {

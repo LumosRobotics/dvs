@@ -65,7 +65,7 @@ public:
     void mouseDragged(wxMouseEvent& event, const wxPoint& delta_vec) override;
     // void ChangePositionOrSize(const wxPoint delta_vec, const ChangeDirection change_direction) override;
 
-    void render() const override;
+    void childRender() const override;
     void updateVertexBuffer() override;
 };
 
