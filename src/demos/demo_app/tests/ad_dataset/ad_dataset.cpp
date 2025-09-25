@@ -371,24 +371,24 @@ void testBasic()
 
     const std::vector<std::pair<Vector<float>, Vector<float>>> circle_points = generateCircles(5, 10.0f, 5.0f);
 
-    setCurrentElement("point_cloud");
+    setActiveView("point_cloud");
     clearView();
     waitForFlush();
     axis({-20.0, -20.0, -20.0}, {20.0, 20.0, 20.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
     axesSquare();
 
-    setCurrentElement("center");
+    setActiveView("center");
     clearView();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     waitForFlush();
 
-    setCurrentElement("right");
+    setActiveView("right");
     clearView();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     waitForFlush();
 
-    setCurrentElement("left");
+    setActiveView("left");
     clearView();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     waitForFlush();
@@ -417,7 +417,7 @@ void testBasic()
 
         const PointCollection& pc = dataset_reader->getPointCollection(k);
 
-        setCurrentElement("point_cloud");
+        setActiveView("point_cloud");
         softClearView();
         scatter3(pc.x,
                  pc.y,
@@ -431,15 +431,15 @@ void testBasic()
             plot(circ_pts.first, circ_pts.second, properties::Color::WHITE, properties::LineWidth(3));
         }
 
-        setCurrentElement("center");
+        setActiveView("center");
         softClearView();
         imShow(img_front);
 
-        setCurrentElement("right");
+        setActiveView("right");
         softClearView();
         imShow(img_right);
 
-        setCurrentElement("left");
+        setActiveView("left");
         softClearView();
         imShow(img_left);
 
@@ -472,7 +472,7 @@ void testBasic()
 
         const PointCollection& pc = dataset_reader->getPointCollection(k);
 
-        setCurrentElement("point_cloud");
+        setActiveView("point_cloud");
         softClearView();
         scatter3(pc.x,
                  pc.y,
@@ -486,15 +486,15 @@ void testBasic()
             plot(circ_pts.first, circ_pts.second, properties::Color::WHITE, properties::LineWidth(3));
         }
 
-        setCurrentElement("center");
+        setActiveView("center");
         softClearView();
         imShow(img_front);
 
-        setCurrentElement("right");
+        setActiveView("right");
         softClearView();
         imShow(img_right);
 
-        setCurrentElement("left");
+        setActiveView("left");
         softClearView();
         imShow(img_left);
 
@@ -513,17 +513,17 @@ void testScroll()
 
     DatasetReader* dataset_reader = new DatasetReader("../../leddar_dataset/20200706_171559_part27_1170_1370/output");
 
-    setCurrentElement("point_cloud");
+    setActiveView("point_cloud");
     clearView();
     waitForFlush();
     axis({-20.0, -20.0, -20.0}, {20.0, 20.0, 20.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
 
-    setCurrentElement("right");
+    setActiveView("right");
     clearView();
     waitForFlush();
     axis({-20.0, -20.0, -20.0}, {20.0, 20.0, 20.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
 
     size_t idx = 0U;
 
@@ -531,7 +531,7 @@ void testScroll()
     {
         const PointCollection& pc = dataset_reader->getPointCollection(idx);
 
-        setCurrentElement("main");
+        setActiveView("main");
         softClearView();
         scatter3(pc.x,
                  pc.y,
@@ -541,7 +541,7 @@ void testScroll()
                  properties::PointSize(5),
                  properties::ScatterStyle::DISC);
 
-        setCurrentElement("secondary");
+        setActiveView("secondary");
         softClearView();
         scatter3(pc.x,
                  pc.y,

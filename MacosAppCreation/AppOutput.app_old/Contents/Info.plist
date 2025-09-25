@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Age</key>
+	<integer>43</integer>
+	<key>CFBundleIconFile</key>
+	<string>./xcode_working_project/build/main_application/Debug/dvs.app/Contents/Resources/AppIcon.icns</string>
+	<key>Children</key>
+	<array>
+		<string>Ellen</string>
+		<string>Luna</string>
+		<string>Norma</string>
+	</array>
+	<key>Name</key>
+	<string>Newt Masterson</string>
+</dict>
+</plist>

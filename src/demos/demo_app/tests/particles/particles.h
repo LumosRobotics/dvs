@@ -30,7 +30,7 @@ Vector<Point2f> splitPointsString(
 
     const std::vector<std::string> q = splitString(coordinates_strings[0], ",");
 
-    coords[0].x = (std::stof(q[0])) * mul + add_x;
+    coords[0].x = (std::stof(q[0]))*mul + add_x;
     coords[0].y = (-std::stof(q[1])) * mul + add_y;
 
     size_t idx = 1;
@@ -42,7 +42,7 @@ Vector<Point2f> splitPointsString(
         }
         const std::vector<std::string> q = splitString(coordinates_strings[k], ",");
 
-        const float x = (std::stod(q[0])) * mul + add_x;
+        const float x = (std::stod(q[0]))*mul + add_x;
         const float y = (sign_mul * std::stod(q[1])) * mul + add_y;
 
         if ((x == coords[idx - 1U].x) && (y == coords[idx - 1U].y))
@@ -334,8 +334,8 @@ public:
             }
 
             output_color_(k) = properties::Color{img_(num_rows_minus_one - r, c, 2),
-                                      img_(num_rows_minus_one - r, c, 1),
-                                      img_(num_rows_minus_one - r, c, 0)};
+                                                 img_(num_rows_minus_one - r, c, 1),
+                                                 img_(num_rows_minus_one - r, c, 0)};
         }
     }
 };
@@ -553,7 +553,7 @@ void runTest()
 
     openProjectFile(project_file_path);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
@@ -607,7 +607,7 @@ void testBasicOld()
 
     openProjectFile(project_file_path);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     axis({-3.0, -2.1}, {3.0, 1.0});
@@ -653,7 +653,7 @@ void testBasicOld()
 
 void saveToFile()
 {
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     axis({-3.0, -2.1}, {3.0, 1.0});
@@ -712,7 +712,7 @@ void testBasicTmp()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-1.0, -1.0}, {1.0, 1.0});
 

@@ -289,21 +289,21 @@ public:
 
 RtMainWindow::RtMainWindow() : wxFrame(NULL, wxID_ANY, "", wxPoint(30, 30), wxSize(500, 500))
 {
-    setCurrentElement("filtered");
+    setActiveView("filtered");
     clearView();
     waitForFlush();
     axis({-4.0, -4.0, -4.0}, {4.0, 4.0, 4.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
     globalIllumination({2.0, 2.0, 2.0});
 
     visualizer_ = new ImuVisualizer{
         20U, properties::Transform{diagMatrix<double>({1.0, 1.0, 1.0}), rotationMatrixZ<double>(0), {0, 0, 0}}};
 
-    setCurrentElement("raw");
+    setActiveView("raw");
     clearView();
     setProperties(properties::ID7, properties::Color(0, 0, 255));
     axis({-1.0, -1.5f, -1.0}, {20.0, 1.5f, 1.0f});
-    view(180, -90);
+    viewAngles(180, -90);
 
     update_timer_.Bind(wxEVT_TIMER, &RtMainWindow::timerFunction, this);
     update_timer_.Start(20);
@@ -325,12 +325,12 @@ void RtMainWindow::timerFunction(wxTimerEvent&)
     const auto r_mat = rotationMatrixY<double>(theta_y) * rotationMatrixX<double>(theta_x);
     const properties::Transform tr{diagMatrix<double>({1.0, 1.0, 1.0}), r_mat, {0, 0, 0}};
 
-    setCurrentElement("filtered");
+    setActiveView("filtered");
     visualizer_->visualize(tr);
 
     flushCurrentElement();
 
-    setCurrentElement("raw");
+    setActiveView("raw");
     const float dt = 0.1f;
     realTimePlot(dt, hori_value, properties::ID7);
     realTimePlot(dt, hori_value * 2.0f, properties::ID8);

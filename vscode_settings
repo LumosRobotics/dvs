@@ -1,0 +1,50 @@
+{
+    "workbench.colorTheme": "Default Dark+",
+    "C_Cpp.formatting": "clangFormat",
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": true,
+        "markdown": true,
+        "scminput": false
+    },
+    "editor.formatOnSave": false,
+    "C_Cpp.workspaceParsingPriority": "medium",
+    "C_Cpp.files.exclude": {
+        "**/.vscode": true,
+        "**/.vs": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.deps": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "/bin": true,
+        "/boot": true,
+        "/cdrom": true,
+        "/dev": true,
+        "/proc": true,
+        "/etc": true
+    },
+    "workbench.editor.empty.hint": "hidden",
+    "github.copilot.editor.enableAutoCompletions": true
+}
+
+
+~/Library/Application Support/Code/User/settings.json
+Extensions
+C/C++
+Atom One Dark Theme
+Black Formatter
+CMake
+Github Copilot
+Github Copilot Chat
+GLSL Lint
+One Dark Pro
+Pylance
+Python
+Python Debugger

@@ -18,7 +18,7 @@ void testBasic()
     const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0, 5.0, num_elements);
     const Vector<double> y = duoplot::sin(x);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     setProperties(properties::ID0, properties::Color::BLUE, properties::LineWidth(10));

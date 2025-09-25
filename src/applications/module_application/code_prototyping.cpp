@@ -50,10 +50,10 @@ void loadFileAndSetupInteraction(const std::string& path_to_file)
 
     // Populate the vectors with data
 
-    setCurrentElement("plot0");
+    setActiveView("plot0");
     plot(x_data, y_data);
 
-    setCurrentElement("button0");
+    setActiveView("button0");
 }
 
 /*
@@ -85,6 +85,6 @@ void loadFile(const std::string& path_to_file)
 
     // Populate the vectors with data
 
-    setCurrentElement("plot0");
+    setActiveView("plot0");
     plot(x_data, y_data);
 }

@@ -125,7 +125,7 @@ void testBasic()
     // VectorConstView<float> x{ff.getXPos(), ff.size()};
     // VectorConstView<float> y{ff.getYPos(), ff.size()};
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis(min_bnd, max_bnd);
     FakeFem ff{num_particles, p0, min_bnd, max_bnd};

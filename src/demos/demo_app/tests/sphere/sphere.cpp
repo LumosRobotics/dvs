@@ -406,12 +406,12 @@ void testBasic()
     yl.fill(0.0f);
     zl.fill(0.0f);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     disableScaleOnRotation();
     disableAutomaticAxesAdjustment();
     axesSquare();
-    view(40, 40);
+    viewAngles(40, 40);
     waitForFlush();
 
     float zv0 = 3.0f;

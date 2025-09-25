@@ -140,7 +140,7 @@ void testBasic()
     VectorConstView<float> vy(y.data(), nu * nv);
     VectorConstView<float> vz(z.data(), nu * nv);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     evalKlein(u_mat, v_mat, x, y, z, 0.0f, 0.0f, klein_params, unitMatrix<float>(3, 3));
@@ -167,7 +167,7 @@ void testAdvanced0()
     VectorConstView<float> vy(y.data(), nu * nv);
     VectorConstView<float> vz(z.data(), nu * nv);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     float u_offset = 0.0f, v_offset = 0.0f;
@@ -231,7 +231,7 @@ void testAdvanced1()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     float u_offset = 0.0f, v_offset = 0.0f;
 

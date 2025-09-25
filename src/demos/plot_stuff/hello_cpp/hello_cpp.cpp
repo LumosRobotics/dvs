@@ -22,9 +22,9 @@ int main()
         }
     }
 
-    setCurrentElement("hello_cpp");
+    setActiveView("hello_cpp");
     clearView();
-    view(-135, 17);
+    viewAngles(-135, 17);
     setTitle("Hello from C++!");
     surf(x, y, z, properties::EdgeColor::NONE, properties::ColorMap::JET_SOFT);
 }

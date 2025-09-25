@@ -189,7 +189,7 @@ void testBasic()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axesSquare();
     disableScaleOnRotation();
@@ -200,8 +200,8 @@ void testBasic()
     // Use perspective projection for this test
 
     float azimuth = 0.0f;
-    view(-90.0f, 90.0f);
-    // view(azimuth, 32.0);
+    viewAngles(-90.0f, 90.0f);
+    // viewAngles(azimuth, 32.0);
     const size_t n_its = 500U;
     double t = 0.0;
 
@@ -238,7 +238,7 @@ void testBasic()
 
         t += 0.1;
         drawCubes(x, y, z, colors_sparkle, 1.0, properties::EdgeColor::NONE);
-        view(azimuth, 32.0);
+        viewAngles(azimuth, 32.0);
         azimuth += 0.5f;
 
         if (azimuth > 180.0f)

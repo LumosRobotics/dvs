@@ -120,13 +120,13 @@ void testBasic()
     const Vec3d scale{0.1, 0.1, 1.0};
     const Vec3d center_of_rotation = Vec3d{150.0, 75.0, 0.0}.elementWiseMultiply(scale);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     const double y_scale = 63.0;
 
     axis({-32.0, -y_scale, -10.0}, {-32.0 + 223, y_scale, 10.0});
-    view(-90, -90);
+    viewAngles(-90, -90);
 
     imShow(road,
            properties::ZOffset(0.0f),

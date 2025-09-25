@@ -18,7 +18,7 @@ void testWithVectorView()
     const VectorConstView<double> xv = x.constView();
     const VectorConstView<double> yv = y.constView();
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
     scatter(x, y, properties::Color::RED);
     plot(xv, yv, properties::Color::BLUE);

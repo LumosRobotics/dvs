@@ -106,12 +106,12 @@ void testSlingPlot()
     vx.fill(0.0f);
     vy.fill(0.0f);
 
-    setCurrentElement("velocity");
+    setActiveView("velocity");
     clearView();
     axis({0.0, 0.0}, {10.0, 25.0});
     waitForFlush();
 
-    setCurrentElement("view");
+    setActiveView("view");
     clearView();
     axis({-10.0, -19.0}, {10.0, 1.0});
     waitForFlush();
@@ -142,7 +142,7 @@ void testSlingPlot()
         const Vector<float> t_copy = t_vec;
         t += dt;
 
-        setCurrentElement("velocity");
+        setActiveView("velocity");
         softClearView();
 
         for (size_t q = 0; q < num_particles; ++q)
@@ -162,7 +162,7 @@ void testSlingPlot()
         flushCurrentElement();
         std::cout << v_vec[0].size() << std::endl;
 
-        setCurrentElement("view");
+        setActiveView("view");
         softClearView();
 
         scatter(x, y, colors, properties::PointSize(15.0f), properties::ScatterStyle::DISC);

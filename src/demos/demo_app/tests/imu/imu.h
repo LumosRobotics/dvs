@@ -302,35 +302,35 @@ void testBasic()
 
     openProjectFile(project_file_path);
 
-    setCurrentElement("raw");
+    setActiveView("raw");
     clearView();
     axesSquare();
     waitForFlush();
     axis({-4.0, -4.0, -4.0}, {4.0, 4.0, 4.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
     globalIllumination({2.0, 2.0, 2.0});
 
     ImuVisualizer visualizer_raw{
         20U, properties::Transform{diagMatrix<double>({1.0, 1.0, 1.0}), rotationMatrixZ<double>(0), {0, 0, 0}}};
 
-    setCurrentElement("filtered");
+    setActiveView("filtered");
     clearView();
     axesSquare();
     waitForFlush();
     axis({-4.0, -4.0, -4.0}, {4.0, 4.0, 4.0});
-    view(-38.0, 32.0);
+    viewAngles(-38.0, 32.0);
     globalIllumination({2.0, 2.0, 2.0});
 
     ImuVisualizer visualizer{
         20U, properties::Transform{diagMatrix<double>({1.0, 1.0, 1.0}), rotationMatrixZ<double>(0), {0, 0, 0}}};
 
-    setCurrentElement("rt");
+    setActiveView("rt");
     clearView();
     waitForFlush();
     setProperties(properties::ID0, properties::Color::RED);
     setProperties(properties::ID1, properties::Color(127, 0, 136));
     axis({0.0, -1.1}, {1.0, 1.1});
-    view(-180.0, -90.0);
+    viewAngles(-180.0, -90.0);
 
     double t = 0.0;
 
@@ -357,13 +357,13 @@ void testBasic()
         const properties::Transform tr{diagMatrix<double>({1.0, 1.0, 1.0}), r_mat, {0, 0, 0}};
         const properties::Transform tr_noise{diagMatrix<double>({1.0, 1.0, 1.0}), r_mat_noise, {t_x, t_y, t_z}};
 
-        setCurrentElement("filtered");
+        setActiveView("filtered");
         visualizer.visualize(tr);
 
-        setCurrentElement("raw");
+        setActiveView("raw");
         visualizer_raw.visualize(tr_noise);
 
-        setCurrentElement("rt");
+        setActiveView("rt");
         realTimePlot(0.01, theta_x, properties::ID0);
         realTimePlot(0.01, theta_raw_x, properties::ID1);
 

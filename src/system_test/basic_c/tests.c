@@ -10,7 +10,7 @@ void testPlot()
     duoplot_VectorF x = duoplot_Vector_linspaceFromPointsAndCountF(0.1, 10.8, num_elements);
     duoplot_VectorF y = duoplot_Vector_sinF(x);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     const duoplot_Vec3D min_vec = {-1.0, -1.0, -1.0};
     const duoplot_Vec3D max_vec = {12.0, 1.0, 2.0};
@@ -26,7 +26,7 @@ void testPlot3()
     duoplot_VectorF y = duoplot_Vector_sinF(x);
     duoplot_VectorF z = duoplot_Vector_cosF(x);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     duoplot_plot3(x, y, z, duoplot_Color(255, 0, 11));
 }
@@ -37,7 +37,7 @@ void testScatter()
     duoplot_VectorF x = duoplot_Vector_linspaceFromPointsAndCountF(0.1, 10.8, num_elements);
     duoplot_VectorF y = duoplot_Vector_sinF(x);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     duoplot_scatter(x, y, duoplot_Color(0, 0, 255), duoplot_PointSize(10));
 }
@@ -49,7 +49,7 @@ void testScatter3()
     duoplot_VectorF y = duoplot_Vector_sinF(x);
     duoplot_VectorF z = duoplot_Vector_cosF(x);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     duoplot_scatter3(x, y, z, duoplot_Color(255, 0, 11));
 }
@@ -65,7 +65,7 @@ void testSurf()
     const duoplot_MatrixD ry = duoplot_Matrix_cosD(y);
     const duoplot_MatrixD z = duoplot_Matrix_elementWiseMultiplyD(rx, ry);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
 
     duoplot_surf(x, y, z, duoplot_Alpha(0.7f));
@@ -85,7 +85,7 @@ void testSurf()
     duoplot_Point3D p2 = {1.0, 1.0, 2.0};
     duoplot_Point3D p3 = {0.0, 2.0, 0.6};
 
-    duoplot_setCurrentElement("view_02");
+    duoplot_setActiveView("view_02");
     duoplot_clearView();
 
     drawPolygonFrom4Points(p0, p1, p2, p3, duoplot_Color(255, 0, 11));
@@ -98,7 +98,7 @@ void testDrawLine3D()
 
     const duoplot_Line3DD line = {p0, p1};
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     drawLine3D(line, -1.3, 3.4, duoplot_Color(255, 0, 11));
 }
@@ -110,7 +110,7 @@ void testDrawLine2D()
 
     const duoplot_PLine2DD line = {p0, p1};
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     drawLine2D(line, -1.3, 3.4, duoplot_Color(255, 0, 11));
 }
@@ -121,7 +121,7 @@ void testDrawPlaneXY()
     const duoplot_PointXYD p0 = {0.0, 0.0};
     const duoplot_PointXYD p1 = {1.0, 1.0};
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     drawPlaneXY(plane, p0, p1, duoplot_Color(255, 0, 11));
 }
@@ -132,7 +132,7 @@ void testDrawPlaneXZ()
     const duoplot_PointXZD p0 = {0.0, 0.0};
     const duoplot_PointXZD p1 = {1.0, 1.0};
 
-    duoplot_setCurrentElement("view_01");
+    duoplot_setActiveView("view_01");
     duoplot_clearView();
     drawPlaneXZ(plane, p0, p1, duoplot_Color(255, 0, 11));
 }
@@ -143,7 +143,7 @@ void testDrawPlaneYZ()
     const duoplot_PointYZD p0 = {0.0, 0.0};
     const duoplot_PointYZD p1 = {1.0, 1.0};
 
-    duoplot_setCurrentElement("view_02");
+    duoplot_setActiveView("view_02");
     duoplot_clearView();
     drawPlaneYZ(plane, p0, p1, duoplot_Color(255, 0, 11));
 }*/
@@ -183,12 +183,12 @@ void testImShow()
 
     const duoplot_Property p = duoplot_Alpha(0.3);
 
-    duoplot_setCurrentElement("p_view_0");
+    duoplot_setActiveView("p_view_0");
     duoplot_clearView();
     duoplot_imShow(img3, p);
 
     // TODO:
-    // duoplot_setCurrentElement("view_01");
+    // duoplot_setActiveView("view_01");
     // duoplot_clearView();
     // duoplot_imShow(img1, duoplot_Color(255, 0, 11));
 }
@@ -201,7 +201,7 @@ void testImShow()
     const duoplot_Point2D p0_2 = {p0.x, p0.y};
     const duoplot_Point2D p1_2 = {p1.x, p1.y};
 
-    duoplot_setCurrentElement("p_view_0");  // TODO: <- Move to setup
+    duoplot_setActiveView("p_view_0");  // TODO: <- Move to setup
     duoplot_clearView();
     drawLineBetweenPoints(p0, p1, duoplot_Color(255, 0, 11));
     drawLineBetween2DPoints(p0_2, p1_2, duoplot_Color(255, 0, 11));

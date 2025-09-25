@@ -157,7 +157,7 @@ DUOPLOT_WEAK void duoplot_internal_imShowFunction(const duoplot_ImageRGB* const 
                                     ##__VA_ARGS__,               \
                                     duoplot_internal_getLastCommHdrObj())
 
-DUOPLOT_WEAK void duoplot_setCurrentElement(const char* const name)
+DUOPLOT_WEAK void duoplot_setActiveView(const char* const name)
 {
     duoplot_internal_CommunicationHeader hdr;
     duoplot_internal_initCommunicationHeader(&hdr, DUOPLOT_INTERNAL_F_SET_CURRENT_ELEMENT);

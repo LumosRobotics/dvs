@@ -20,7 +20,7 @@ void testWithVectorView()
     const VectorConstView<double> yv = y.constView();
     const VectorConstView<double> zv = z.constView();
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
     scatter3(x, y, z, properties::Color::RED);
     plot3(xv, yv, zv, properties::Color::BLUE);

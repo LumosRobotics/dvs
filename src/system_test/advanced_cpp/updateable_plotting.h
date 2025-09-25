@@ -16,9 +16,9 @@ void testRealTimePlotBasic()
     float t = 0.0f;
     float dt = 0.01f;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
-    view(180, -90);
+    viewAngles(180, -90);
     axis({-1.0, -1.5f, -1.0}, {20.0, 1.5f, 1.0f});
 
     setProperties(properties::ID0, properties::Color::BLUE);
@@ -64,7 +64,7 @@ void testPlot2Basic()
     float t = 0.0f;
     float dt = 0.01f;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-1.0, -1.5f, -1.0}, {6.0, 1.5f, 1.0f});
 
@@ -93,12 +93,12 @@ void testSurfBasic()
     const Matrix<double>& y_mat = mat_xy.second;
     Matrix<double> z_mat{100, 100};
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     double t = 0.0;
     const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0, 5.0, num_elements);
-    view(10, 10);
+    viewAngles(10, 10);
     float azimuth = 10.0;
 
     for (size_t k = 0; k < 1000; k++)
@@ -124,7 +124,7 @@ void testSurfBasic()
 
         azimuth = azimuth > 180.0f ? -180.0f : azimuth + 1.0f;
         axis({-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0});
-        view(azimuth, 10);
+        viewAngles(azimuth, 10);
 
         usleep(10000);
     }
@@ -134,7 +134,7 @@ void testScatter2DAppendable()
 {
     const size_t num_elements = 100;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-4.0, -4.0}, {4.0, 4.0});
 
@@ -169,7 +169,7 @@ void testScatter2DAppendable()
         }
         y_offset += 0.1;
 
-        scatter(x, y, colorp, properties::ID0, properties::APPENDABLE);
+        scatter(x, y, colorp, properties::ID0, properties::not_ready::APPENDABLE);
 
         scatter(x, y, properties::Color::RED, properties::ScatterStyle::CROSS, properties::PointSize(10));
 
@@ -181,7 +181,7 @@ void testScatter3DAppendable()
 {
     const size_t num_elements = 100;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-4.0, -4.0}, {4.0, 4.0});
 
@@ -217,7 +217,7 @@ void testScatter3DAppendable()
         }
         y_offset += 0.1;
 
-        scatter3(x, y, z, colorp, properties::ID0, properties::APPENDABLE);
+        scatter3(x, y, z, colorp, properties::ID0, properties::not_ready::APPENDABLE);
 
         scatter3(x, y, z, properties::Color::RED, properties::ScatterStyle::CROSS, properties::PointSize(10));
 
@@ -227,7 +227,7 @@ void testScatter3DAppendable()
 
 void testFastPlot2Appendable()
 {
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-4.0, -4.0}, {4.0, 4.0});
 
@@ -263,8 +263,8 @@ void testFastPlot2Appendable()
         }
         y_offset += 0.1;
 
-        plot(x, y, properties::ID0, properties::APPENDABLE);
-        scatter(x, y, colorp, properties::ID1, properties::APPENDABLE);
+        plot(x, y, properties::ID0, properties::not_ready::APPENDABLE);
+        scatter(x, y, colorp, properties::ID1, properties::not_ready::APPENDABLE);
 
         scatter(x, y, properties::Color::RED, properties::ScatterStyle::CROSS, properties::PointSize(10));
     }
@@ -272,7 +272,7 @@ void testFastPlot2Appendable()
 
 void testAppendableOnePointOnly()
 {
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-4.0, -4.0}, {4.0, 4.0});
 
@@ -295,8 +295,8 @@ void testAppendableOnePointOnly()
         x(0) = t;
         y(0) = std::sin(t);
 
-        plot(x, y, properties::ID0, properties::APPENDABLE);
-        scatter(x, y, properties::ID1, properties::APPENDABLE);
+        plot(x, y, properties::ID0, properties::not_ready::APPENDABLE);
+        scatter(x, y, properties::ID1, properties::not_ready::APPENDABLE);
         usleep(100 * 1000);
 
         t += 0.1;

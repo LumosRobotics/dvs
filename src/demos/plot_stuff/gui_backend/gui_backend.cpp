@@ -120,7 +120,7 @@ int main()
         using Vd = Vector<double>;
         using Vid = VectorInitializer<double>;
 
-        setCurrentElement("p0");
+        setActiveView("p0");
 
         plot(t, x, properties::LineWidth(7.0f), properties::Label("Position"));
         plot(t, vx, properties::LineWidth(7.0f), properties::Label("Velocity"));
@@ -142,7 +142,7 @@ int main()
         flushCurrentElement();
         softClearView();
 
-        setCurrentElement("p1");
+        setActiveView("p1");
 
         plot(Vd{Vid{t(0), t(end_idx)}},
              Vd{Vid{sim_params.error_bound, sim_params.error_bound}},
@@ -166,23 +166,29 @@ int main()
 
     duoplot::gui::registerGuiCallback("slider_kp", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
         const double val_kp = gui_element_handle.getNormalizedValue();
-        const double val_ki = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
-        const double val_kd = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+        const double val_ki =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+        const double val_kd =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
     });
 
     duoplot::gui::registerGuiCallback("slider_ki", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
-        const double val_kp = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+        const double val_kp =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
         const double val_ki = gui_element_handle.getNormalizedValue();
-        const double val_kd = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+        const double val_kd =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
     });
 
     duoplot::gui::registerGuiCallback("slider_kd", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
-        const double val_kp = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
-        const double val_ki = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+        const double val_kp =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+        const double val_ki =
+            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
         const double val_kd = gui_element_handle.getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
@@ -192,21 +198,24 @@ int main()
 
     duoplot::gui::startGuiReceiveThread();
 
-    setCurrentElement("p0");
+    setActiveView("p0");
     clearView();
     setTitle("PID Controller Simulation");
     waitForFlush();
     axis({0.0, -0.5}, {t(end_idx), 1.5});
 
-    setCurrentElement("p1");
+    setActiveView("p1");
     clearView();
     setTitle("Error");
     waitForFlush();
     axis({0.0, -0.5}, {t(end_idx), 0.5});
 
-    const double val_kp = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
-    const double val_ki = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
-    const double val_kd = duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+    const double val_kp =
+        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+    const double val_ki =
+        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+    const double val_kd =
+        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
     plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
 

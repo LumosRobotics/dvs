@@ -187,13 +187,13 @@ void testBasic()
 
     WaveEquationStepper stepper{num_rows, num_cols, params};
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     // globalIllumination({1.0, 1.0, 1.0});
 
     const double z_max = 0.05;
     axis({0.0, 0.0, -z_max}, {1.0, 1.0, z_max});
-    view(-14, 40);
+    viewAngles(-14, 40);
 
     const VectorConstView<float> x_vec(x.data(), x.numElements()), y_vec(y.data(), y.numElements());
 

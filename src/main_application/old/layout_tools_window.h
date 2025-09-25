@@ -69,7 +69,7 @@ public:
     void setupShapes();
 
     void setCurrentTabName(const std::string& tab_name);
-    void setCurrentElementName(const std::string& name_of_selected);
+    void setActiveViewName(const std::string& name_of_selected);
 
     virtual void OnClose(wxCloseEvent& event);
 };

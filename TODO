@@ -3,17 +3,13 @@ Pre release:
 - Support for Windows and Linux
 - Add all keybindings to the help pane
 - Clean up and sanitize CMakeLists.txt files, so that they are "neat"
-- In python interface, delete old C++ reference code in duoplot.py
 - GUI interface might be broken for C interface?
 - Adding a slider with the wrong aspect ratio of the window still gives crap result, with a vertical slider
   that is unmovable...
 - Solve all TODOs
 - If the the axes is on some large number (like 11396), zooming in a lot doesn't show the last digits, it shows only 11396.1 repeatedly
 - Potential bug in ImShow, where it's black if image4 (alpha) is used? Was present for particle sim demo
-- Rename everything with "element" to "view", e.g. setCurrentElement -> setCurrentView, because "element" was chosen when other types of gui elements were considered, thus the general name. Check if setting current gui element is needed for other gui element types (button, text field, drop down), might not be necessary since all information can be passed in one function call, thus no need to set state
-- If setCurrentElement -> setCurrentView, view -> setViewAngles/viewAngles
 - Adding another .c file using the c interface creates linker error for duplicated functions -> make inline
-- Move "FAST_PLOT" flag to "not_ready" namespace?
 - Text viewer just showing the most recent value of a topic, both numerical and text. Maybe both a separate window, and separate text labels for individual topics
 - Rename "stream_type" in project files to "plot_type" or something
 - Change name of ItemId to ObjectId?
@@ -21,10 +17,8 @@ Pre release:
 - PlotProperties -> UserProperties in duoplot application
 - All gui elements should have a setting that makes their size or position scale with window size
 - Semi transparent overlay when resizing, showing the different resizing zones, maybe indicating which zones that are disabled, if one is resizing a lets say, horizontal slider, where height cannot be resized
-- setCurrentElement -> setActiveElement
-- Should probably rename "element" to view in "setActiveElement", because the plot view is the only type of element that's gonna be state based, all others are going to be handle based
-- Remove "APPENDABLE" and "UPDATEABLE" option for now
 - Enable two callbacks for editable text field, one for when text is changed, and one for when enter is pressed
+- Lock azimuth or elevation at certain values
 
 Post release:
 - Add handle based interface for plot views

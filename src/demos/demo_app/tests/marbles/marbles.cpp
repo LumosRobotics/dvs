@@ -218,7 +218,7 @@ public:
             setProperties(props);
 
             theta += 0.01;
-            view(azimuth, 35);
+            viewAngles(azimuth, 35);
             azimuth += 0.3;
             if (azimuth > 180.0)
             {
@@ -300,17 +300,17 @@ void testBasic()
     const std::string project_file_path = "../../project_files/small_demo.duoplot";
     openProjectFile(project_file_path);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     // globalIllumination({2.0, 2.0, 2.0});
     axesSquare();
-    view(azimuth, 35);
+    viewAngles(azimuth, 35);
     // waitForFlush();
 
     disableScaleOnRotation();
     axis({-5.0, -5.0, -1.0}, {5.0, 5.0, 9.0});
-    // view(-90, 90);
+    // viewAngles(-90, 90);
 
     Marbles marbles(10, 4);
     drawGrid();

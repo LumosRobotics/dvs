@@ -57,7 +57,7 @@ template <typename... Us> void setProperties(const std::vector<PropertySet>& pro
     internal::sendHeaderAndData(internal::getSendFunction(), hdr, data_vec);
 }
 
-inline void setCurrentElement(const std::string& name)
+inline void setActiveView(const std::string& name)
 {
     if (name.length() == 0)
     {
@@ -79,7 +79,7 @@ inline void deletePlotObject(const ItemId id)
     internal::sendHeaderOnly(internal::getSendFunction(), hdr);
 }
 
-inline void setCurrentElementToImageView()
+inline void setActiveViewToImageView()
 {
     internal::CommunicationHeader hdr{internal::Function::CURRENT_ELEMENT_AS_IMAGE_VIEW};
 
@@ -148,7 +148,7 @@ template <typename... Us> void flushMultipleElements(const Us&... elements)
     internal::sendHeaderAndData(internal::getSendFunction(), hdr, name_lengths, concatenated_names_local);
 }
 
-inline void view(const float azimuth_deg, const float elevation_deg)
+inline void viewAngles(const float azimuth_deg, const float elevation_deg)
 {
     internal::CommunicationHeader hdr{internal::Function::VIEW};
     hdr.append(internal::CommunicationHeaderObjectType::AZIMUTH, azimuth_deg);

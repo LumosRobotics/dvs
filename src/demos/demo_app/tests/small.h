@@ -270,7 +270,7 @@ void testLorenz()
         z0 = z1;
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-28.0f, -28.0f, -10.0f}, {28.0f, 28.0f, 55.0f});
 
@@ -304,7 +304,7 @@ void testBump()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     surf(x, y, z, properties::EdgeColor::BLACK, properties::ColorMap::MAGMA);
 }
@@ -336,7 +336,7 @@ void testScatterColorMap()
 
     const VectorConstView<float> x_vec{x.data(), x.size()}, y_vec{y.data(), y.size()};
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     scatter(x_vec,
             y_vec,
@@ -372,7 +372,7 @@ void testScatterSamples()
     openProjectFile(project_file_path);
     disableScaleOnRotation();
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     scatter(x_vec,
             y_vec,
@@ -496,7 +496,7 @@ void testFakeContour()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     // surf(x, y, z, properties::EdgeColor::BLACK, properties::ColorMap::VIRIDIS);
 
@@ -535,7 +535,7 @@ void testStocks()
         // y2(k - 1) = y2(k) + r_func();
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     plot(x, y0, properties::LineWidth(3.0f));
     // plot(x, y1);
@@ -552,7 +552,7 @@ void testScatterCluster()
 
     const auto r_func = []() -> double { return static_cast<double>(rand() % 1001) / 1000.0; };
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     std::vector<properties::Color> colors{properties::Color{218, 83, 29},
@@ -617,7 +617,7 @@ void testScatterVaryingSize()
         r += 0.01;
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0});
 
@@ -648,7 +648,7 @@ void testScatterSmallPoints()
         t += 0.1;
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0});
 
@@ -796,11 +796,11 @@ void testTransparentFillBelowPlot()
     std::tie(vertices1, indices1) = create_mesh(t, x1, -0.2);
     std::tie(vertices2, indices2) = create_mesh(t, x2, -0.4);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     // axis({-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0});
 
-    view(0, 90);
+    viewAngles(0, 90);
 
     plot(t, x0, properties::LineWidth(5), properties::Color::BLACK);
     plot(t, x1, properties::LineWidth(5), properties::Color::BLACK);
@@ -870,10 +870,10 @@ void testTransitioningSurfs()
     //////////////////////////// Create surfaces ////////////////////////////
     /////////////////////////////////////////////////////////////////////////
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     disableScaleOnRotation();
-    view(-60, 40);
+    viewAngles(-60, 40);
     axis({0.0, 0.0, -1.0}, {1.0, 1.0, 1.0});
 
     const size_t num_its = 100U;
@@ -924,7 +924,7 @@ void testIsoSurfaces()
     // funy = @(u,v) -u.*cos(v);
     // funz = @(u,v) v;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     surf(x, y, z, properties::EdgeColor(0, 0, 0), properties::ColorMap::JET_BRIGHT);
 }
@@ -976,13 +976,13 @@ void testHyperboloid()
         // return {x, y, z};
     };
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     disableScaleOnRotation();
     axesSquare();
 
     axis({-10.0, -10.0, -10.0}, {10.0, 10.0, 10.0});
-    view(-65, 12);
+    viewAngles(-65, 12);
 
     XYZMats xyz_mats;
 
@@ -1018,12 +1018,12 @@ void testHyperboloid()
     usleep(1000U * 1000U * 6U);
     openProjectFile("../../project_files/small_bright.duoplot");
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     disableScaleOnRotation();
     axesSquare();
     axis({-10.0, -10.0, -10.0}, {10.0, 10.0, 10.0});
-    view(-65, 12);
+    viewAngles(-65, 12);
 
     softClearView();
     xyz_mats = hyberboloid(-3.0, 3.0, 1.0, 30U);
@@ -1069,7 +1069,7 @@ void testSphere()
     const Matrix<double> y = elementWiseMultiply(elementWiseMultiply(r, duoplot::sin(theta)), duoplot::sin(phi));
     const Matrix<double> z = elementWiseMultiply(r, cos(theta));
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     surf(x, y, z, properties::EdgeColor(0, 0, 0), properties::ColorMap::JET_SOFT);
 }
@@ -1107,9 +1107,9 @@ void testLinesAndDots()
 
     const double thresh = debug_value_args::getValue<double>("dist-thresh", 0.05);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
-    view(180.0, 90.0);
+    viewAngles(180.0, 90.0);
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     axesSquare();
     disableAutomaticAxesAdjustment();
@@ -1170,7 +1170,7 @@ void testLinesAndDots()
             azimuth = 180.0;
         }
         elevation -= 0.1;
-        view(azimuth, elevation);
+        viewAngles(azimuth, elevation);
 
         scatter3(x,
                  y,
@@ -1226,7 +1226,7 @@ void testLissaJous()
         t = t + dt;
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     const double delta = 0.3;
@@ -1311,7 +1311,7 @@ void testCubeImage()
         }
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     axis({-1.0, -1.0, -5.0}, {10.0, 10.0, 5.0});
@@ -1358,7 +1358,7 @@ void testFilteringWithSliders()
 
     duoplot::gui::startGuiReceiveThread();
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     axis({0.125, 0.625}, {0.375, 1.125});
@@ -1485,7 +1485,7 @@ void testPidTuner()
         duoplot::gui::getGuiElementHandle<duoplot::gui::TextLabelHandle>("tl_rt").setLabel("Rise time: " +
                                                                                            std::to_string(t(ss_idx)));
 
-        setCurrentElement("p_view_0");
+        setActiveView("p_view_0");
 
         plot(t, x, properties::LineWidth(7.0f), properties::Label("Position"));
         plot(t, vx, properties::LineWidth(7.0f), properties::Label("Velocity"));
@@ -1507,7 +1507,7 @@ void testPidTuner()
         flushCurrentElement();
         softClearView();
 
-        setCurrentElement("p_view_1");
+        setActiveView("p_view_1");
 
         plot(Vd{Vid{t(0), t(end_idx)}},
              Vd{Vid{sim_params.error_bound, sim_params.error_bound}},
@@ -1563,12 +1563,12 @@ void testPidTuner()
 
     duoplot::gui::startGuiReceiveThread();
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     waitForFlush();
     axis({0.0, -0.5}, {t(end_idx), 1.5});
 
-    setCurrentElement("p_view_1");
+    setActiveView("p_view_1");
     clearView();
     waitForFlush();
     axis({0.0, -0.5}, {t(end_idx), 0.5});
@@ -1702,12 +1702,12 @@ void testThreeBodyProblem()
         flushCurrentElement();
     };
 
-    setCurrentElement("p0");
+    setActiveView("p0");
     clearView();
     axesSquare();
     disableScaleOnRotation();
     axis({-2.0, -2.0, -4.0}, {2.0, 2.0, 4.0});
-    view(-20, 47);
+    viewAngles(-20, 47);
 
     const double h = debug_value_args::getValue<double>("h", 0.01);
     const double damping = 0.0001;
@@ -1774,7 +1774,7 @@ void testThreeBodyProblem()
     disableScaleOnRotation();
     waitForFlush();
 
-    view(0, -90);
+    viewAngles(0, -90);
 
     for (size_t k = 0; k < n_its; k++)
     {
@@ -1909,12 +1909,12 @@ void testSolarSystem()
         flushCurrentElement();
     };
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axesSquare();
     disableScaleOnRotation();
     axis({-2.0, -2.0, -4.0}, {2.0, 2.0, 4.0});
-    view(-20, 47);
+    viewAngles(-20, 47);
 
     const double h = debug_value_args::getValue<double>("h", 0.05);
     const double damping = 0.0001;
@@ -2032,7 +2032,7 @@ void testSolarSystem()
         const double elevation = std::sin(t) * 20.0;
         plot_bodies(bodies, k);
 
-        view(azimuth, elevation);
+        viewAngles(azimuth, elevation);
         azimuth += 0.5f;
         if (azimuth > 180.0f)
         {
@@ -2076,9 +2076,9 @@ void testSwirls()
         scatter(x_vec, y_vec, properties::ScatterStyle::DISC, properties::PointSize(s), col);
     };
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
-    view(0, 90);
+    viewAngles(0, 90);
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     axesSquare();
     axis({-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0});
@@ -2328,9 +2328,9 @@ void testBouncingBalls()
         balls.push_back(ball);
     }
 
-    setCurrentElement("p0");
+    setActiveView("p0");
     clearView();
-    view(0, 90);
+    viewAngles(0, 90);
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     axesSquare();
     axis({-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0});
@@ -2412,9 +2412,9 @@ void testSeries()
     for (size_t k = 0; k < n_elements; k++)
     {
         const std::string element_name = "p" + std::to_string(k);
-        setCurrentElement(element_name);
+        setActiveView(element_name);
         clearView();
-        view(0, 90);
+        viewAngles(0, 90);
         disableScaleOnRotation();
         // setAxesBoxScaleFactor({1.0, 1.0, 1.0});
         axesSquare();
@@ -2464,8 +2464,8 @@ void testSeries()
         for (size_t k = 0; k < current_element; k++)
         {
             const std::string element_name = "p" + std::to_string(k);
-            setCurrentElement(element_name);
-            view(azimuth, elevations[k]);
+            setActiveView(element_name);
+            viewAngles(azimuth, elevations[k]);
         }
         azimuth += 0.7f;
         if (azimuth > 180.0f)
@@ -2482,7 +2482,7 @@ void testSeries()
         {
             apply_function(functions[current_element]);
             const std::string element_name = "p" + std::to_string(current_element);
-            setCurrentElement(element_name);
+            setActiveView(element_name);
             surf(x, y, z, colormaps[current_element], properties::EdgeColor::NONE);
             current_element++;
 
@@ -2666,10 +2666,10 @@ void testTopology()
     apply_average(vertices);
     // apply_average(vertices);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     globalIllumination({2.0, 2.0, 2.0});
-    // view(0, 90);
+    // viewAngles(0, 90);
     // setAxesBoxScaleFactor({1.0, 1.0, 1.0});
     // axesSquare();
     axis({0.0, 0.0, -1.0}, {static_cast<double>(n_size - 1U), static_cast<double>(n_size - 1U), 1.0});
@@ -2690,7 +2690,7 @@ void testChaos()
     double r = 0;
     const double h = 0.01;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
 
@@ -2779,7 +2779,7 @@ void testColorfulScatter()
         colorp(k) = calculateColormapJetSoft(d / max_dist);
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     // setAxesBoxScaleFactor({1.0, 1.0, 1.0});
 

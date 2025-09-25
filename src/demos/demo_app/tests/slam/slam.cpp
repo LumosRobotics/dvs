@@ -232,16 +232,16 @@ void showOneFrame(const std::string base_path, const size_t frame_num)
         readKeyPoints(base_path + "key_points/" + f_name)};
     auto [x, y, z] = read3DPoints(base_path + "points/" + f_name);
 
-    setCurrentElement("3d_view");
+    setActiveView("3d_view");
     softClearView();
     scatter3(x, y, z);
 
-    setCurrentElement("image_view");
+    setActiveView("image_view");
     softClearView();
     imShow(rgb_img);
     scatter(key_points[3].first, key_points[3].second, properties::ZOffset(-0.1f));
 
-    setCurrentElement("depth_view");
+    setActiveView("depth_view");
     softClearView();
     imShow(depth_img);
 }
@@ -263,13 +263,13 @@ void testRunSavedDataFromPython()
 
     openProjectFile(project_file_path);
 
-    setCurrentElement("3d_view");
-    view(-21.0, -34.0);
+    setActiveView("3d_view");
+    viewAngles(-21.0, -34.0);
     axis({-16.0, -8.0, 0.0}, {24.0, 32.0, 64.0});
 
-    setCurrentElement("image_view");
+    setActiveView("image_view");
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
-    setCurrentElement("depth_view");
+    setActiveView("depth_view");
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
 
     for (size_t k = 8; k < 34; k++)

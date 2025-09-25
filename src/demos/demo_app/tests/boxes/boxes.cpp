@@ -322,7 +322,7 @@ void testBasic()
 
     float timeStep = 1.0f / 600.0f;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     globalIllumination({2.0, 2.0, 2.0});
     disableScaleOnRotation();
@@ -415,9 +415,9 @@ void testBasic()
     float azimuth = -52.0f;
     float azimuth_ref = -52.0f;
     // axis({-3.0, 0.0, -4.0}, {5.0, 8.0, 4.0});
-    // view(-48, 17);
-    view(azimuth, 14);
-    // view(-73, 43);
+    // viewAngles(-48, 17);
+    viewAngles(azimuth, 14);
+    // viewAngles(-73, 43);
     bullet_body->setLinearVelocity(Vector3{0.0, 0.0, -10.0});
     // bullet_body->setAngularVelocity(Vector3{50.0, 50.0, 50.0});
 
@@ -442,7 +442,7 @@ void testBasic()
             azimuth_ref += 0.1f;
             const float h = 0.99f;
             azimuth = azimuth_ref * (1.0f - h) + azimuth * h;
-            view(azimuth, 14);
+            viewAngles(azimuth, 14);
         }
         else if ((i < 700) && ((timeStep - 1.0 / 60000.0) > 0.0f))
         {
@@ -451,7 +451,7 @@ void testBasic()
             azimuth_ref += 0.1f;
             const float h = 0.99f;
             azimuth = azimuth_ref * (1.0f - h) + azimuth * h;
-            view(azimuth, 14);
+            viewAngles(azimuth, 14);
         }
         else if (i < 1000)
         {
@@ -459,7 +459,7 @@ void testBasic()
             azimuth_ref += 0.5f;
             const float h = 0.99f;
             azimuth = azimuth_ref * (1.0f - h) + azimuth * h;
-            view(azimuth, 14);
+            viewAngles(azimuth, 14);
             run_simulation = false;
         }
         else if (i < 1500)
@@ -469,7 +469,7 @@ void testBasic()
             azimuth = azimuth_ref * (1.0f - h) + azimuth * h;
             timeStep = std::min(timeStep + 1.0f / 7000.0f, 1.0f / 60.0f);
             axis_zoom_scale_ref = std::min(2.0f, axis_zoom_scale_ref + 0.01f);
-            view(azimuth, 14);
+            viewAngles(azimuth, 14);
             center_on_bullet = false;
 
             run_simulation = true;

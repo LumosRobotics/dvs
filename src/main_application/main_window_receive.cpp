@@ -12,7 +12,7 @@
 
 using namespace duoplot::internal;
 
-void MainWindow::setCurrentElement(const ReceivedData& received_data)
+void MainWindow::setActiveView(const ReceivedData& received_data)
 {
     const CommunicationHeader& hdr = received_data.getCommunicationHeader();
 
@@ -63,73 +63,84 @@ std::shared_ptr<const ConvertedDataBase> convertPlotObjectData(const Communicati
     switch (fcn)
     {
         case Function::STAIRS:
-            converted_data = Stairs::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Stairs::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::PLOT2:
-            converted_data = Plot2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Plot2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::PLOT3:
-            converted_data = Plot3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Plot3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::SCREEN_SPACE_PRIMITIVE:
-            converted_data = ScreenSpacePrimitive::convertRawData(hdr, attributes, user_supplied_properties,
-                                                                  received_data.payloadData());
+            converted_data = ScreenSpacePrimitive::convertRawData(
+                hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::FAST_PLOT2:
-            converted_data = FastPlot2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                FastPlot2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::FAST_PLOT3:
-            converted_data = FastPlot3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                FastPlot3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::LINE_COLLECTION2:
-            converted_data =
-                LineCollection2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data = LineCollection2D::convertRawData(
+                hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::LINE_COLLECTION3:
-            converted_data =
-                LineCollection3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data = LineCollection3D::convertRawData(
+                hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::STEM:
-            converted_data = Stem::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Stem::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::SCATTER2:
-            converted_data = Scatter2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Scatter2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::SCATTER3:
-            converted_data = Scatter3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Scatter3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::SURF:
-            converted_data = Surf::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                Surf::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::IM_SHOW:
-            converted_data = ImShow::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                ImShow::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::PLOT_COLLECTION2:
-            converted_data =
-                PlotCollection2D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data = PlotCollection2D::convertRawData(
+                hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::PLOT_COLLECTION3:
-            converted_data =
-                PlotCollection3D::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data = PlotCollection3D::convertRawData(
+                hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::DRAW_MESH_SEPARATE_VECTORS:
         case Function::DRAW_MESH:
-            converted_data = DrawMesh::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
+            converted_data =
+                DrawMesh::convertRawData(hdr, attributes, user_supplied_properties, received_data.payloadData());
             break;
 
         case Function::REAL_TIME_PLOT:
@@ -150,7 +161,7 @@ void MainWindow::addActionToQueue(ReceivedData& received_data)
 
     if (fcn == Function::SET_CURRENT_ELEMENT)
     {
-        setCurrentElement(received_data);
+        setActiveView(received_data);
     }
     else if (fcn == Function::FLUSH_MULTIPLE_ELEMENTS)
     {
@@ -165,8 +176,8 @@ void MainWindow::addActionToQueue(ReceivedData& received_data)
         std::shared_ptr<const ConvertedDataBase> converted_data =
             convertPlotObjectData(hdr, received_data, plot_object_attributes, user_supplied_properties);
 
-        queued_data_[current_element_name_].push(
-            std::make_unique<InputData>(received_data, converted_data, plot_object_attributes, user_supplied_properties));
+        queued_data_[current_element_name_].push(std::make_unique<InputData>(
+            received_data, converted_data, plot_object_attributes, user_supplied_properties));
     }
     else if (fcn == Function::PROPERTIES_EXTENSION)
     {

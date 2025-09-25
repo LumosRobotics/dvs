@@ -720,7 +720,7 @@ public:
         const float elevation = 90.0f;
         if (iteration == 0)
         {
-            view(0, elevation);
+            viewAngles(0, elevation);
             current_pos.x = base_zoom_center.x;
             current_pos.y = base_zoom_center.y;
             current_range.x = base_zoom_half_range.x * current_zoom_factor;
@@ -743,7 +743,7 @@ public:
 
             current_range.x = base_zoom_half_range.x * current_zoom_factor;
             current_range.y = base_zoom_half_range.y * current_zoom_factor;
-            view(current_angle * 180.0 / M_PI, 90.0);
+            viewAngles(current_angle * 180.0 / M_PI, 90.0);
         }
         else if (iteration < 150) {}
         else if (iteration < 600)
@@ -773,7 +773,7 @@ public:
                 current_angle = ang;
             }
 
-            view(((angle_offset + -ang) * 180.0 / M_PI), elevation);
+            viewAngles(((angle_offset + -ang) * 180.0 / M_PI), elevation);
 
             const Vec2d current_reference(p.x, p.y);
             const double zoom_factor_reference = 0.8;

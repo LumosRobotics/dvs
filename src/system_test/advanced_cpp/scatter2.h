@@ -18,7 +18,7 @@ void testWithVectorView()
     const VectorConstView<double> xv = x.constView();
     const VectorConstView<double> yv = y.constView();
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     plot(x, y, properties::Color::BLUE);
     scatter(xv, yv, properties::Color::RED);
@@ -37,7 +37,7 @@ void testWithColorVec()
         color(k) = properties::Color{k8, static_cast<uint8_t>(255U - k8), static_cast<uint8_t>(127U + k8 * 2U)};
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     scatter(x, y, color, properties::PointSize(20));
 }

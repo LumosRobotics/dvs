@@ -23,9 +23,9 @@ void testBasic()
         z(k) = 2 * std::sin(x(k));
     }
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     sleepMS(20);
-    view(22.4f, 0.14f);
+    viewAngles(22.4f, 0.14f);
     sleepMS(20);
     axis({-1.1, -2.2, -3.3}, {4.4, 5.5, 6.6});
     sleepMS(20);
@@ -41,7 +41,7 @@ void testBasic()
          properties::ColorMap::magma(),
          properties::PointSize(137));
     sleepMS(20);
-    setCurrentElement("view_01");
+    setActiveView("view_01");
     sleepMS(20);
     plot3(x,
           y,
@@ -56,7 +56,7 @@ void testBasic()
           properties::ColorMap::magma(),
           properties::PointSize(137));
     sleepMS(20);
-    setCurrentElement("view_02");
+    setActiveView("view_02");
     sleepMS(20);
     plot3(x,
           y,
@@ -71,7 +71,7 @@ void testBasic()
           properties::ColorMap::magma(),
           properties::PointSize(137));
     sleepMS(20);
-    setCurrentElement("view_00");
+    setActiveView("view_00");
 
     for (int i = 0; i < 100; i++)
     {
@@ -119,7 +119,7 @@ void testDifferentViews()
     for (size_t k = 0; k < 200; k++)
     {
         const std::string current_view = views[k % views.size()];
-        setCurrentElement(current_view);
+        setActiveView(current_view);
         softClearView();
 
         axis({10.0, 10.0, 0.3}, {32.0, 32.0, 100.6});
@@ -131,7 +131,7 @@ void testDifferentViews()
 
 void testCube()
 {
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
     const double x = 1.0, y = 1.0, z = 1.0, d = 0.00001;
     axis({-x - d, -y - d, -z - d}, {x + d, y + d, z + d});
@@ -160,10 +160,10 @@ void testMultipleStuff()
         t = t + 0.3;
     }
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
 
-    view(-106.5f, 16.3f);
+    viewAngles(-106.5f, 16.3f);
     axis({-5.0, -5.0, -5.0}, {5.0, 5.0, 5.0});
     plot3(x, y, z, properties::Color(12, 14, 55), properties::LineWidth(1));
     scatter3(x, y, z, properties::Color(255, 0, 0), properties::PointSize(3));
@@ -207,7 +207,7 @@ void testDrawMeshAdvanced()
         }
     }
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
     drawMesh(vertices, indices, properties::EdgeColor(0, 0, 0), properties::FaceColor(12, 244, 244));
 }

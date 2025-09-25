@@ -72,7 +72,7 @@ void testBasic()
 
     openProjectFile(project_file_path);
 
-    setCurrentElement("_");
+    setActiveView("_");
     clearView();
     waitForFlush();
     axesSquare();

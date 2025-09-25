@@ -200,7 +200,7 @@ void testBasic()
 
     setPoints(x, y, z, indices, num_rows, num_cols);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     globalIllumination({16, 16, 10});
@@ -212,7 +212,7 @@ void testBasic()
     for (size_t k = 0; k < num_its; k++)
     {
         // properties::FaceColor(0.5294 * 255.0, 0.7333 * 255.0, 0.6667 * 255.0)
-        view(azimuth, 25);
+        viewAngles(azimuth, 25);
         updateZ(z, num_rows, num_cols, t);
         drawMesh(x, y, z, indices, properties::FaceColor(0, 0.35 * 255.0, 0), properties::EdgeColor::NONE);
         azimuth += 0.5f;

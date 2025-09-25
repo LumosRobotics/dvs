@@ -490,7 +490,7 @@ void GuiWindow::tabChanged(const std::string name)
     }
 }
 
-void GuiWindow::OnMove(wxMoveEvent& event)
+void GuiWindow::OnMove(wxMoveEvent& WXUNUSED(event))
 {
     notify_main_window_about_modification_();
 }

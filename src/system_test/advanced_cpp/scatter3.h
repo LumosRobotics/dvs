@@ -20,7 +20,7 @@ void testWithVectorView()
     const VectorConstView<double> yv = y.constView();
     const VectorConstView<double> zv = z.constView();
 
-    setCurrentElement("view_00");
+    setActiveView("view_00");
     clearView();
     scatter3(xv, yv, zv, properties::Color::GREEN);
     plot3(x, y, z, properties::Color::MAGENTA);
@@ -40,7 +40,7 @@ void testWithColorVec()
         color(k) = properties::Color{k8, static_cast<uint8_t>(255U - k8), static_cast<uint8_t>(127U + k8 * 2U)};
     }
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     scatter3(x, y, z, color, properties::PointSize(20), properties::ScatterStyle::DISC);
 }

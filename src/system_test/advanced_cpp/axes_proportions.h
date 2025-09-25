@@ -56,26 +56,25 @@ void testBasic()
 
     // clang-format on
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     globalIllumination({2, 2, 2});
     disableScaleOnRotation();
     axesSquare();
     drawMesh(x, y, z, indices);
 
-    setCurrentElement("p_view_1");
+    setActiveView("p_view_1");
     clearView();
     globalIllumination({2, 2, 2});
     disableScaleOnRotation();
     drawMesh(x, y, z, indices);
 
-    setCurrentElement("p1");
+    setActiveView("p1");
     clearView();
     globalIllumination({2, 2, 2});
     axis({-1.0, -1.0, -1.0}, {1.0, 1.0, 1.0});
     drawMesh(x, y, z, indices);
     axesSquare();
-
 }
 
 void addTests()

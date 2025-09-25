@@ -170,7 +170,7 @@ void LayoutToolsWindow::setCurrentTabName(const std::string& tab_name)
     tab_name_ctrl_->SetEvtHandlerEnabled(true);
 }
 
-void LayoutToolsWindow::setCurrentElementName(const std::string& name_of_selected)
+void LayoutToolsWindow::setActiveViewName(const std::string& name_of_selected)
 {
     element_name_ctrl_->SetEvtHandlerEnabled(false);
     element_name_ctrl_->SetValue(name_of_selected);

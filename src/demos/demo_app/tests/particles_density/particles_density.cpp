@@ -1,7 +1,8 @@
 #include "particles_density.h"
-#include "tests/slam/color_maps.h"
 
 #include <array>
+
+#include "tests/slam/color_maps.h"
 
 namespace particles_density
 {
@@ -37,11 +38,11 @@ struct ParticleEjector
     b2Vec2* velocities_;
 
     ParticleEjector() : group_{nullptr} {}
-    ParticleEjector(b2ParticleGroup* group, b2ParticleSystem* particle_system, const Point2f& eject_pos, const Vec2f& eject_dir) : 
-        group_{group},
-        particle_system_{particle_system},
-        eject_pos_{eject_pos},
-        eject_dir_{eject_dir}
+    ParticleEjector(b2ParticleGroup* group,
+                    b2ParticleSystem* particle_system,
+                    const Point2f& eject_pos,
+                    const Vec2f& eject_dir)
+        : group_{group}, particle_system_{particle_system}, eject_pos_{eject_pos}, eject_dir_{eject_dir}
     {
         particles_ = particle_system_->GetPositionBuffer();
         velocities_ = particle_system_->GetVelocityBuffer();
@@ -53,7 +54,7 @@ struct ParticleEjector
         cos_angle_ = std::cos(angle_);
         sin_angle_ = std::sin(angle_);
 
-        for(size_t k = 0; k < num_particles_left_; k++)
+        for (size_t k = 0; k < num_particles_left_; k++)
         {
             particles_[offset_ + k].x = k * 10.0f;
             particles_[offset_ + k].y = start_y;
@@ -63,19 +64,18 @@ struct ParticleEjector
         }
 
         start_y = start_y - 5.0f;
-
     }
 
     void eject()
     {
-        if(num_particles_left_ > 0)
+        if (num_particles_left_ > 0)
         {
             constexpr float delta = 0.05;
             constexpr size_t num_particles_to_emit = 5U;
             constexpr float full_width = static_cast<float>(num_particles_to_emit - 1U) * delta;
             float d = -full_width / 2.0f;
 
-            for(size_t k = 0; k < num_particles_to_emit && num_particles_left_ > 0; k++)
+            for (size_t k = 0; k < num_particles_to_emit && num_particles_left_ > 0; k++)
             {
                 const float y = d;
                 d += delta;
@@ -91,7 +91,6 @@ struct ParticleEjector
 
                 idx_++;
                 num_particles_left_--;
-
             }
         }
     }
@@ -105,17 +104,15 @@ void ParticleSystem::changeDensity()
     const size_t num_particles = heaviest_grp->GetParticleCount();
 
     float* densities = particle_system_->GetDensityBuffer();
-    for(size_t k = 0; k < num_particles; k++)
+    for (size_t k = 0; k < num_particles; k++)
     {
         densities[k + offset] = 0.0005;
     }
-
 }
 
 ParticleSystem::ParticleSystem(const Vec2f min_bnd, const Vec2f max_bnd)
     : min_bnd_{min_bnd}, max_bnd_{max_bnd}, world_{b2Vec2{0.0, -9.82}}
 {
-
     b2ParticleSystemDef particleSystemDef;
 
     particleSystemDef.radius = radius;
@@ -170,7 +167,7 @@ ParticleSystem::ParticleSystem(const Vec2f min_bnd, const Vec2f max_bnd)
     assert(densities.size() == kNumDensities);
 
     float y_pos = 3.0;
-    for(float density : densities)
+    for (float density : densities)
     {
         particleGroupDef.density = density;
         particleGroupDef.position.Set(1.0f, y_pos);
@@ -180,7 +177,7 @@ ParticleSystem::ParticleSystem(const Vec2f min_bnd, const Vec2f max_bnd)
 
     num_particles_ = particle_system_->GetParticleCount();
 
-    for(auto& grp : groups_)
+    for (auto& grp : groups_)
     {
         const float px = (static_cast<float>(rand() % 1001U) / 1000.0f - 0.5f) * 2.0f;
         const float py = (static_cast<float>(rand() % 1001U) / 1000.0f - 0.5f) * 2.0f + 1.0;
@@ -191,7 +188,6 @@ ParticleSystem::ParticleSystem(const Vec2f min_bnd, const Vec2f max_bnd)
         const float vy = std::sin(theta) * 5.0f;
         ejectors_.push_back(ParticleEjector{grp, particle_system_, Point2f{px, py}, Vec2f{vx, vy}});
     }
-
 
     x_pos_ = new float[particle_system_->GetParticleCount()];
     y_pos_ = new float[particle_system_->GetParticleCount()];
@@ -211,8 +207,7 @@ const b2Vec2* ParticleSystem::getParticles() const
 
 void ParticleSystem::update(const double dt)
 {
-    
-    for(auto& ej : ejectors_)
+    for (auto& ej : ejectors_)
     {
         ej.eject();
     }
@@ -241,10 +236,9 @@ VectorConstView<float> ParticleSystem::getYView() const
 
 properties::Color toColor(const RGBTripletf& col)
 {
-    return properties::Color{
-        static_cast<std::uint8_t>(col.red * 255.0f),
-        static_cast<std::uint8_t>(col.green * 255.0f),
-        static_cast<std::uint8_t>(col.blue * 255.0f)};
+    return properties::Color{static_cast<std::uint8_t>(col.red * 255.0f),
+                             static_cast<std::uint8_t>(col.green * 255.0f),
+                             static_cast<std::uint8_t>(col.blue * 255.0f)};
 }
 
 Matrix<float> createKernel(const size_t size, const float s, const float a)
@@ -256,9 +250,9 @@ Matrix<float> createKernel(const size_t size, const float s, const float a)
 
     Matrix<float> kernel{size, size};
 
-    for(int32_t x = -half_size; x <= half_size; x++)
+    for (int32_t x = -half_size; x <= half_size; x++)
     {
-        for(int32_t y = -half_size; y <= half_size; y++)
+        for (int32_t y = -half_size; y <= half_size; y++)
         {
             const float r = static_cast<float>(x * x + y * y);
             kernel(y + half_size, x + half_size) = a * std::exp(-s * r);
@@ -289,7 +283,7 @@ void renderImage(const ParticleSystem& ps,
     const VectorConstView<float> x = ps.getXView();
     const VectorConstView<float> y = ps.getYView();
 
-    for(const auto grp : ps.groups_)
+    for (const auto grp : ps.groups_)
     {
         const size_t num_particles = grp->GetParticleCount();
         const size_t offset_idx = grp->GetBufferIndex();
@@ -301,48 +295,48 @@ void renderImage(const ParticleSystem& ps,
 
         const properties::Color cl = colors[idx];
 
-        for(size_t k = 0; k < num_particles; k++)
+        for (size_t k = 0; k < num_particles; k++)
         {
             const int32_t center_col = (num_cols_1 * (xg(k) - offset.x) / scale.x + 0.5f);
             const int32_t center_row = num_rows_1 - (num_rows_1 * (yg(k) - offset.y) / scale.y + 0.5f);
 
-            for(int32_t x = -kHalfKernelSize; x <= kHalfKernelSize; x++)
+            for (int32_t x = -kHalfKernelSize; x <= kHalfKernelSize; x++)
             {
-                for(int32_t y = -kHalfKernelSize; y <= kHalfKernelSize; y++)
+                for (int32_t y = -kHalfKernelSize; y <= kHalfKernelSize; y++)
                 {
                     const int32_t column = center_col + x;
                     const int32_t row = center_row + y;
 
-                    if(column >= 0 && column < num_cols && row >= 0 && row < num_rows)
+                    if (column >= 0 && column < num_cols && row >= 0 && row < num_rows)
                     {
                         ArrayType& current_array{count_mat(row, column)};
                         current_array[idx] += kernel(y + kHalfKernelSize, x + kHalfKernelSize);
                     }
                 }
             }
-        }        
+        }
 
         idx++;
     }
 
-    for(size_t r = 0; r < num_rows; r++)
+    for (size_t r = 0; r < num_rows; r++)
     {
-        for(size_t c = 0; c < num_cols; c++)
+        for (size_t c = 0; c < num_cols; c++)
         {
             const ArrayType& current_array{count_mat(r, c)};
             // Find max and max index
             float max_val = 0.0f;
             size_t max_idx = 0U;
-            for(size_t k = 0; k < kNumDensities; k++)
+            for (size_t k = 0; k < kNumDensities; k++)
             {
-                if(current_array[k] > max_val)
+                if (current_array[k] > max_val)
                 {
                     max_val = current_array[k];
                     max_idx = k;
                 }
             }
 
-            if(max_val > 1.0f)
+            if (max_val > 1.0f)
             {
                 img(r, c, 0) = colors[max_idx].red;
                 img(r, c, 1) = colors[max_idx].green;
@@ -362,16 +356,16 @@ void testBasic()
     Matrix<ArrayType> count_matrix{kNumRows, kNumCols};
     Matrix<ArrayType> blank_count_matrix{kNumRows, kNumCols};
 
-    for(size_t r = 0; r < kNumRows; r++)
+    for (size_t r = 0; r < kNumRows; r++)
     {
-        for(size_t c = 0; c < kNumCols; c++)
+        for (size_t c = 0; c < kNumCols; c++)
         {
             blank_img(r, c, 0) = 0U;
             blank_img(r, c, 1) = 0U;
             blank_img(r, c, 2) = 0U;
             blank_img(r, c, 3) = 0U;
 
-            for(size_t k = 0; k < kNumDensities; k++)
+            for (size_t k = 0; k < kNumDensities; k++)
             {
                 blank_count_matrix(r, c)[k] = 0.0f;
             }
@@ -381,14 +375,15 @@ void testBasic()
     openProjectFile(project_file_path);
 
     const Matrix<float> kernel{createKernel(kKernelSize, 0.1f, 1.0f)};
-    std::pair<Matrix<float>, Matrix<float>> xy_mats = meshGrid<float>(-1.0f, 1.0f, -1.0f, 1.0f, kKernelSize, kKernelSize);
+    std::pair<Matrix<float>, Matrix<float>> xy_mats =
+        meshGrid<float>(-1.0f, 1.0f, -1.0f, 1.0f, kKernelSize, kKernelSize);
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
 
     waitForFlush();
     setAxesBoxScaleFactor({1.0, 1.0, 1.0});
-    
+
     // axis({0.0, 0.0}, {kNumCols, kNumRows});
     axis({-2.0, -3.425438 + 1.425438}, {2.0, 3.425438 + 1.425438});
     const float x_interval = 4.0f;
@@ -404,7 +399,7 @@ void testBasic()
 
     std::vector<properties::Color> colors;
 
-    for(size_t k = 0; k < ps.groups_.size(); k++)
+    for (size_t k = 0; k < ps.groups_.size(); k++)
     {
         const float d = static_cast<float>(k) / static_cast<float>(ps.groups_.size() - 1U);
         colors.push_back(toColor(calculateColormapJetSoft(d)));
@@ -416,10 +411,9 @@ void testBasic()
 
         size_t idx = 0U;
 
-        if(k < 1200)
+        if (k < 1200)
         {
-
-            for(const auto grp : ps.groups_)
+            for (const auto grp : ps.groups_)
             {
                 const size_t num_particles = grp->GetParticleCount();
 
@@ -430,33 +424,31 @@ void testBasic()
                 const VectorConstView<float> xg = VectorConstView<float>{x.data() + offset, num_particles};
                 const VectorConstView<float> yg = VectorConstView<float>{y.data() + offset, num_particles};
 
-                scatter(xg, yg, properties::ScatterStyle::DISC, properties::PointSize(10), col, properties::Silhouette{0U, 0U, 0U, 0.1f});
+                scatter(xg,
+                        yg,
+                        properties::ScatterStyle::DISC,
+                        properties::PointSize(10),
+                        col,
+                        properties::Silhouette{0U, 0U, 0U, 0.1f});
 
                 idx++;
             }
         }
         else
         {
-
-            if(k == 1400)
+            if (k == 1400)
             {
                 ps.changeDensity();
             }
             count_matrix = blank_count_matrix;
             img = blank_img;
-            renderImage(ps,
-                img,
-                {x_interval, y_interval},
-                {x_min, y_min},
-                colors,
-                count_matrix,
-                kernel);
+            renderImage(ps, img, {x_interval, y_interval}, {x_min, y_min}, colors, count_matrix, kernel);
 
             imShow(img,
-                properties::Transform{
-                    diagMatrix<double>({x_interval / kNumCols, y_interval / kNumRows, 1.0}),
-                    rotationMatrixZ<double>(0),
-                    {-x_interval / 2.0f, -(-4.85*0.0 + -3.425438 * 0.0 + 0.0*1.425438 + 2.0), 0.0}});
+                   properties::Transform{
+                       diagMatrix<double>({x_interval / kNumCols, y_interval / kNumRows, 1.0}),
+                       rotationMatrixZ<double>(0),
+                       {-x_interval / 2.0f, -(-4.85 * 0.0 + -3.425438 * 0.0 + 0.0 * 1.425438 + 2.0), 0.0}});
         }
         flushCurrentElement();
         softClearView();

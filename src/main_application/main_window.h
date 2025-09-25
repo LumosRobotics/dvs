@@ -122,7 +122,7 @@ private:
 
     void OnReceiveTimer(wxTimerEvent&);
     void OnRefreshTimer(wxTimerEvent&);
-    void setCurrentElement(const ReceivedData& received_data);
+    void setActiveView(const ReceivedData& received_data);
     void receiveData();
 
     void mouseLeftPressed(wxMouseEvent& event);

@@ -70,7 +70,7 @@ void testBasic2D()
     y(3) = 1.0;
     y(4) = 0.0;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-2.0, -2.0}, {2.0, 2.0});
     plot(x, y, properties::ID0, properties::LineWidth(10.0f));
@@ -185,7 +185,7 @@ void testBasic3D()
 
     constexpr double axis_limit = 10.0;
 
-    setCurrentElement("p_view_0");
+    setActiveView("p_view_0");
     clearView();
     axis({-axis_limit, -axis_limit, -axis_limit}, {axis_limit, axis_limit, axis_limit});
     drawMesh(cube_pts_indices.points, cube_pts_indices.indices, properties::FaceColor{242, 152, 124}, properties::ID0);

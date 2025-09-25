@@ -12,7 +12,7 @@ int main()
     const duoplot_MatrixD ry = duoplot_Matrix_cosD(y);
     const duoplot_MatrixD z = duoplot_Matrix_elementWiseMultiplyD(rx, ry);
 
-    duoplot_setCurrentElement("hello_c");
+    duoplot_setActiveView("hello_c");
     duoplot_clearView();
 
     duoplot_surf(x, y, z, duoplot_ColorMap_JET_SOFT, duoplot_Alpha(0.7));
