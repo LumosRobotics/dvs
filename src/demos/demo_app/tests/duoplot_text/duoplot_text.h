@@ -245,7 +245,7 @@ void testBasic()
         {
             azimuth = -180.0f;
         }
-        softClearView();
+        clearViewOnUpdate();
     }
 
     // imShow(img);

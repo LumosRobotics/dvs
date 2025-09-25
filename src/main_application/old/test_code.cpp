@@ -120,7 +120,7 @@ void testDifferentViews()
     {
         const std::string current_view = views[k % views.size()];
         setActiveView(current_view);
-        softClearView();
+        clearViewOnUpdate();
 
         axis({10.0, 10.0, 0.3}, {32.0, 32.0, 100.6});
         plot3(x, y, z, properties::Color(212, 14, 55), properties::LineWidth(1));

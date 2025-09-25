@@ -219,7 +219,7 @@ void testBasic()
 
         usleep(10000);
 
-        softClearView();
+        clearViewOnUpdate();
 
         t += 0.1f;
     }

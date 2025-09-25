@@ -451,7 +451,7 @@ void testBasic()
                        {-x_interval / 2.0f, -(-4.85 * 0.0 + -3.425438 * 0.0 + 0.0 * 1.425438 + 2.0), 0.0}});
         }
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 

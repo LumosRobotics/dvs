@@ -140,7 +140,7 @@ int main()
              properties::Color{255, 127, 0});
         // showLegend();
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
 
         setActiveView("p1");
 
@@ -161,7 +161,7 @@ int main()
         plot(t, x - sim_params.r, properties::LineWidth(7.0f), properties::Label("Velocity"));
 
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
     };
 
     duoplot::gui::registerGuiCallback("slider_kp", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {

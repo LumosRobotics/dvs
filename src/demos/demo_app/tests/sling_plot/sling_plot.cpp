@@ -143,7 +143,7 @@ void testSlingPlot()
         t += dt;
 
         setActiveView("velocity");
-        softClearView();
+        clearViewOnUpdate();
 
         for (size_t q = 0; q < num_particles; ++q)
         {
@@ -163,7 +163,7 @@ void testSlingPlot()
         std::cout << v_vec[0].size() << std::endl;
 
         setActiveView("view");
-        softClearView();
+        clearViewOnUpdate();
 
         scatter(x, y, colors, properties::PointSize(15.0f), properties::ScatterStyle::DISC);
         plot(x, y, properties::LineWidth(5.0f));

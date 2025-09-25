@@ -184,7 +184,7 @@ void testAdvanced0()
 
         usleep(50000);
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 
@@ -271,7 +271,7 @@ void testAdvanced1()
         // view(azimuth, 30);
         usleep(10000);
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 

@@ -529,7 +529,7 @@ void testBasic()
         flushCurrentElement();
         // std::cin.ignore();
         // usleep(1000 * 10);
-        // softClearView();
+        // clearViewOnUpdate();
     }
 
     // waitForFlush();

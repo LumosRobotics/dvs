@@ -86,7 +86,7 @@ public:
 
             scatter(x, y, properties::Color::RED, properties::ScatterStyle::DISC, properties::PointSize(30));
             usleep(500 * 1000);
-            softClearView();
+            clearViewOnUpdate();
         }
     }
 
@@ -132,7 +132,7 @@ void testBasic()
 
     // scatter(x, y, properties::Color::RED, properties::ScatterStyle::DISC, properties::PointSize(30));
     // usleep(50 * 1000);
-    // softClearView();
+    // clearViewOnUpdate();
 }
 
 }  // namespace fake_fem

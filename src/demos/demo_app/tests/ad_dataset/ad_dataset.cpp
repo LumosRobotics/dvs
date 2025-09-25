@@ -418,7 +418,7 @@ void testBasic()
         const PointCollection& pc = dataset_reader->getPointCollection(k);
 
         setActiveView("point_cloud");
-        softClearView();
+        clearViewOnUpdate();
         scatter3(pc.x,
                  pc.y,
                  pc.z,
@@ -432,15 +432,15 @@ void testBasic()
         }
 
         setActiveView("center");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_front);
 
         setActiveView("right");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_right);
 
         setActiveView("left");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_left);
 
         flushMultipleElements("point_cloud", "center", "left", "right");
@@ -473,7 +473,7 @@ void testBasic()
         const PointCollection& pc = dataset_reader->getPointCollection(k);
 
         setActiveView("point_cloud");
-        softClearView();
+        clearViewOnUpdate();
         scatter3(pc.x,
                  pc.y,
                  pc.z,
@@ -487,15 +487,15 @@ void testBasic()
         }
 
         setActiveView("center");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_front);
 
         setActiveView("right");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_right);
 
         setActiveView("left");
-        softClearView();
+        clearViewOnUpdate();
         imShow(img_left);
 
         flushMultipleElements("point_cloud", "center", "left", "right");
@@ -532,7 +532,7 @@ void testScroll()
         const PointCollection& pc = dataset_reader->getPointCollection(idx);
 
         setActiveView("main");
-        softClearView();
+        clearViewOnUpdate();
         scatter3(pc.x,
                  pc.y,
                  pc.z,
@@ -542,7 +542,7 @@ void testScroll()
                  properties::ScatterStyle::DISC);
 
         setActiveView("secondary");
-        softClearView();
+        clearViewOnUpdate();
         scatter3(pc.x,
                  pc.y,
                  pc.z,

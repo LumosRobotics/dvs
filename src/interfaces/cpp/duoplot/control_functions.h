@@ -193,7 +193,7 @@ inline void showLegend()
     internal::sendHeaderOnly(internal::getSendFunction(), hdr);
 }
 
-inline void softClearView()
+inline void clearViewOnUpdate()
 {
     internal::CommunicationHeader hdr{internal::Function::SOFT_CLEAR};
 

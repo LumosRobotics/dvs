@@ -25,7 +25,7 @@ void testBasic()
         const Matrix<double> z = v * v1;
 
         surf(x, y, z, properties::EdgeColor(0, 0, 0), properties::ColorMap::JET_BRIGHT);
-        softClearView();
+        clearViewOnUpdate();
     };
 
     duoplot::gui::registerGuiCallback("slider0",
@@ -296,7 +296,7 @@ void testDynamicSystem()
         setActiveView("p_view_0");
         set_data(x, vx, sim_params);
         plot(t, x, properties::LineWidth(5.0));
-        softClearView();
+        clearViewOnUpdate();
 
         const double F = sim_params.amp * std::sin(sim_params.freq * tv);
         tv += sim_params.h;
@@ -317,7 +317,7 @@ void testDynamicSystem()
         setActiveView("p_view_1");
         plot(xc, offset_y, properties::LineWidth(5.0));
         scatter(xv, yv, properties::PointSize(50.0), properties::ScatterStyle::DISC);
-        softClearView();
+        clearViewOnUpdate();
         usleep(1000U * 30U);
 
         prev_sim_params = sim_params;

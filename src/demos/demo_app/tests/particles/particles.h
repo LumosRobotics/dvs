@@ -30,7 +30,7 @@ Vector<Point2f> splitPointsString(
 
     const std::vector<std::string> q = splitString(coordinates_strings[0], ",");
 
-    coords[0].x = (std::stof(q[0]))*mul + add_x;
+    coords[0].x = (std::stof(q[0])) * mul + add_x;
     coords[0].y = (-std::stof(q[1])) * mul + add_y;
 
     size_t idx = 1;
@@ -42,7 +42,7 @@ Vector<Point2f> splitPointsString(
         }
         const std::vector<std::string> q = splitString(coordinates_strings[k], ",");
 
-        const float x = (std::stod(q[0]))*mul + add_x;
+        const float x = (std::stod(q[0])) * mul + add_x;
         const float y = (sign_mul * std::stod(q[1])) * mul + add_y;
 
         if ((x == coords[idx - 1U].x) && (y == coords[idx - 1U].y))
@@ -596,7 +596,7 @@ void runTest()
 
             scatter(x, y, new_color_view, properties::ScatterStyle::DISC, properties::PointSize(17));
             flushCurrentElement();
-            softClearView();
+            clearViewOnUpdate();
         }
     }
 }
@@ -646,7 +646,7 @@ void testBasicOld()
 
             scatter(x, y, new_color_view, properties::ScatterStyle::DISC, properties::PointSize(20));
             flushCurrentElement();
-            softClearView();
+            clearViewOnUpdate();
         }
     }
 }
@@ -669,7 +669,7 @@ void saveToFile()
     const VectorConstView<float> y = ps.getYView();
     scatter(x, y, properties::Color::RED, properties::ScatterStyle::DISC, properties::PointSize(20));
     flushCurrentElement();
-    softClearView();
+    clearViewOnUpdate();
 
     ps.savePointsToFile();
 }

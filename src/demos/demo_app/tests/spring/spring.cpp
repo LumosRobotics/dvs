@@ -626,7 +626,7 @@ void testBasic()
 
         flushCurrentElement();
 
-        softClearView();
+        clearViewOnUpdate();
 
         // usleep(50 * 1000);
     }

@@ -233,16 +233,16 @@ void showOneFrame(const std::string base_path, const size_t frame_num)
     auto [x, y, z] = read3DPoints(base_path + "points/" + f_name);
 
     setActiveView("3d_view");
-    softClearView();
+    clearViewOnUpdate();
     scatter3(x, y, z);
 
     setActiveView("image_view");
-    softClearView();
+    clearViewOnUpdate();
     imShow(rgb_img);
     scatter(key_points[3].first, key_points[3].second, properties::ZOffset(-0.1f));
 
     setActiveView("depth_view");
-    softClearView();
+    clearViewOnUpdate();
     imShow(depth_img);
 }
 

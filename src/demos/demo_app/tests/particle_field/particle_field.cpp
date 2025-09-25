@@ -213,7 +213,7 @@ void testBasic()
         stepSimulation(x, y, vx, vy, color, x0, y0, d);
         scatter(x_vec, y_vec, color_view, properties::ScatterStyle::SQUARE, properties::PointSize(2.0f));
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 

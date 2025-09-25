@@ -231,7 +231,7 @@ void testBasic()
 
         // std::cin.ignore();
         // usleep(50 * 1000);
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 

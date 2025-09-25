@@ -896,7 +896,7 @@ void testTransitioningSurfs()
             z_mix = dt1 * z_mix + dt * (z_k * (1.0 - h) + z_kp1 * h);
             surf(x, y, z_mix, properties::EdgeColor(0, 0, 0), properties::ColorMap::JET_BRIGHT);
             usleep(1000 * 10);
-            softClearView();
+            clearViewOnUpdate();
         }
     }
     // surf(x, y, z, properties::EdgeColor(0, 0, 0), properties::ColorMap::JET_BRIGHT);
@@ -996,7 +996,7 @@ void testHyperboloid()
         xyz_mats = hyberboloid(-3.0, 3.0, f, n_elems);
         auto [x, y, z] = xyz_mats;
 
-        softClearView();
+        clearViewOnUpdate();
         if (k < n_iters / 2U)
         {
             surf(x,
@@ -1025,7 +1025,7 @@ void testHyperboloid()
     axis({-10.0, -10.0, -10.0}, {10.0, 10.0, 10.0});
     viewAngles(-65, 12);
 
-    softClearView();
+    clearViewOnUpdate();
     xyz_mats = hyberboloid(-3.0, 3.0, 1.0, 30U);
     auto [x, y, z] = xyz_mats;
     surf(x, y, z, properties::ID0, properties::EdgeColor(0, 0, 0), properties::FaceColor::NONE);
@@ -1162,7 +1162,7 @@ void testLinesAndDots()
         Vector<double> y_lines = y_lines_std;
         Vector<double> z_lines = z_lines_std;
 
-        softClearView();
+        clearViewOnUpdate();
         // if (k > num_its / 2U)
         azimuth -= 0.5;
         if (azimuth < -180.0)
@@ -1241,7 +1241,7 @@ void testLissaJous()
             yt(i) = y(i);
         }
 
-        softClearView();
+        clearViewOnUpdate();
         axis({xt(k - 1U) - delta, yt(k - 1U) - delta}, {xt(k - 1U) + delta, yt(k - 1U) + delta});
         plot(xt, yt, properties::Color(201, 238, 121), properties::LineWidth(10.0f));
     }
@@ -1353,7 +1353,7 @@ void testFilteringWithSliders()
         plot(x, y_n, properties::LineWidth(3.0f));
         plot(x, y_f, properties::LineWidth(5.0f));
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
     });
 
     duoplot::gui::startGuiReceiveThread();
@@ -1505,7 +1505,7 @@ void testPidTuner()
              properties::Color{255, 127, 0});
         // showLegend();
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
 
         setActiveView("p_view_1");
 
@@ -1526,7 +1526,7 @@ void testPidTuner()
         plot(t, x - sim_params.r, properties::LineWidth(7.0f), properties::Label("Velocity"));
 
         flushCurrentElement();
-        softClearView();
+        clearViewOnUpdate();
     };
 
     duoplot::gui::registerGuiCallback("slider_kp", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
@@ -1780,7 +1780,7 @@ void testThreeBodyProblem()
     {
         plot_bodies(bodies, k);
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 
@@ -2039,7 +2039,7 @@ void testSolarSystem()
             azimuth = -180.0f;
         }
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 
@@ -2135,7 +2135,7 @@ void testSwirls()
         // plot_point(1.0, 0.0, 50.0);
         plot(t, xs);
         flushCurrentElement();
-        // softClearView();
+        // clearViewOnUpdate();
         // usleep(1000U * 10U);
     }
 }
@@ -2346,7 +2346,7 @@ void testBouncingBalls()
     for (size_t k = 0; k < n_its; k++)
     {
         plot_balls(balls, k);
-        softClearView();
+        clearViewOnUpdate();
         usleep(1000U * 10U);
         flushCurrentElement();
     }

@@ -116,7 +116,7 @@ void test2DFunctionNewDataAndClear()
         plot(x, y, properties::Color::BLUE, properties::LineWidth(14));
 
         axis({min_vec.x, -1.0}, {max_vec.x, 1.0});
-        softClearView();
+        clearViewOnUpdate();
 
         usleep(10000);
     }
@@ -165,7 +165,7 @@ void test3DFunctionNewDataAndClear()
         viewAngles(azimuth, 10);
 
         usleep(10000);
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 
@@ -211,7 +211,7 @@ void test3DFunctionManualInteraction()
         azimuth = azimuth > 180.0f ? -180.0f : azimuth + 1.0f;
 
         usleep(10000);
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 

@@ -457,7 +457,7 @@ void testBasic()
 
         flushCurrentElement();
 
-        softClearView();
+        clearViewOnUpdate();
     }
 }
 
