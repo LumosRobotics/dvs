@@ -5,12 +5,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 #include "gui_window.h"
 #include "main_window.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 
-using namespace duoplot::internal;
+using namespace lumos::internal;
 
 void MainWindow::setActiveView(const ReceivedData& received_data)
 {
@@ -21,7 +21,7 @@ void MainWindow::setActiveView(const ReceivedData& received_data)
 
     if (current_element_name.length() == 0)
     {
-        DUOPLOT_LOG_WARNING() << "Label string had zero length!";
+        LUMOS_LOG_WARNING() << "Label string had zero length!";
         return;
     }
 
@@ -267,7 +267,7 @@ void MainWindow::tcpReceiveThreadFunction()
         /*std::atomic<bool> received_data_has_been_moved = false;
 
         std::thread local_thread([this, &received_data, &received_data_has_been_moved] {
-            // DUOPLOT_LOG_DEBUG() << "In thread!";
+            // LUMOS_LOG_DEBUG() << "In thread!";
             ReceivedData local_received_data{std::move(received_data)};
             received_data_has_been_moved = true;
             manageReceivedData(local_received_data);

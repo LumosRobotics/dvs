@@ -4,9 +4,9 @@
 #include <array>
 #include <cstdint>
 
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 enum class MouseInteractionType
 {

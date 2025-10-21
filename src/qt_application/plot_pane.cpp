@@ -11,8 +11,8 @@
 #endif
 
 #include "axes/axes_side_configuration.h"
-#include "duoplot/enumerations.h"
-#include "duoplot/logging.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/logging/logging.h"
 #include "platform_paths.h"
 #include "project_state/project_settings.h"
 
@@ -42,7 +42,7 @@ PlotPane::PlotPane(QWidget* parent,
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
-    DUOPLOT_LOG_INFO() << "PlotPane created with handle: " << element_settings->handle_string;
+    LUMOS_LOG_INFO() << "PlotPane created with handle: " << element_settings->handle_string;
 }
 
 PlotPane::~PlotPane()
@@ -62,7 +62,7 @@ PlotPane::~PlotPane()
 
     doneCurrent();
 
-    DUOPLOT_LOG_INFO() << "PlotPane destroyed";
+    LUMOS_LOG_INFO() << "PlotPane destroyed";
 }
 
 void PlotPane::initializeGL()
@@ -106,7 +106,7 @@ void PlotPane::initializeGL()
     // Create plot data handler
     plot_data_handler_ = new PlotDataHandler(shader_collection_);
 
-    DUOPLOT_LOG_INFO() << "OpenGL initialized in PlotPane";
+    LUMOS_LOG_INFO() << "OpenGL initialized in PlotPane";
 }
 
 void PlotPane::resizeGL(int w, int h)
@@ -200,7 +200,7 @@ void PlotPane::initShaders()
 
 void PlotPane::processActionQueue()
 {
-    using namespace duoplot::internal;
+    using namespace lumos::internal;
 
     while (!queued_data_.empty())
     {
@@ -321,11 +321,11 @@ void PlotPane::mousePressEvent(QMouseEvent* event)
             shift_pressed_at_mouse_press_ = true;
             axes_interactor_.setOverriddenMouseInteractionType(MouseInteractionType::ZOOM);
             axes_interactor_.registerMousePressed(mouse_pos_normalized);
-            DUOPLOT_LOG_DEBUG() << "Right-click with shift: zoom mode enabled";
+            LUMOS_LOG_DEBUG() << "Right-click with shift: zoom mode enabled";
         }
         else
         {
-            DUOPLOT_LOG_DEBUG() << "Right-click at position: (" << event->pos().x() << ", " << event->pos().y() << ")";
+            LUMOS_LOG_DEBUG() << "Right-click at position: (" << event->pos().x() << ", " << event->pos().y() << ")";
         }
     }
 }
@@ -420,7 +420,7 @@ void PlotPane::addPlotData(ReceivedData& received_data,
 {
     if (plot_data_handler_ != nullptr)
     {
-        const duoplot::internal::CommunicationHeader& hdr = received_data.getCommunicationHeader();
+        const lumos::internal::CommunicationHeader& hdr = received_data.getCommunicationHeader();
         plot_data_handler_->addData(hdr, plot_object_attributes, user_supplied_properties,
                                    received_data, converted_data);
         update();
@@ -448,11 +448,11 @@ void PlotPane::keyPressedElementSpecific(const char key)
 {
     // Handle plot-specific key presses
     // TODO: Implement key bindings for view manipulation, etc.
-    DUOPLOT_LOG_DEBUG() << "PlotPane key pressed: " << key;
+    LUMOS_LOG_DEBUG() << "PlotPane key pressed: " << key;
 }
 
 void PlotPane::keyReleasedElementSpecific(const char key)
 {
     // Handle plot-specific key releases
-    DUOPLOT_LOG_DEBUG() << "PlotPane key released: " << key;
+    LUMOS_LOG_DEBUG() << "PlotPane key released: " << key;
 }

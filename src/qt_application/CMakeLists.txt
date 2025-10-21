@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 include_directories(${REPO_DIR}/src/qt_application)
-include_directories(${REPO_DIR}/src/interfaces/cpp)
+include_directories(${REPO_DIR}/third_party/LumosAlgo/src)
 include_directories(${REPO_DIR}/src/main_application)
 include_directories(${REPO_DIR}/src/common)
 

@@ -11,13 +11,13 @@
 #include "axes/structures/grid_vectors.h"
 #include "color.h"
 #include "communication/received_data.h"
-#include "duoplot/enumerations.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/math/math.h"
 #include "gui_element_state.h"
 #include "input_data.h"
 #include "project_state/project_settings.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 enum class CursorSquareState
 {
@@ -131,12 +131,12 @@ public:
 
     virtual void hide()
     {
-        DUOPLOT_LOG_WARNING() << "hide() not implemented!";
+        LUMOS_LOG_WARNING() << "hide() not implemented!";
     }
 
     virtual void show()
     {
-        DUOPLOT_LOG_WARNING() << "show() not implemented!";
+        LUMOS_LOG_WARNING() << "show() not implemented!";
     }
 
     std::string getHandleString() const
@@ -172,11 +172,11 @@ public:
 
     virtual void setLabel(const std::string& new_label)
     {
-        DUOPLOT_LOG_WARNING() << "setLabel() not implemented!";
+        LUMOS_LOG_WARNING() << "setLabel() not implemented!";
     }
     virtual std::shared_ptr<GuiElementState> getGuiElementState() const
     {
-        DUOPLOT_LOG_WARNING() << "getGuiElementState() not implemented!";
+        LUMOS_LOG_WARNING() << "getGuiElementState() not implemented!";
         return std::make_shared<GuiElementState>();
     }
 

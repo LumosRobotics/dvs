@@ -8,7 +8,7 @@
 
 #include "axes/legend_properties.h"
 #include "axes/text_rendering.h"
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 #include "opengl_low_level/opengl_header.h"
 #include "opengl_low_level/vertex_buffer.h"
 #include "shader.h"
@@ -26,11 +26,11 @@ private:
     TextRenderer text_renderer_;
     ShaderCollection shader_collection_;
 
-    duoplot::Vector<float> points_;
-    duoplot::Vector<float> colors_;
+    lumos::Vector<float> points_;
+    lumos::Vector<float> colors_;
 
-    duoplot::Vector<float> legend_inner_vertices_;
-    duoplot::Vector<float> legend_edge_vertices_;
+    lumos::Vector<float> legend_inner_vertices_;
+    lumos::Vector<float> legend_edge_vertices_;
     void renderColorMapLegend(const size_t num_segments,
                               const RGBTripletf& edge_color,
                               const float xc,

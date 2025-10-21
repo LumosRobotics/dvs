@@ -1,9 +1,9 @@
 #ifndef MAIN_APPLICATION_AXES_STRUCTURES_AXES_LIMITS_H_
 #define MAIN_APPLICATION_AXES_STRUCTURES_AXES_LIMITS_H_
 
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 class AxesLimits
 {

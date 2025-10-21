@@ -36,7 +36,7 @@ struct ConvertedData : ConvertedDataBase
     ConvertedData(ConvertedData&& other) = delete;
     ConvertedData& operator=(ConvertedData&& other) = delete;
 
-    std::pair<duoplot::Vec3<double>, double> getClosestPoint(const Line3D<double>& line) const override
+    std::pair<lumos::Vec3<double>, double> getClosestPoint(const Line3D<double>& line) const override
     {
         double min_dist = std::numeric_limits<double>::max();
 

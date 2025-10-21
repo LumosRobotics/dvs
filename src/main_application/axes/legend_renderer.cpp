@@ -118,7 +118,7 @@ void LegendRenderer::render(const std::vector<LegendProperties>& legend_properti
     float max_width = 0.0f;
     for (size_t k = 0; k < legend_properties.size(); k++)
     {
-        const duoplot::Vec2f sz = calculateStringSize(legend_properties[k].label, 0.0005f, axes_width, axes_height);
+        const lumos::Vec2f sz = calculateStringSize(legend_properties[k].label, 0.0005f, axes_width, axes_height);
         const float current_width = sz.x;
         max_width = std::max(max_width, current_width);
     }

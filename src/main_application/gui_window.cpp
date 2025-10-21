@@ -3,7 +3,7 @@
 #include <ctime>
 #include <iomanip>
 
-#include "duoplot/internal.h"
+#include "lumos/plotting/internal.h"
 #include "events.h"
 #include "globals.h"
 #include "main_window.h"
@@ -990,17 +990,17 @@ std::map<std::string, std::pair<std::string, std::string>> transformElementSetti
     std::map<std::string, std::pair<std::string, std::string>> ret_fields;
     ret_fields["handle_string"] = {"Handle string", element_settings->handle_string};
 
-    if (element_settings->type == duoplot::GuiElementType::Button)
+    if (element_settings->type == lumos::GuiElementType::Button)
     {
         std::shared_ptr<ButtonSettings> bs = std::dynamic_pointer_cast<ButtonSettings>(element_settings);
         ret_fields["label"] = {"Label", bs->label};
     }
-    else if (element_settings->type == duoplot::GuiElementType::Checkbox)
+    else if (element_settings->type == lumos::GuiElementType::Checkbox)
     {
         std::shared_ptr<CheckboxSettings> cs = std::dynamic_pointer_cast<CheckboxSettings>(element_settings);
         ret_fields["label"] = {"Label", cs->label};
     }
-    else if (element_settings->type == duoplot::GuiElementType::Slider)
+    else if (element_settings->type == lumos::GuiElementType::Slider)
     {
         std::shared_ptr<SliderSettings> ss = std::dynamic_pointer_cast<SliderSettings>(element_settings);
         // ret_fields["is_horizontal"] = {"Is horizontal", ss->is_horizontal ? "true" : "false"};
@@ -1008,7 +1008,7 @@ std::map<std::string, std::pair<std::string, std::string>> transformElementSetti
         ret_fields["max_value"] = {"Max value", std::to_string(ss->max_value)};
         ret_fields["min_value"] = {"Min value", std::to_string(ss->min_value)};
     }
-    else if (element_settings->type == duoplot::GuiElementType::PlotPane)
+    else if (element_settings->type == lumos::GuiElementType::PlotPane)
     {
         std::shared_ptr<PlotPaneSettings> pps = std::dynamic_pointer_cast<PlotPaneSettings>(element_settings);
         ret_fields["title"] = {"Title", pps->title};

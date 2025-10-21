@@ -1,10 +1,10 @@
 #include "communication/received_data.h"
-#include "duoplot/enumerations.h"
+#include "lumos/plotting/enumerations.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 #include "plot_objects/plot_objects.h"
 #include "user_supplied_properties.h"
 
-using namespace duoplot::internal;
+using namespace lumos::internal;
 
 std::shared_ptr<const ConvertedDataBase> convertPlotObjectData(const CommunicationHeader& hdr,
                                                                const ReceivedData& received_data,

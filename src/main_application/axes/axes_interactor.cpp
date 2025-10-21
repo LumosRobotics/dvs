@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "axes/structures/grid_vectors.h"
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 #include "opengl_low_level/opengl_header.h"
 
 AxesInteractor::AxesInteractor(const AxesSettings& axes_settings, const int window_height, const int window_width)
@@ -472,8 +472,8 @@ void generateAxisVector(
         }
     }
 
-    DUOPLOT_ASSERT(vec.size() <= GridVector::kMaxNumGridNumbers);
-    DUOPLOT_ASSERT(vec.size() > 1U);
+    LUMOS_ASSERT(vec.size() <= GridVector::kMaxNumGridNumbers);
+    LUMOS_ASSERT(vec.size() > 1U);
 
     ret_vec.grid_spacing = d_inc;
     ret_vec.min_value = vec[0];

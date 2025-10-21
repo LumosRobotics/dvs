@@ -40,3 +40,6 @@
 [submodule "third_party/LumosConfig"]
 	path = third_party/LumosConfig
 	url = git@github.com:LumosRobotics/LumosConfig.git
+[submodule "third_party/LumosAlgo"]
+	path = third_party/LumosAlgo
+	url = git@github.com:LumosRobotics/LumosAlgo.git

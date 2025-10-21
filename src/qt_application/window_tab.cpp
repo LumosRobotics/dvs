@@ -1,6 +1,6 @@
 #include "window_tab.h"
 
-#include "duoplot/logging.h"
+#include "lumos/logging/logging.h"
 #include "project_state/project_settings.h"
 
 WindowTab::WindowTab(
@@ -27,14 +27,14 @@ WindowTab::WindowTab(
     // Create GUI elements from settings
     for (const auto& element_settings : tab_settings.elements)
     {
-        if (element_settings->type == duoplot::GuiElementType::PlotPane)
+        if (element_settings->type == lumos::GuiElementType::PlotPane)
         {
             createNewPlotPane(element_settings);
         }
         // TODO: Add other element types (buttons, sliders, etc.) when implemented
     }
 
-    DUOPLOT_LOG_INFO() << "WindowTab '" << name_ << "' created with "
+    LUMOS_LOG_INFO() << "WindowTab '" << name_ << "' created with "
                        << plot_panes_.size() << " plot panes";
 }
 
@@ -54,7 +54,7 @@ WindowTab::~WindowTab()
     }
     gui_elements_.clear();
 
-    DUOPLOT_LOG_INFO() << "WindowTab '" << name_ << "' destroyed";
+    LUMOS_LOG_INFO() << "WindowTab '" << name_ << "' destroyed";
 }
 
 std::vector<ApplicationGuiElement*> WindowTab::getPlotPanes() const
@@ -124,7 +124,7 @@ void WindowTab::createNewPlotPane(const std::string& element_handle_string)
 {
     auto element_settings = std::make_shared<PlotPaneSettings>();
     element_settings->handle_string = element_handle_string;
-    element_settings->type = duoplot::GuiElementType::PlotPane;
+    element_settings->type = lumos::GuiElementType::PlotPane;
     element_settings->x = 10.0f;
     element_settings->y = 10.0f;
     element_settings->width = 600.0f;
@@ -151,7 +151,7 @@ void WindowTab::createNewPlotPane(const std::shared_ptr<ElementSettings>& elemen
     plot_pane->show();
     plot_panes_.push_back(plot_pane);
 
-    DUOPLOT_LOG_INFO() << "Created plot pane: " << element_settings->handle_string;
+    LUMOS_LOG_INFO() << "Created plot pane: " << element_settings->handle_string;
 }
 
 void WindowTab::show()

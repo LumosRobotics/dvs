@@ -2,12 +2,12 @@
 
 #include <QCloseEvent>
 
-#include "duoplot/enumerations.h"
-#include "duoplot/logging.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/logging/logging.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 #include "plot_objects/plot_objects.h"
 
-using namespace duoplot::internal;
+using namespace lumos::internal;
 
 // Forward declaration for data conversion function
 std::shared_ptr<const ConvertedDataBase> convertPlotObjectData(const CommunicationHeader& hdr,
@@ -63,7 +63,7 @@ MainWindow::MainWindow(const std::vector<std::string>& cmdl_args)
     // Start TCP receive thread
     tcp_receive_thread_ = new std::thread(&MainWindow::tcpReceiveThreadFunction, this);
 
-    DUOPLOT_LOG_INFO() << "MainWindow initialized (hidden data router)";
+    LUMOS_LOG_INFO() << "MainWindow initialized (hidden data router)";
 }
 
 MainWindow::~MainWindow()
@@ -80,7 +80,7 @@ void MainWindow::destroy()
 
     shutdown_in_progress_ = true;
 
-    DUOPLOT_LOG_INFO() << "MainWindow shutting down";
+    LUMOS_LOG_INFO() << "MainWindow shutting down";
 
     // Stop timers
     if (receive_timer_)
@@ -103,7 +103,7 @@ void MainWindow::destroy()
     // Clean up windows
     removeAllWindows();
 
-    DUOPLOT_LOG_INFO() << "MainWindow destroyed";
+    LUMOS_LOG_INFO() << "MainWindow destroyed";
 }
 
 void MainWindow::setupCallbacks()
@@ -133,7 +133,7 @@ void MainWindow::setupCallbacks()
     };
 
     notify_main_window_about_modification_ = [this]() {
-        DUOPLOT_LOG_DEBUG() << "Project modified";
+        LUMOS_LOG_DEBUG() << "Project modified";
         // TODO: Mark project as modified
     };
 }
@@ -193,7 +193,7 @@ void MainWindow::setupWindows(const ProjectSettings& project_settings)
 
     window_initialization_in_progress_ = false;
 
-    DUOPLOT_LOG_INFO() << "Created " << windows_.size() << " windows";
+    LUMOS_LOG_INFO() << "Created " << windows_.size() << " windows";
 }
 
 void MainWindow::removeAllWindows()
@@ -209,7 +209,7 @@ void MainWindow::removeAllWindows()
 
 void MainWindow::tcpReceiveThreadFunction()
 {
-    DUOPLOT_LOG_INFO() << "TCP receive thread started";
+    LUMOS_LOG_INFO() << "TCP receive thread started";
 
     while (!shutdown_in_progress_)
     {
@@ -227,7 +227,7 @@ void MainWindow::tcpReceiveThreadFunction()
         }
     }
 
-    DUOPLOT_LOG_INFO() << "TCP receive thread stopped";
+    LUMOS_LOG_INFO() << "TCP receive thread stopped";
 }
 
 void MainWindow::manageReceivedData(ReceivedData& received_data)
@@ -272,7 +272,7 @@ void MainWindow::setActiveView(const ReceivedData& received_data)
     const CommunicationHeader& hdr = received_data.getCommunicationHeader();
     current_element_name_ = hdr.get(CommunicationHeaderObjectType::ELEMENT_NAME).as<properties::Label>().data;
 
-    DUOPLOT_LOG_DEBUG() << "Set current element: " << current_element_name_;
+    LUMOS_LOG_DEBUG() << "Set current element: " << current_element_name_;
 }
 
 void MainWindow::receiveData()
@@ -318,25 +318,25 @@ void MainWindow::onRefreshTimer()
 
 void MainWindow::newProject()
 {
-    DUOPLOT_LOG_INFO() << "New project requested";
+    LUMOS_LOG_INFO() << "New project requested";
     // TODO: Implement new project functionality
 }
 
 void MainWindow::saveProject()
 {
-    DUOPLOT_LOG_INFO() << "Save project requested";
+    LUMOS_LOG_INFO() << "Save project requested";
     // TODO: Implement project saving
 }
 
 void MainWindow::saveProjectAs()
 {
-    DUOPLOT_LOG_INFO() << "Save project as requested";
+    LUMOS_LOG_INFO() << "Save project as requested";
     // TODO: Implement project saving
 }
 
 void MainWindow::openExistingFile(const std::string& file_path)
 {
-    DUOPLOT_LOG_INFO() << "Opening project: " << file_path;
+    LUMOS_LOG_INFO() << "Opening project: " << file_path;
     // TODO: Implement project loading
 }
 
@@ -378,7 +378,7 @@ void MainWindow::newWindowWithoutFileModification()
     window_callback_id_++;
     current_window_num_++;
 
-    DUOPLOT_LOG_INFO() << "Created new window: " << window_settings.name;
+    LUMOS_LOG_INFO() << "Created new window: " << window_settings.name;
 }
 
 std::vector<std::string> MainWindow::getAllElementNames() const
@@ -396,12 +396,12 @@ std::vector<std::string> MainWindow::getAllElementNames() const
 
 void MainWindow::windowNameChanged(const std::string& old_name, const std::string& new_name)
 {
-    DUOPLOT_LOG_INFO() << "Window name changed: " << old_name << " -> " << new_name;
+    LUMOS_LOG_INFO() << "Window name changed: " << old_name << " -> " << new_name;
 }
 
 void MainWindow::elementDeleted(const std::string& element_handle_string)
 {
-    DUOPLOT_LOG_INFO() << "Element deleted: " << element_handle_string;
+    LUMOS_LOG_INFO() << "Element deleted: " << element_handle_string;
 
     // Remove from maps
     plot_panes_.erase(element_handle_string);
@@ -411,7 +411,7 @@ void MainWindow::elementDeleted(const std::string& element_handle_string)
 
 void MainWindow::elementNameChanged(const std::string& old_name, const std::string& new_name)
 {
-    DUOPLOT_LOG_INFO() << "Element name changed: " << old_name << " -> " << new_name;
+    LUMOS_LOG_INFO() << "Element name changed: " << old_name << " -> " << new_name;
 
     // Update maps
     if (plot_panes_.count(old_name) > 0)

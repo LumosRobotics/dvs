@@ -2,7 +2,7 @@
 
 #include "outer_converter.h"
 
-using namespace duoplot::internal;
+using namespace lumos::internal;
 
 namespace
 {

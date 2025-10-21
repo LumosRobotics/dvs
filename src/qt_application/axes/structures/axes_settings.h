@@ -5,10 +5,10 @@
 
 #include <string>
 
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 #include "misc/rgb_triplet.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 struct AxesSettings
 {

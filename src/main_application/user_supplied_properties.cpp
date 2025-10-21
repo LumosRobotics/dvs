@@ -7,7 +7,7 @@ bool UserSuppliedProperties::hasFlag(const PropertyFlag f) const
     return flags_[static_cast<uint8_t>(f)];
 }
 
-bool UserSuppliedProperties::hasProperty(const duoplot::internal::PropertyType tp) const
+bool UserSuppliedProperties::hasProperty(const lumos::internal::PropertyType tp) const
 {
     return props_lut_.data[static_cast<uint8_t>(tp)] != 255;
 }

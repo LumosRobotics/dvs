@@ -9,7 +9,7 @@
 #include <map>
 
 #include "constants.h"
-#include "duoplot/logging.h"
+#include "lumos/logging/logging.h"
 
 enum
 {
@@ -91,7 +91,7 @@ public:
 
     int getNextFreeId()
     {
-        DUOPLOT_ASSERT(free_ids_.size() != 0);
+        LUMOS_ASSERT(free_ids_.size() != 0);
         const int val = free_ids_.back();
         free_ids_.pop_back();
         taken_ids_.push_back(val);
@@ -100,7 +100,7 @@ public:
 
     void freeId(int id_to_free)
     {
-        DUOPLOT_ASSERT(std::find(taken_ids_.begin(), taken_ids_.end(), id_to_free) != taken_ids_.end());
+        LUMOS_ASSERT(std::find(taken_ids_.begin(), taken_ids_.end(), id_to_free) != taken_ids_.end());
         taken_ids_.erase(std::find(taken_ids_.begin(), taken_ids_.end(), id_to_free));
         free_ids_.push_back(id_to_free);
     }

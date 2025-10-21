@@ -88,7 +88,7 @@ void FastPlot2D::appendNewData(ReceivedData& received_data,
 
     if ((num_added_elements_ + num_elements_) > buffer_size_)
     {
-        DUOPLOT_LOG_ERROR() << "Buffer overflow!";
+        LUMOS_LOG_ERROR() << "Buffer overflow!";
         return;
     }
 

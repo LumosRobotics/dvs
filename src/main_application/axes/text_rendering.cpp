@@ -15,7 +15,7 @@
 #include "platform_paths.h"
 #include "shader.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace
 {

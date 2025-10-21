@@ -4,7 +4,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
-#include "duoplot/logging.h"
+#include "lumos/logging/logging.h"
 
 GuiWindow::GuiWindow(
     QWidget* parent,
@@ -73,13 +73,13 @@ GuiWindow::GuiWindow(
         tab_widget_->addTab(tab_page, QString::fromStdString(tab_settings.name));
     }
 
-    DUOPLOT_LOG_INFO() << "GuiWindow '" << name_ << "' created with " << tabs_.size() << " tabs";
+    LUMOS_LOG_INFO() << "GuiWindow '" << name_ << "' created with " << tabs_.size() << " tabs";
 }
 
 GuiWindow::~GuiWindow()
 {
     deleteAllTabs();
-    DUOPLOT_LOG_INFO() << "GuiWindow '" << name_ << "' destroyed";
+    LUMOS_LOG_INFO() << "GuiWindow '" << name_ << "' destroyed";
 }
 
 void GuiWindow::deleteAllTabs()
@@ -147,7 +147,7 @@ void GuiWindow::tabChanged(int index)
     if (index >= 0 && index < static_cast<int>(tabs_.size()))
     {
         current_tab_num_ = index;
-        DUOPLOT_LOG_DEBUG() << "Tab changed to: " << tabs_[index]->getName();
+        LUMOS_LOG_DEBUG() << "Tab changed to: " << tabs_[index]->getName();
     }
 }
 
@@ -250,13 +250,13 @@ void GuiWindow::onDeleteTab()
 void GuiWindow::onEditElementName()
 {
     // TODO: Implement element name editing
-    DUOPLOT_LOG_WARNING() << "Element name editing not yet implemented";
+    LUMOS_LOG_WARNING() << "Element name editing not yet implemented";
 }
 
 void GuiWindow::onDeleteElement()
 {
     // TODO: Implement element deletion
-    DUOPLOT_LOG_WARNING() << "Element deletion not yet implemented";
+    LUMOS_LOG_WARNING() << "Element deletion not yet implemented";
 }
 
 void GuiWindow::closeEvent(QCloseEvent* event)

@@ -8,7 +8,7 @@ wxDECLARE_EVENT(NO_ELEMENT_SELECTED, wxCommandEvent);
 wxDECLARE_EVENT(CHILD_WINDOW_IN_FOCUS_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(NEW_EVENT, wxCommandEvent);
 
-namespace duoplot_ids
+namespace lumos_ids
 {
 enum DuoplotIds : uint16_t
 {

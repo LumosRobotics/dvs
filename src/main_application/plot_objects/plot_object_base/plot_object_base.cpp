@@ -260,9 +260,9 @@ size_t PlotObjectBase::getNumDimensions() const
     return num_dimensions_;
 }
 
-void PlotObjectBase::setTransform(const MatrixFixed<double, 3, 3>& rotation,
+void PlotObjectBase::setTransform(const FixedSizeMatrix<double, 3, 3>& rotation,
                                   const Vec3<double>& translation,
-                                  const MatrixFixed<double, 3, 3>& scale)
+                                  const FixedSizeMatrix<double, 3, 3>& scale)
 {
     has_custom_transform_ = true;
 

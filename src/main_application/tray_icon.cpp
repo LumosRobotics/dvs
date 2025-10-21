@@ -85,7 +85,7 @@ void CustomTaskBarIcon::onMenuSubWindow(wxCommandEvent& evt)
             break;
         }
     }
-    DUOPLOT_ASSERT(window_found);
+    LUMOS_ASSERT(window_found);
     submenu_function_(window_name);
 }
 

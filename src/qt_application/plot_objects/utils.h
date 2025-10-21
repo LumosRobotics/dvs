@@ -5,14 +5,14 @@
 
 #include <iostream>
 
-#include "duoplot/enumerations.h"
-#include "duoplot/logging.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/logging/logging.h"
+#include "lumos/math/math.h"
 #include "misc/rgb_triplet.h"
 #include "opengl_low_level/opengl_header.h"
 
-using namespace duoplot::internal;
-using namespace duoplot;
+using namespace lumos::internal;
+using namespace lumos;
 
 inline size_t getNumDimensionsFromFunction(const Function fcn)
 {
@@ -110,7 +110,7 @@ inline GLint dataTypeToGLInt(const DataType& data_type)
             break;
         case DataType::INT64:
             gl_type = GL_FLOAT;
-            DUOPLOT_ASSERT(false);  // Haven't fround int64 in opengl enums yet...
+            LUMOS_ASSERT(false);  // Haven't fround int64 in opengl enums yet...
             break;
         case DataType::UINT8:
             gl_type = GL_UNSIGNED_BYTE;
@@ -122,7 +122,7 @@ inline GLint dataTypeToGLInt(const DataType& data_type)
             gl_type = GL_UNSIGNED_INT;
             break;
         case DataType::UINT64:
-            DUOPLOT_ASSERT(false);  // Haven't fround uint64 in opengl enums yet...
+            LUMOS_ASSERT(false);  // Haven't fround uint64 in opengl enums yet...
             gl_type = GL_FLOAT;
             break;
         case DataType::UNKNOWN:

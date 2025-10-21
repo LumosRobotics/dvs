@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <iostream>
 
-#include "duoplot/logging.h"
+#include "lumos/logging/logging.h"
 #include "main_window.h"
 
 int main(int argc, char* argv[])
@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     app.setApplicationVersion("1.0");
     app.setOrganizationName("Duoplot");
 
-    DUOPLOT_LOG_INFO() << "Starting Duoplot Qt application";
+    LUMOS_LOG_INFO() << "Starting Duoplot Qt application";
 
     std::vector<std::string> cmd_args;
     for (int k = 0; k < argc; k++)
@@ -25,11 +25,11 @@ int main(int argc, char* argv[])
     // Note: MainWindow calls hide() in its constructor, so we don't call show()
     // The GuiWindow instances it creates are shown automatically
 
-    DUOPLOT_LOG_INFO() << "Application initialized - MainWindow (hidden) managing GuiWindows";
+    LUMOS_LOG_INFO() << "Application initialized - MainWindow (hidden) managing GuiWindows";
 
     int result = app.exec();
 
-    DUOPLOT_LOG_INFO() << "Exiting Duoplot Qt application";
+    LUMOS_LOG_INFO() << "Exiting Duoplot Qt application";
 
     return result;
 }

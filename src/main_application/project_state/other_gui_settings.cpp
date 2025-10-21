@@ -49,7 +49,7 @@ ButtonSettings::ButtonSettings() : GuiElementSettings{}, label{""}
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::Button;
+    type = lumos::GuiElementType::Button;
 }
 
 ButtonSettings::ButtonSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}, label{""}
@@ -86,7 +86,7 @@ CheckboxSettings::CheckboxSettings() : GuiElementSettings{}, label{""}
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::Checkbox;
+    type = lumos::GuiElementType::Checkbox;
 }
 CheckboxSettings::CheckboxSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}, label{""}
 {
@@ -121,7 +121,7 @@ EditableTextSettings::EditableTextSettings() : GuiElementSettings{}, init_value{
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::EditableText;
+    type = lumos::GuiElementType::EditableText;
 }
 EditableTextSettings::EditableTextSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}, init_value{""}
 {
@@ -157,7 +157,7 @@ DropdownMenuSettings::DropdownMenuSettings() : GuiElementSettings{}, initially_s
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::DropdownMenu;
+    type = lumos::GuiElementType::DropdownMenu;
 }
 DropdownMenuSettings::DropdownMenuSettings(const nlohmann::json& j_data)
     : GuiElementSettings{j_data}, initially_selected_item{""}, elements{}
@@ -219,7 +219,7 @@ ListBoxSettings::ListBoxSettings() : GuiElementSettings{}, elements{}
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::ListBox;
+    type = lumos::GuiElementType::ListBox;
 }
 ListBoxSettings::ListBoxSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}, elements{}
 {
@@ -330,7 +330,7 @@ TextLabelSettings::TextLabelSettings() : GuiElementSettings{}, label{""}
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::TextLabel;
+    type = lumos::GuiElementType::TextLabel;
 }
 TextLabelSettings::TextLabelSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}, label{""}
 {
@@ -367,7 +367,7 @@ SliderSettings::SliderSettings()
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::Slider;
+    type = lumos::GuiElementType::Slider;
 }
 
 SliderSettings::SliderSettings(const nlohmann::json& j_data) : GuiElementSettings{j_data}
@@ -442,7 +442,7 @@ StaticBoxSettings::StaticBoxSettings() : label{""}, elements{}
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = duoplot::GuiElementType::StaticBox;
+    type = lumos::GuiElementType::StaticBox;
 }
 
 StaticBoxSettings::StaticBoxSettings(const nlohmann::json& j_data) : ElementSettings{j_data}, label{""}, elements{}
@@ -455,45 +455,45 @@ StaticBoxSettings::StaticBoxSettings(const nlohmann::json& j_data) : ElementSett
 
         for (const nlohmann::json& j_element : j_ess["elements"])
         {
-            const duoplot::GuiElementType ge_type = parseGuiElementType(j_element);
+            const lumos::GuiElementType ge_type = parseGuiElementType(j_element);
 
-            if (ge_type == duoplot::GuiElementType::Button)
+            if (ge_type == lumos::GuiElementType::Button)
             {
                 elements.push_back(std::make_shared<ButtonSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::Checkbox)
+            else if (ge_type == lumos::GuiElementType::Checkbox)
             {
                 elements.push_back(std::make_shared<CheckboxSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::EditableText)
+            else if (ge_type == lumos::GuiElementType::EditableText)
             {
                 elements.push_back(std::make_shared<EditableTextSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::DropdownMenu)
+            else if (ge_type == lumos::GuiElementType::DropdownMenu)
             {
                 elements.push_back(std::make_shared<DropdownMenuSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::ListBox)
+            else if (ge_type == lumos::GuiElementType::ListBox)
             {
                 elements.push_back(std::make_shared<ListBoxSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::RadioButtonGroup)
+            else if (ge_type == lumos::GuiElementType::RadioButtonGroup)
             {
                 elements.push_back(std::make_shared<RadioButtonGroupSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::ScrollingText)
+            else if (ge_type == lumos::GuiElementType::ScrollingText)
             {
                 elements.push_back(std::make_shared<ScrollingTextSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::TextLabel)
+            else if (ge_type == lumos::GuiElementType::TextLabel)
             {
                 elements.push_back(std::make_shared<TextLabelSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::Slider)
+            else if (ge_type == lumos::GuiElementType::Slider)
             {
                 elements.push_back(std::make_shared<SliderSettings>(j_element));
             }
-            else if (ge_type == duoplot::GuiElementType::StaticBox)
+            else if (ge_type == lumos::GuiElementType::StaticBox)
             {
                 elements.push_back(std::make_shared<StaticBoxSettings>(j_element));
             }
