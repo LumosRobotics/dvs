@@ -41,6 +41,10 @@ include_directories(${REPO_DIR}/src/common)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/build/lib)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/googletest/include)
 
+# Qt6
+set(CMAKE_PREFIX_PATH "/usr/local/opt/qt/lib/cmake")
+find_package(Qt6 COMPONENTS Core Widgets OpenGL OpenGLWidgets QUIET)
+
 # Nlohmann
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/nlohmann/include)
 
@@ -81,6 +85,7 @@ add_subdirectory(interfaces/test/cpp)
 add_subdirectory(demos/demo_app)
 add_subdirectory(demos/plot_stuff)
 add_subdirectory(main_application)
+add_subdirectory(qt_application)
 add_subdirectory(test)
 add_subdirectory(applications/module_application)
 

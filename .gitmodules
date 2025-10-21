@@ -37,3 +37,6 @@
 [submodule "src/externals/pyslam"]
 	path = src/externals/pyslam
 	url = https://github.com/luigifreda/pyslam.git
+[submodule "third_party/LumosConfig"]
+	path = third_party/LumosConfig
+	url = git@github.com:LumosRobotics/LumosConfig.git
