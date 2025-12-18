@@ -5,12 +5,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 #include "gui_window.h"
 #include "main_window.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 
-using namespace lumos::internal;
+using namespace duoplot::internal;
 
 void MainWindow::setActiveView(const ReceivedData& received_data)
 {

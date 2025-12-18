@@ -3,10 +3,10 @@
 
 #include <algorithm>
 
-#include "duoplot/duoplot.h"
+#include "lumos/lumos.h"
 #include "utils.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace basic_cpp
 {
@@ -804,7 +804,7 @@ void testStem()
     const size_t num_elements = 30;
 
     const Vector<float> x = linspaceFromBoundariesAndCount<float>(0.0f, 5.0f, num_elements);
-    const Vector<float> y = duoplot::sin(x);
+    const Vector<float> y = lumos::sin(x);
 
     setActiveView("p_view_0");
     clearView();
@@ -1232,7 +1232,7 @@ void testSetProperties()
     const size_t num_elements = 30;
 
     const Vector<float> x = linspaceFromBoundariesAndCount<float>(0.0f, 5.0f, num_elements);
-    const Vector<float> y = duoplot::sin(x);
+    const Vector<float> y = lumos::sin(x);
 
     setActiveView("p_view_0");
     clearView();
@@ -1955,7 +1955,7 @@ void testCreateNewElement()
     openProjectFile(project_file_path);
 
     const Vector<double> t = linspaceFromBoundariesAndCount(0.0, 2.0 * M_PI, 1000);
-    const Vector<double> x = duoplot::cos(t);
+    const Vector<double> x = lumos::cos(t);
 
     setActiveView("p_view_0");
     clearView();
@@ -1978,8 +1978,8 @@ void testAxesSquare()
 
     t = linspaceFromBoundariesAndCount(0.0, 2.0 * M_PI, num_elements);
 
-    x = duoplot::cos(t);
-    y = duoplot::sin(t);
+    x = lumos::cos(t);
+    y = lumos::sin(t);
     z = 2.0 * t / (2.0 * M_PI) - 1.0;
 
     setActiveView("p_view_0");
@@ -2023,7 +2023,7 @@ void testNan()
     Vector<double> x(num_elements), y(num_elements);
 
     x = linspaceFromBoundariesAndCount(0.0, 1.0, num_elements);
-    y = duoplot::sin(x);
+    y = lumos::sin(x);
 
     setActiveView("p1");
     clearView();
@@ -2052,7 +2052,7 @@ void testDifferentAxesScaling()
     const std::vector<double> multipliers{1e-3, 1e-6, 1e-9, 1e12, 1e15, 1e38, 1e-21, 1e-24, 1e-27};
 
     x = linspaceFromBoundariesAndCount(-1.0 * M_PI, 1.0 * M_PI, num_elements);
-    y = duoplot::sin(x);
+    y = lumos::sin(x);
 
     for (size_t k = 0; k < element_names.size(); k++)
     {

@@ -12,19 +12,19 @@
 #include "axes/legend_properties.h"
 #include "color_picker.h"
 #include "communication/received_data.h"
-#include "lumos/plotting/enumerations.h"
-#include "lumos/math/math.h"
-#include "lumos/plotting/plot_properties.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/math/math.h"
+#include "duoplot/plot_properties.h"
 #include "misc/rgb_triplet.h"
 #include "opengl_low_level/opengl_header.h"
 #include "plot_objects/utils.h"
 #include "user_supplied_properties.h"
-#include "lumos/plotting/internal.h"
+#include "duoplot/internal.h"
 #include "shader.h"
 
-using namespace lumos;
-using namespace lumos::internal;
-using namespace lumos::properties;
+using namespace duoplot;
+using namespace duoplot::internal;
+using namespace duoplot::properties;
 
 bool isPlotDataFunction(const Function fcn);
 
@@ -33,7 +33,7 @@ struct ConvertedDataBase
     Function function;
 
     virtual ~ConvertedDataBase() {}
-    virtual std::pair<lumos::Vec3<double>, double> getClosestPoint(const Line3D<double>& line) const
+    virtual std::pair<duoplot::Vec3<double>, double> getClosestPoint(const Line3D<double>& line) const
     {
         std::cout << "Called base function!" << std::endl;
         return {Vec3<double>{0.0, 0.0, 0.0}, std::numeric_limits<double>::max()};
@@ -221,9 +221,9 @@ public:
     bool isAppendable() const;
     bool isUpdateable() const;
 
-    void setTransform(const FixedSizeMatrix<double, 3, 3>& rotation,
+    void setTransform(const MatrixFixed<double, 3, 3>& rotation,
                       const Vec3<double>& translation,
-                      const FixedSizeMatrix<double, 3, 3>& scale);
+                      const MatrixFixed<double, 3, 3>& scale);
 
     ItemId getId() const
     {

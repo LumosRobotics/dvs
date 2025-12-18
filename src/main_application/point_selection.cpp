@@ -1,7 +1,7 @@
 #include "point_selection.h"
 
-using namespace lumos;
-using namespace lumos::internal;
+using namespace duoplot;
+using namespace duoplot::internal;
 
 PointSelection::~PointSelection() {}
 
@@ -48,18 +48,18 @@ void PointSelection::clear()
     pending_soft_clear_ = false;
 }
 
-std::pair<lumos::Vec3<double>, bool> PointSelection::getClosestPoint(const Line3D<double>& line,
+std::pair<duoplot::Vec3<double>, bool> PointSelection::getClosestPoint(const Line3D<double>& line,
                                                                    const bool has_query_line)
 {
     double min_dist = std::numeric_limits<double>::max();
-    lumos::Vec3<double> closest_point;
+    duoplot::Vec3<double> closest_point;
     bool has_closest_point = false;
 
     if (has_query_line)
     {
         for (size_t k = 0; k < plot_datas_.size(); k++)
         {
-            const std::pair<lumos::Vec3<double>, double> res = plot_datas_[k].converted_data->getClosestPoint(line);
+            const std::pair<duoplot::Vec3<double>, double> res = plot_datas_[k].converted_data->getClosestPoint(line);
             if (res.second < min_dist)
             {
                 min_dist = res.second;

@@ -1,10 +1,10 @@
 #ifndef TEST_APPLICATIONS_ADVANCED_TESTS_CPP_TESTS_UPDATEABLE_PLOT_H_
 #define TEST_APPLICATIONS_ADVANCED_TESTS_CPP_TESTS_UPDATEABLE_PLOT_H_
 
-#include "duoplot/duoplot.h"
+#include "lumos/lumos.h"
 #include "utils.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace updateable_plotting
 {
@@ -74,7 +74,7 @@ void testPlot2Basic()
     for (size_t k = 0; k < num_its; k++)
     {
         const Vector<double> xt = linspaceFromBoundariesAndCount<double>(0.0 + t, 5.0 + t, num_elements);
-        const Vector<double> y = duoplot::sin(xt);
+        const Vector<double> y = lumos::sin(xt);
 
         plot(x, y, properties::ID0);
 
@@ -88,7 +88,7 @@ void testSurfBasic()
 {
     const size_t num_elements = 100;
 
-    const auto mat_xy = duoplot::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
+    const auto mat_xy = lumos::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
     const Matrix<double>& x_mat = mat_xy.first;
     const Matrix<double>& y_mat = mat_xy.second;
     Matrix<double> z_mat{100, 100};
@@ -103,8 +103,8 @@ void testSurfBasic()
 
     for (size_t k = 0; k < 1000; k++)
     {
-        const Vector<double> y = duoplot::sin(x + t);
-        const Vector<double> z = duoplot::cos(x + t);
+        const Vector<double> y = lumos::sin(x + t);
+        const Vector<double> z = lumos::cos(x + t);
 
         for (size_t r = 0; r < x_mat.numRows(); r++)
         {

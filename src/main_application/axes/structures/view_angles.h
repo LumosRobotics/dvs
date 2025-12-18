@@ -1,9 +1,9 @@
 #ifndef MAIN_APPLICATION_AXES_STRUCTURES_VIEW_ANGLES_H_
 #define MAIN_APPLICATION_AXES_STRUCTURES_VIEW_ANGLES_H_
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 
-using namespace lumos;
+using namespace duoplot;
 
 enum class SnappingAxis
 {

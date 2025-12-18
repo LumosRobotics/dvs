@@ -10,7 +10,7 @@
 
 #include "axes/structures/axes_limits.h"
 #include "axes/structures/view_angles.h"
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 #include "opengl_low_level/opengl_header.h"
 
 class ZoomRect
@@ -21,8 +21,8 @@ private:
 
 public:
     ZoomRect();
-    void render(const lumos::Vec2f mouse_pos_at_press,
-                const lumos::Vec2f current_mouse_pos,
+    void render(const duoplot::Vec2f mouse_pos_at_press,
+                const duoplot::Vec2f current_mouse_pos,
                 const SnappingAxis snapping_axis,
                 const glm::mat4& view_mat,
                 const glm::mat4& model_mat,

@@ -2,20 +2,20 @@
 #define GUI_ELEMENT_STATE_H
 
 #include "buffered_writer.h"
-#include "lumos/plotting/enumerations.h"
-#include "lumos/plotting/fillable_uint8_array.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/fillable_uint8_array.h"
 #include "project_state/project_settings.h"
 
 class GuiElementState
 {
 private:
-    lumos::GuiElementType type_;
+    duoplot::GuiElementType type_;
     std::string handle_string_;
 
 public:
-    GuiElementState() : type_{lumos::GuiElementType::Unknown}, handle_string_{""} {}
+    GuiElementState() : type_{duoplot::GuiElementType::Unknown}, handle_string_{""} {}
 
-    GuiElementState(const lumos::GuiElementType type, const std::string& handle_string)
+    GuiElementState(const duoplot::GuiElementType type, const std::string& handle_string)
         : type_{type}, handle_string_{handle_string}
     {
     }
@@ -49,7 +49,7 @@ public:
         return other != nullptr && type_ == other->getType() && handle_string_ == other->getHandleString();
     }
 
-    lumos::GuiElementType getType() const
+    duoplot::GuiElementType getType() const
     {
         return type_;
     }
@@ -63,7 +63,7 @@ private:
 public:
     CheckboxState() = delete;
     CheckboxState(const std::string& handle_string, const bool is_checked)
-        : GuiElementState(lumos::GuiElementType::Checkbox, handle_string), is_checked_{is_checked}
+        : GuiElementState(duoplot::GuiElementType::Checkbox, handle_string), is_checked_{is_checked}
     {
     }
     ~CheckboxState() override {}
@@ -115,7 +115,7 @@ public:
                 const std::int32_t step_size,
                 const std::int32_t value,
                 const bool is_horizontal)
-        : GuiElementState(lumos::GuiElementType::Slider, handle_string),
+        : GuiElementState(duoplot::GuiElementType::Slider, handle_string),
           min_value_{min_value},
           max_value_{max_value},
           step_size_{step_size},
@@ -181,7 +181,7 @@ private:
 public:
     ButtonState() = delete;
     ButtonState(const std::string& handle_string, const bool is_pressed)
-        : GuiElementState(lumos::GuiElementType::Button, handle_string), is_pressed_{is_pressed}
+        : GuiElementState(duoplot::GuiElementType::Button, handle_string), is_pressed_{is_pressed}
     {
     }
     ~ButtonState() override {}
@@ -237,7 +237,7 @@ private:
 public:
     TextLabelState() = delete;
     TextLabelState(const std::string& handle_string, const std::string& label)
-        : GuiElementState(lumos::GuiElementType::TextLabel, handle_string), label_{label}
+        : GuiElementState(duoplot::GuiElementType::TextLabel, handle_string), label_{label}
     {
     }
     ~TextLabelState() override {}
@@ -285,7 +285,7 @@ public:
     ListBoxState(const std::string& handle_string,
                  const std::vector<std::string>& elements,
                  const std::string& selected_element)
-        : GuiElementState{lumos::GuiElementType::ListBox, handle_string},
+        : GuiElementState{duoplot::GuiElementType::ListBox, handle_string},
           elements_{elements},
           selected_element_{selected_element}
     {
@@ -359,7 +359,7 @@ private:
 public:
     EditableTextState() = delete;
     EditableTextState(const std::string& handle_string, const bool enter_pressed, const std::string& text)
-        : GuiElementState{lumos::GuiElementType::EditableText, handle_string},
+        : GuiElementState{duoplot::GuiElementType::EditableText, handle_string},
           enter_pressed_{enter_pressed},
           text_{text}
     {
@@ -416,7 +416,7 @@ public:
     DropdownMenuState(const std::string& handle_string,
                       const std::vector<std::string>& elements,
                       const std::string& selected_element)
-        : GuiElementState{lumos::GuiElementType::DropdownMenu, handle_string},
+        : GuiElementState{duoplot::GuiElementType::DropdownMenu, handle_string},
           elements_{elements},
           selected_element_{selected_element}
     {
@@ -493,7 +493,7 @@ public:
     RadioButtonGroupState(const std::string& handle_string,
                           const std::vector<std::string>& buttons,
                           const std::int32_t selected_button)
-        : GuiElementState{lumos::GuiElementType::RadioButtonGroup, handle_string},
+        : GuiElementState{duoplot::GuiElementType::RadioButtonGroup, handle_string},
           buttons_{buttons},
           selected_button_{selected_button}
     {

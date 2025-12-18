@@ -9,9 +9,9 @@
 #include "axes/structures/axes_settings.h"
 #include "axes/structures/grid_vectors.h"
 #include "axes/structures/view_angles.h"
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 
-using namespace lumos;
+using namespace duoplot;
 
 struct AxesSideConfiguration
 {

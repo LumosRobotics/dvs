@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 #include "opengl_low_level/opengl_header.h"
 
 class TextRenderer
@@ -36,7 +36,7 @@ public:
 };
 
 bool initFreetype();
-lumos::Vec2f calculateStringSize(const std::string_view& text,
+duoplot::Vec2f calculateStringSize(const std::string_view& text,
                                const float scale,
                                const float axes_width,
                                const float axes_height);

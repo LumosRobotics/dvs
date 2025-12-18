@@ -100,16 +100,16 @@ static std::pair<std::string, bool> getHomeDirPath()
         is_valid_ = false;
         return;
     }
-    const lumos::filesystem::path home_dir_path("/home/" + username_and_status.first);
+    const duoplot::filesystem::path home_dir_path("/home/" + username_and_status.first);
 
-    const lumos::filesystem::path config_dir_path{home_dir_path / lumos::filesystem::path{configuration_folder_name}};
+    const duoplot::filesystem::path config_dir_path{home_dir_path / duoplot::filesystem::path{configuration_folder_name}};
 
-    if (!lumos::filesystem::exists(config_dir_path))
+    if (!duoplot::filesystem::exists(config_dir_path))
     {
         LUMOS_LOG_INFO() << config_dir_path << " dir does not exist, creating...";
         try
         {
-            lumos::filesystem::create_directory(config_dir_path);
+            duoplot::filesystem::create_directory(config_dir_path);
         }
         catch (const std::exception& e)
         {
@@ -120,7 +120,7 @@ static std::pair<std::string, bool> getHomeDirPath()
         }
     }
 
-    const lumos::filesystem::path duoplot_dir_path{config_dir_path / lumos::filesystem::path{"duoplot"}};
+    const duoplot::filesystem::path duoplot_dir_path{config_dir_path / duoplot::filesystem::path{"duoplot"}};
 #endif
 
 #ifdef PLATFORM_APPLE_M
@@ -128,7 +128,7 @@ static std::pair<std::string, bool> getHomeDirPath()
 #endif
 
 #ifdef PLATFORM_WINDOWS_M
-    const lumos::filesystem::path config_dir_path{home_dir_path / lumos::filesystem::path{configuration_folder_name}};
+    const duoplot::filesystem::path config_dir_path{home_dir_path / duoplot::filesystem::path{configuration_folder_name}};
 #endif
 
 */
@@ -177,10 +177,10 @@ std::string getConfigDirRoot()
     return "/Users/" + getUsername() + "/Library/Preferences";
 }
 
-lumos::filesystem::path getConfigDir()
+duoplot::filesystem::path getConfigDir()
 {
     // The path received from getConfigDirRoot() is assumed to exist
-    return lumos::filesystem::path{getConfigDirRoot() / lumos::filesystem::path{"duoplot"}};
+    return duoplot::filesystem::path{getConfigDirRoot() / duoplot::filesystem::path{"duoplot"}};
 }
 
 std::string getApplicationRootPath()

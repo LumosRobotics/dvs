@@ -1,7 +1,7 @@
 #include "main_application/plot_data_handler.h"
 
-#include "lumos/math/math.h"
-#include "lumos/plotting/utils.h"
+#include "duoplot/math/math.h"
+#include "duoplot/utils.h"
 #include "misc/rgb_triplet.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 #include "plot_objects/plot_objects.h"
@@ -30,9 +30,9 @@ void PlotDataHandler::clear()
 }
 
 void PlotDataHandler::setTransform(const ItemId id,
-                                   const FixedSizeMatrix<double, 3, 3>& rotation,
+                                   const MatrixFixed<double, 3, 3>& rotation,
                                    const Vec3<double>& translation,
-                                   const FixedSizeMatrix<double, 3, 3>& scale)
+                                   const MatrixFixed<double, 3, 3>& scale)
 {
     const auto q = std::find_if(plot_datas_.begin(), plot_datas_.end(), [&id](const PlotObjectBase* const pd) -> bool {
         return pd->getId() == id;

@@ -1,10 +1,10 @@
 #include "communication/received_data.h"
 
-#include "lumos/plotting/constants.h"
+#include "duoplot/constants.h"
 
 ReceivedData::ReceivedData()
     : hdr_{},
-      function_{lumos::internal::Function::UNKNOWN},
+      function_{duoplot::internal::Function::UNKNOWN},
       payload_data_{nullptr},
       raw_data_{nullptr},
       num_data_bytes_{0U},
@@ -28,7 +28,7 @@ ReceivedData::ReceivedData(ReceivedData&& other)
       num_data_bytes_{other.num_data_bytes_},
       total_num_bytes_{other.total_num_bytes_}
 {
-    other.function_ = lumos::internal::Function::UNKNOWN;
+    other.function_ = duoplot::internal::Function::UNKNOWN;
     other.payload_data_ = nullptr;
     other.num_data_bytes_ = 0U;
     other.raw_data_ = nullptr;
@@ -49,7 +49,7 @@ ReceivedData& ReceivedData::operator=(ReceivedData&& other)
     num_data_bytes_ = other.num_data_bytes_;
     total_num_bytes_ = other.total_num_bytes_;
 
-    other.function_ = lumos::internal::Function::UNKNOWN;
+    other.function_ = duoplot::internal::Function::UNKNOWN;
     other.payload_data_ = nullptr;
     other.raw_data_ = nullptr;
     other.num_data_bytes_ = 0U;
@@ -69,9 +69,9 @@ ReceivedData::~ReceivedData()
 void ReceivedData::parseHeader()
 {
     const UInt8ArrayView array_view{raw_data_, total_num_bytes_};
-    hdr_ = lumos::internal::CommunicationHeader{array_view};
+    hdr_ = duoplot::internal::CommunicationHeader{array_view};
     function_ = hdr_.getFunction();
-    const uint64_t transmission_data_offset = hdr_.numBytes() + lumos::internal::kHeaderDataStartOffset;
+    const uint64_t transmission_data_offset = hdr_.numBytes() + duoplot::internal::kHeaderDataStartOffset;
 
     if (transmission_data_offset > array_view.size())
     {
@@ -90,7 +90,7 @@ void ReceivedData::parseHeader()
     }
 }
 
-lumos::internal::Function ReceivedData::getFunction() const
+duoplot::internal::Function ReceivedData::getFunction() const
 {
     return function_;
 }
@@ -110,7 +110,7 @@ uint64_t ReceivedData::size() const
     return num_data_bytes_;
 }
 
-const lumos::internal::CommunicationHeader& ReceivedData::getCommunicationHeader() const
+const duoplot::internal::CommunicationHeader& ReceivedData::getCommunicationHeader() const
 {
     return hdr_;
 }

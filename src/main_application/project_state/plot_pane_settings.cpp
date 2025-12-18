@@ -35,7 +35,7 @@ PlotPaneSettings::PlotPaneSettings()
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = lumos::GuiElementType::PlotPane;
+    type = duoplot::GuiElementType::PlotPane;
 }
 
 void PlotPaneSettings::defaultInitializeAllSettings()
@@ -256,7 +256,7 @@ SubscribedStreamSettings::SubscribedStreamSettings(const nlohmann::json& j)
     if (j.contains("color"))
     {
         const RGBTripletf rgbt{jsonObjToColor(j["color"])};
-        color = lumos::properties::Color{static_cast<uint8_t>(rgbt.red * 255.0f),
+        color = duoplot::properties::Color{static_cast<uint8_t>(rgbt.red * 255.0f),
                                            static_cast<uint8_t>(rgbt.green * 255.0f),
                                            static_cast<uint8_t>(rgbt.blue * 255.0f)};
     }
@@ -267,19 +267,19 @@ SubscribedStreamSettings::SubscribedStreamSettings(const nlohmann::json& j)
 
         if (line_style_str == "solid")
         {
-            line_style = lumos::properties::LineStyle::SOLID;
+            line_style = duoplot::properties::LineStyle::SOLID;
         }
         else if (line_style_str == "dashed")
         {
-            line_style = lumos::properties::LineStyle::DASHED;
+            line_style = duoplot::properties::LineStyle::DASHED;
         }
         else if (line_style_str == "short_dashed")
         {
-            line_style = lumos::properties::LineStyle::SHORT_DASHED;
+            line_style = duoplot::properties::LineStyle::SHORT_DASHED;
         }
         else if (line_style_str == "long_dashed")
         {
-            line_style = lumos::properties::LineStyle::LONG_DASHED;
+            line_style = duoplot::properties::LineStyle::LONG_DASHED;
         }
         else
         {
@@ -293,23 +293,23 @@ SubscribedStreamSettings::SubscribedStreamSettings(const nlohmann::json& j)
 
         if (scatter_style_str == "square")
         {
-            scatter_style = lumos::properties::ScatterStyle::SQUARE;
+            scatter_style = duoplot::properties::ScatterStyle::SQUARE;
         }
         else if (scatter_style_str == "circle")
         {
-            scatter_style = lumos::properties::ScatterStyle::CIRCLE;
+            scatter_style = duoplot::properties::ScatterStyle::CIRCLE;
         }
         else if (scatter_style_str == "disc")
         {
-            scatter_style = lumos::properties::ScatterStyle::DISC;
+            scatter_style = duoplot::properties::ScatterStyle::DISC;
         }
         else if (scatter_style_str == "plus")
         {
-            scatter_style = lumos::properties::ScatterStyle::PLUS;
+            scatter_style = duoplot::properties::ScatterStyle::PLUS;
         }
         else if (scatter_style_str == "cross")
         {
-            scatter_style = lumos::properties::ScatterStyle::CROSS;
+            scatter_style = duoplot::properties::ScatterStyle::CROSS;
         }
         else
         {
@@ -357,40 +357,40 @@ nlohmann::json SubscribedStreamSettings::toJson() const
                                  std::to_string(static_cast<uint8_t>(stream_type)) + "\"");
     }
 
-    if (line_style == lumos::properties::LineStyle::SOLID)
+    if (line_style == duoplot::properties::LineStyle::SOLID)
     {
         j["line_style"] = "solid";
     }
-    else if (line_style == lumos::properties::LineStyle::DASHED)
+    else if (line_style == duoplot::properties::LineStyle::DASHED)
     {
         j["line_style"] = "dashed";
     }
-    else if (line_style == lumos::properties::LineStyle::SHORT_DASHED)
+    else if (line_style == duoplot::properties::LineStyle::SHORT_DASHED)
     {
         j["line_style"] = "short_dashed";
     }
-    else if (line_style == lumos::properties::LineStyle::LONG_DASHED)
+    else if (line_style == duoplot::properties::LineStyle::LONG_DASHED)
     {
         j["line_style"] = "LONG_DASHED";
     }
 
-    else if (scatter_style == lumos::properties::ScatterStyle::SQUARE)
+    else if (scatter_style == duoplot::properties::ScatterStyle::SQUARE)
     {
         j["scatter_style"] = "square";
     }
-    else if (scatter_style == lumos::properties::ScatterStyle::CIRCLE)
+    else if (scatter_style == duoplot::properties::ScatterStyle::CIRCLE)
     {
         j["scatter_style"] = "circle";
     }
-    else if (scatter_style == lumos::properties::ScatterStyle::DISC)
+    else if (scatter_style == duoplot::properties::ScatterStyle::DISC)
     {
         j["scatter_style"] = "disc";
     }
-    else if (scatter_style == lumos::properties::ScatterStyle::PLUS)
+    else if (scatter_style == duoplot::properties::ScatterStyle::PLUS)
     {
         j["scatter_style"] = "plus";
     }
-    else if (scatter_style == lumos::properties::ScatterStyle::CROSS)
+    else if (scatter_style == duoplot::properties::ScatterStyle::CROSS)
     {
         j["scatter_style"] = "cross";
     }

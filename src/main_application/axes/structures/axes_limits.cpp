@@ -1,6 +1,6 @@
 #include "axes/structures/axes_limits.h"
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 
 AxesLimits::AxesLimits(const Vec3d& min_vec, const Vec3d& max_vec)
 {

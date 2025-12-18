@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 #include "main_application/misc/rgb_triplet.h"
 #include "misc/rgb_triplet.h"
 #include "opengl_low_level/opengl_header.h"

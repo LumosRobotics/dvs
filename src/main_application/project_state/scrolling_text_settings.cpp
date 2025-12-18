@@ -6,7 +6,7 @@ ScrollingTextSettings::ScrollingTextSettings() : ElementSettings{}, title{"<NO-N
     y = 0.0;
     width = 0.4;
     height = 0.4;
-    type = lumos::GuiElementType::ScrollingText;
+    type = duoplot::GuiElementType::ScrollingText;
 }
 
 ScrollingTextSettings::ScrollingTextSettings(const nlohmann::json& j) : ElementSettings{j}

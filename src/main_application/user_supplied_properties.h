@@ -14,18 +14,18 @@
 #include "axes/legend_properties.h"
 #include "color_picker.h"
 #include "communication/received_data.h"
-#include "lumos/plotting/enumerations.h"
-#include "lumos/math/math.h"
-#include "lumos/plotting/plot_properties.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/math/math.h"
+#include "duoplot/plot_properties.h"
 #include "misc/rgb_triplet.h"
 #include "opengl_low_level/opengl_header.h"
 #include "plot_objects/utils.h"
-#include "lumos/plotting/internal.h"
+#include "duoplot/internal.h"
 #include "shader.h"
 
-using namespace lumos;
-using namespace lumos::internal;
-using namespace lumos::properties;
+using namespace duoplot;
+using namespace duoplot::internal;
+using namespace duoplot::properties;
 
 
 constexpr size_t kDefaultBufferSize = 500U;
@@ -50,67 +50,67 @@ constexpr GLenum kDefaultDynamicOrStaticUsage{GL_STATIC_DRAW};
 constexpr bool kDefaultNoEdges{false};
 constexpr bool kDefaultNoFaces{false};
 
-template <typename T> lumos::internal::PropertyType templateToPropertyType()
+template <typename T> duoplot::internal::PropertyType templateToPropertyType()
 {
-    if (std::is_same<T, lumos::properties::Alpha>::value)
+    if (std::is_same<T, duoplot::properties::Alpha>::value)
     {
-        return lumos::internal::PropertyType::ALPHA;
+        return duoplot::internal::PropertyType::ALPHA;
     }
-    else if (std::is_same<T, lumos::properties::Label>::value)
+    else if (std::is_same<T, duoplot::properties::Label>::value)
     {
-        return lumos::internal::PropertyType::NAME;
+        return duoplot::internal::PropertyType::NAME;
     }
-    else if (std::is_same<T, lumos::properties::LineWidth>::value)
+    else if (std::is_same<T, duoplot::properties::LineWidth>::value)
     {
-        return lumos::internal::PropertyType::LINE_WIDTH;
+        return duoplot::internal::PropertyType::LINE_WIDTH;
     }
-    else if (std::is_same<T, lumos::properties::LineStyle>::value)
+    else if (std::is_same<T, duoplot::properties::LineStyle>::value)
     {
-        return lumos::internal::PropertyType::LINE_STYLE;
+        return duoplot::internal::PropertyType::LINE_STYLE;
     }
-    else if (std::is_same<T, lumos::internal::ColorInternal>::value)
+    else if (std::is_same<T, duoplot::internal::ColorInternal>::value)
     {
-        return lumos::internal::PropertyType::COLOR;
+        return duoplot::internal::PropertyType::COLOR;
     }
-    else if (std::is_same<T, lumos::properties::EdgeColor>::value)
+    else if (std::is_same<T, duoplot::properties::EdgeColor>::value)
     {
-        return lumos::internal::PropertyType::EDGE_COLOR;
+        return duoplot::internal::PropertyType::EDGE_COLOR;
     }
-    else if (std::is_same<T, lumos::properties::FaceColor>::value)
+    else if (std::is_same<T, duoplot::properties::FaceColor>::value)
     {
-        return lumos::internal::PropertyType::FACE_COLOR;
+        return duoplot::internal::PropertyType::FACE_COLOR;
     }
-    else if (std::is_same<T, lumos::properties::ColorMap>::value)
+    else if (std::is_same<T, duoplot::properties::ColorMap>::value)
     {
-        return lumos::internal::PropertyType::COLOR_MAP;
+        return duoplot::internal::PropertyType::COLOR_MAP;
     }
-    else if (std::is_same<T, lumos::properties::ScatterStyle>::value)
+    else if (std::is_same<T, duoplot::properties::ScatterStyle>::value)
     {
-        return lumos::internal::PropertyType::SCATTER_STYLE;
+        return duoplot::internal::PropertyType::SCATTER_STYLE;
     }
-    else if (std::is_same<T, lumos::properties::PointSize>::value)
+    else if (std::is_same<T, duoplot::properties::PointSize>::value)
     {
-        return lumos::internal::PropertyType::POINT_SIZE;
+        return duoplot::internal::PropertyType::POINT_SIZE;
     }
-    else if (std::is_same<T, lumos::properties::BufferSize>::value)
+    else if (std::is_same<T, duoplot::properties::BufferSize>::value)
     {
-        return lumos::internal::PropertyType::BUFFER_SIZE;
+        return duoplot::internal::PropertyType::BUFFER_SIZE;
     }
-    else if (std::is_same<T, lumos::properties::DistanceFrom>::value)
+    else if (std::is_same<T, duoplot::properties::DistanceFrom>::value)
     {
-        return lumos::internal::PropertyType::DISTANCE_FROM;
+        return duoplot::internal::PropertyType::DISTANCE_FROM;
     }
-    else if (std::is_same<T, lumos::properties::ZOffset>::value)
+    else if (std::is_same<T, duoplot::properties::ZOffset>::value)
     {
-        return lumos::internal::PropertyType::Z_OFFSET;
+        return duoplot::internal::PropertyType::Z_OFFSET;
     }
-    else if (std::is_same<T, lumos::properties::Transform>::value)
+    else if (std::is_same<T, duoplot::properties::Transform>::value)
     {
-        return lumos::internal::PropertyType::TRANSFORM;
+        return duoplot::internal::PropertyType::TRANSFORM;
     }
-    else if (std::is_same<T, lumos::properties::Silhouette>::value)
+    else if (std::is_same<T, duoplot::properties::Silhouette>::value)
     {
-        return lumos::internal::PropertyType::SILHOUETTE;
+        return duoplot::internal::PropertyType::SILHOUETTE;
     }
     else
     {
@@ -123,9 +123,9 @@ class UserSuppliedProperties
 private:
     bool has_properties_;
 
-    lumos::internal::CommunicationHeader::PropertiesArray props_;
-    lumos::internal::PropertyLookupTable props_lut_;
-    lumos::internal::CommunicationHeader::FlagsArray flags_;
+    duoplot::internal::CommunicationHeader::PropertiesArray props_;
+    duoplot::internal::PropertyLookupTable props_lut_;
+    duoplot::internal::CommunicationHeader::FlagsArray flags_;
 
     template <typename T>
     void overwritePropertyFromOtherIfPresent(std::optional<T>& local, const std::optional<T> other)
@@ -150,12 +150,12 @@ public:
     bool hasProperties() const;
     void clear();
 
-    bool hasProperty(const lumos::internal::PropertyType tp) const;
-    bool hasFlag(const lumos::internal::PropertyFlag f) const;
+    bool hasProperty(const duoplot::internal::PropertyType tp) const;
+    bool hasFlag(const duoplot::internal::PropertyFlag f) const;
 
     template <typename T> T getProperty() const
     {
-        const lumos::internal::PropertyType tp = templateToPropertyType<T>();
+        const duoplot::internal::PropertyType tp = templateToPropertyType<T>();
 
         const uint8_t idx = props_lut_.data[static_cast<uint8_t>(tp)];
 

@@ -3,10 +3,10 @@
 
 #include <unistd.h>
 
-#include "duoplot/duoplot.h"
+#include "lumos/lumos.h"
 #include "utils.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace axes_proportions
 {

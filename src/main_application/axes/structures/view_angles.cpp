@@ -199,16 +199,7 @@ double ViewAngles::getSnappedElevation() const
 AxisAngled ViewAngles::getAngleAxis() const
 {
     const Matrixd rotation_mat = rotationMatrixX(getElevation()) * rotationMatrixY(getAzimuth());
-    // Convert dynamic Matrix to FixedSizeMatrix for fromRotationMatrix
-    FixedSizeMatrix<double, 3, 3> fixed_mat;
-    for (size_t i = 0; i < 3; ++i)
-    {
-        for (size_t j = 0; j < 3; ++j)
-        {
-            fixed_mat(i, j) = rotation_mat(i, j);
-        }
-    }
-    return AxisAngled::fromRotationMatrix(fixed_mat);
+    return rotationMatrixToAxisAngle(rotation_mat);
 }
 
 Matrixd ViewAngles::getRotationMatrix() const
@@ -220,16 +211,7 @@ Matrixd ViewAngles::getRotationMatrix() const
 AxisAngled ViewAngles::getSnappedAngleAxis() const
 {
     const Matrixd rotation_mat = getSnappedRotationMatrix();
-    // Convert dynamic Matrix to FixedSizeMatrix for fromRotationMatrix
-    FixedSizeMatrix<double, 3, 3> fixed_mat;
-    for (size_t i = 0; i < 3; ++i)
-    {
-        for (size_t j = 0; j < 3; ++j)
-        {
-            fixed_mat(i, j) = rotation_mat(i, j);
-        }
-    }
-    return AxisAngled::fromRotationMatrix(fixed_mat);
+    return rotationMatrixToAxisAngle(rotation_mat);
 }
 
 Matrixd ViewAngles::getSnappedRotationMatrix() const

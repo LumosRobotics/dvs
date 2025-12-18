@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "debug_value_args.h"
-#include "lumos/logging/logging.h"
+#include "duoplot/logging.h"
 #include "main_window.h"
 
 class MainApp : public wxApp

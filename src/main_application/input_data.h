@@ -3,7 +3,7 @@
 
 #include <tuple>
 
-#include "lumos/plotting/communication_header.h"
+#include "duoplot/communication_header.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 #include "plot_objects/plot_objects.h"
 

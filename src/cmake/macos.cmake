@@ -4,6 +4,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FILE_OFFSET_BITS=64 -D__WXMAC__ -D__W
 #  -mmacosx-version-min=10.1.5 --sysroot=/Users/danielpi/MacOSX-SDKs/MacOSX10.5.sdk
 # -x objective-c++ -framework Foundation
 # set(CMAKE_OSX_DEPLOYMENT_TARGET "10.1" CACHE STRING "Minimum macOS version")
+link_directories(/usr/local/Cellar/libpng/1.6.50/lib)
 link_directories(/usr/local/Cellar/libpng/1.6.43/lib)
 link_directories(/usr/local/Cellar/libpng/1.6.39/lib)
 link_directories(/usr/local/Cellar/libpng/1.6.44/lib)

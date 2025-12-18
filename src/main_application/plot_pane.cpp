@@ -5,13 +5,13 @@
 
 #include "axes/axes.h"
 #include "axes/axes_side_configuration.h"
-#include "lumos/plotting/enumerations.h"
-#include "lumos/math/math.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/math/math.h"
 #include "events.h"
 #include "platform_paths.h"
 #include "plot_objects/stream_objects/stream_objects.h"
 
-using namespace lumos::internal;
+using namespace duoplot::internal;
 
 wxGLAttributes PlotPane::getGLAttributes() const
 {
@@ -229,7 +229,7 @@ void PlotPane::addSettingsData(const ReceivedData& received_data,
                                const PlotObjectAttributes& plot_object_attributes,
                                const UserSuppliedProperties& user_supplied_properties)
 {
-    const lumos::internal::CommunicationHeader& hdr = received_data.getCommunicationHeader();
+    const duoplot::internal::CommunicationHeader& hdr = received_data.getCommunicationHeader();
     const Function fcn = hdr.getFunction();
 
     if (fcn == Function::AXES_2D)
@@ -331,15 +331,15 @@ void PlotPane::addSettingsData(const ReceivedData& received_data,
     else if (fcn == Function::SET_OBJECT_TRANSFORM)
     {
         const Vec3d translation_vec = hdr.get(CommunicationHeaderObjectType::TRANSLATION_VECTOR).as<Vec3d>();
-        const FixedSizeMatrix<double, 3, 3> rotation_mat =
-            hdr.get(CommunicationHeaderObjectType::ROTATION_MATRIX).as<FixedSizeMatrix<double, 3, 3>>();
+        const MatrixFixed<double, 3, 3> rotation_mat =
+            hdr.get(CommunicationHeaderObjectType::ROTATION_MATRIX).as<MatrixFixed<double, 3, 3>>();
 
         const ItemId id = hdr.get(CommunicationHeaderObjectType::ITEM_ID).as<ItemId>();
 
-        const FixedSizeMatrix<double, 3, 3> scale =
-            hdr.get(CommunicationHeaderObjectType::SCALE_MATRIX).as<FixedSizeMatrix<double, 3, 3>>();
+        const MatrixFixed<double, 3, 3> scale =
+            hdr.get(CommunicationHeaderObjectType::SCALE_MATRIX).as<MatrixFixed<double, 3, 3>>();
 
-        const FixedSizeMatrix<double, 3, 3> inv_rotation_mat = rotation_mat.transposed();
+        const MatrixFixed<double, 3, 3> inv_rotation_mat = rotation_mat.transposed();
         plot_data_handler_->setTransform(id, inv_rotation_mat, translation_vec, scale);
     }
     else

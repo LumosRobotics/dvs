@@ -3,10 +3,10 @@
 
 #include <unistd.h>
 
-#include "duoplot/duoplot.h"
+#include "lumos/lumos.h"
 #include "utils.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace dynamic_plotting
 {
@@ -23,7 +23,7 @@ void test2DFunctionExpandingPlotObject()
     for (size_t k = 0; k < 100; k++)
     {
         const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0 + t, 5.0 + t, num_elements);
-        const Vector<double> y = duoplot::sin(x) + t;
+        const Vector<double> y = lumos::sin(x) + t;
 
         t += 0.1;
 
@@ -44,8 +44,8 @@ void test3DFunctionExpandingPlotObject()
     for (size_t k = 0; k < 100; k++)
     {
         const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0 + t, 5.0 + t, num_elements);
-        const Vector<double> y = duoplot::sin(x) + t;
-        const Vector<double> z = duoplot::cos(x) + t * 2.0;
+        const Vector<double> y = lumos::sin(x) + t;
+        const Vector<double> z = lumos::cos(x) + t * 2.0;
 
         t += 0.1;
 
@@ -62,7 +62,7 @@ void test2DFunctionRotatingView()
     clearView();
 
     const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0, 5.0, num_elements);
-    const Vector<double> y = duoplot::sin(x);
+    const Vector<double> y = lumos::sin(x);
     plot(x, y, properties::Color::BLUE, properties::LineWidth(14));
 
     for (size_t k = 0; k < 100; k++)
@@ -80,11 +80,11 @@ void test2DFunctionChangingAxes()
     clearView();
 
     const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0, 5.0, num_elements);
-    const Vector<double> y = duoplot::sin(x);
+    const Vector<double> y = lumos::sin(x);
     plot(x, y, properties::Color::BLUE, properties::LineWidth(14));
 
-    const Vec2d min_vec(duoplot::min(x), duoplot::min(y));
-    const Vec2d max_vec(duoplot::max(x), duoplot::max(y));
+    const Vec2d min_vec(lumos::min(x), lumos::min(y));
+    const Vec2d max_vec(lumos::max(x), lumos::max(y));
 
     for (size_t k = 0; k < 100; k++)
     {
@@ -102,16 +102,16 @@ void test2DFunctionNewDataAndClear()
 
     double t = 0.0;
     const Vector<double> x = linspaceFromBoundariesAndCount<double>(0.0, 5.0, num_elements);
-    const double min_x = duoplot::min(x);
-    const double max_x = duoplot::max(x);
+    const double min_x = lumos::min(x);
+    const double max_x = lumos::max(x);
 
     for (size_t k = 0; k < 100; k++)
     {
-        const Vector<double> y = duoplot::sin(x + t);
+        const Vector<double> y = lumos::sin(x + t);
 
         t += 0.1;
-        const Vec2d min_vec(min_x, duoplot::min(y));
-        const Vec2d max_vec(max_x, duoplot::max(y));
+        const Vec2d min_vec(min_x, lumos::min(y));
+        const Vec2d max_vec(max_x, lumos::max(y));
 
         plot(x, y, properties::Color::BLUE, properties::LineWidth(14));
 
@@ -126,7 +126,7 @@ void test3DFunctionNewDataAndClear()
 {
     const size_t num_elements = 100;
 
-    const auto mat_xy = duoplot::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
+    const auto mat_xy = lumos::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
     const Matrix<double>& x_mat = mat_xy.first;
     const Matrix<double>& y_mat = mat_xy.second;
     Matrix<double> z_mat{100, 100};
@@ -141,8 +141,8 @@ void test3DFunctionNewDataAndClear()
 
     for (size_t k = 0; k < 1000; k++)
     {
-        const Vector<double> y = duoplot::sin(x + t);
-        const Vector<double> z = duoplot::cos(x + t);
+        const Vector<double> y = lumos::sin(x + t);
+        const Vector<double> z = lumos::cos(x + t);
 
         for (size_t r = 0; r < x_mat.numRows(); r++)
         {
@@ -173,7 +173,7 @@ void test3DFunctionManualInteraction()
 {
     const size_t num_elements = 100;
 
-    const auto mat_xy = duoplot::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
+    const auto mat_xy = lumos::meshGrid<double>(-1.0, 1.0, -1.0, 1.0, 100, 100);
     const Matrix<double>& x_mat = mat_xy.first;
     const Matrix<double>& y_mat = mat_xy.second;
     Matrix<double> z_mat{100, 100};
@@ -189,8 +189,8 @@ void test3DFunctionManualInteraction()
 
     for (size_t k = 0; k < 1000; k++)
     {
-        const Vector<double> y = duoplot::sin(x + t);
-        const Vector<double> z = duoplot::cos(x + t);
+        const Vector<double> y = lumos::sin(x + t);
+        const Vector<double> z = lumos::cos(x + t);
 
         for (size_t r = 0; r < x_mat.numRows(); r++)
         {

@@ -5,14 +5,14 @@
 
 #include <iostream>
 
-#include "lumos/plotting/enumerations.h"
-#include "lumos/logging/logging.h"
-#include "lumos/math/math.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/logging.h"
+#include "duoplot/math/math.h"
 #include "misc/rgb_triplet.h"
 #include "opengl_low_level/opengl_header.h"
 
-using namespace lumos::internal;
-using namespace lumos;
+using namespace duoplot::internal;
+using namespace duoplot;
 
 inline size_t getNumDimensionsFromFunction(const Function fcn)
 {

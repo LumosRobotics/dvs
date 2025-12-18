@@ -367,4 +367,17 @@ inline void showThreadId(const bool show_thread_id)
     duoplot::logging::internal::Log(duoplot::logging::internal::MessageSeverity::EXIT, __FILE__, __func__, __LINE__, false) \
         .getStream()
 
+// Aliases for compatibility with LUMOS naming convention
+#define LUMOS_LOG() DUOPLOT_LOG()
+#define LUMOS_LOG_INFO() DUOPLOT_LOG_INFO()
+#define LUMOS_LOG_DEBUG() DUOPLOT_LOG_DEBUG()
+#define LUMOS_LOG_WARNING() DUOPLOT_LOG_WARNING()
+#define LUMOS_LOG_TRACE() DUOPLOT_LOG_TRACE()
+#define LUMOS_LOG_ERROR() DUOPLOT_LOG_ERROR()
+#define LUMOS_LOG_FATAL() DUOPLOT_LOG_FATAL()
+#define LUMOS_PRINT() DUOPLOT_PRINT()
+#define LUMOS_PRINT_COND(cond) DUOPLOT_PRINT_COND(cond)
+#define LUMOS_ASSERT(cond) DUOPLOT_ASSERT(cond)
+#define LUMOS_EXIT(cond) DUOPLOT_EXIT(cond)
+
 #endif  // DUOPLOT_LOGGING_H_

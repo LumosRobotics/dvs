@@ -1,7 +1,7 @@
 #include "gui_elements.h"
 #include "main_window.h"
 
-using namespace lumos::internal;
+using namespace duoplot::internal;
 
 void MainWindow::updateSerialDeviceAboutGuiState()
 {

@@ -9,7 +9,7 @@
 #include <map>
 
 #include "constants.h"
-#include "lumos/logging/logging.h"
+#include "duoplot/logging.h"
 
 enum
 {

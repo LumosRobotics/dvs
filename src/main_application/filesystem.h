@@ -7,11 +7,19 @@ namespace lumos
 {
 namespace filesystem = std::experimental::filesystem;
 }
+namespace duoplot
+{
+namespace filesystem = std::experimental::filesystem;
+}
 #endif
 
 #ifdef PLATFORM_APPLE_M
 #include <filesystem>
 namespace lumos
+{
+namespace filesystem = std::filesystem;
+}
+namespace duoplot
 {
 namespace filesystem = std::filesystem;
 }

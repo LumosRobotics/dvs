@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <vector>
 
-#include "lumos/plotting/enumerations.h"
-#include "lumos/logging/logging.h"
+#include "duoplot/enumerations.h"
+#include "duoplot/logging.h"
 
 template <typename T> struct RGBTriplet
 {

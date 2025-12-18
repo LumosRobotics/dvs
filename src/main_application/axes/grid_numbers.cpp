@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <iostream>
 
-#include "lumos/math/math.h"
+#include "duoplot/math/math.h"
 #include "misc/misc.h"
 #include "opengl_low_level/opengl_header.h"
 #include "text_rendering.h"

@@ -9,7 +9,7 @@ ElementSettings::ElementSettings()
       height{100.0f},
       handle_string{"<NO-NAME>"},
       z_order{kZOrderDefault},
-      type{lumos::GuiElementType::Unknown}
+      type{duoplot::GuiElementType::Unknown}
 {
 }
 

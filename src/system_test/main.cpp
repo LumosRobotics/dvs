@@ -7,7 +7,7 @@
 #include "basic_c/tests.h"
 #include "basic_cpp/tests.h"
 #include "debug_value_args.h"
-#include "duoplot/duoplot.h"
+#include "lumos/lumos.h"
 #include "two_way_comm/two_way_comm.h"
 #include "utils.h"
 

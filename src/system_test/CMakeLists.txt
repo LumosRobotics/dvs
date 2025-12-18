@@ -13,4 +13,4 @@ project(system-test CXX)
 
 add_executable(system-test main.cpp two_way_comm/two_way_comm.cpp)
 target_link_libraries(system-test basic-tests-c-library)
-target_include_directories(system-test PUBLIC ${REPO_DIR}/src/interfaces/cpp)
+target_include_directories(system-test PUBLIC ${REPO_DIR}/third_party/LumosAlgo/src)

@@ -24,10 +24,10 @@
 #include <string>
 
 #include "communication/received_data.h"
-#include "lumos/plotting/constants.h"
-#include "lumos/plotting/internal.h"
-#include "lumos/math/math.h"
-#include "lumos/plotting/timing.h"
+#include "duoplot/constants.h"
+#include "duoplot/internal.h"
+#include "duoplot/math/math.h"
+#include "duoplot/timing.h"
 
 class DataReceiver
 {
