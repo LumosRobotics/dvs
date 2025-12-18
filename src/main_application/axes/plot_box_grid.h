@@ -8,7 +8,7 @@
 #include "axes/structures/axes_settings.h"
 #include "axes/structures/grid_vectors.h"
 #include "axes/structures/view_angles.h"
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 #include "opengl_low_level/opengl_header.h"
 
 class PlotBoxGrid

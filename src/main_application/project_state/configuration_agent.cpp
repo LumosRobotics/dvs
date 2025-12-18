@@ -13,14 +13,14 @@ ConfigurationAgent::~ConfigurationAgent() {}
 
 ConfigurationAgent::ConfigurationAgent() : is_valid_{true}
 {
-    const duoplot::filesystem::path duoplot_dir_path{getConfigDir()};
+    const lumos::filesystem::path duoplot_dir_path{getConfigDir()};
 
-    if (!duoplot::filesystem::exists(duoplot_dir_path))
+    if (!lumos::filesystem::exists(duoplot_dir_path))
     {
         LUMOS_LOG_INFO() << "duoplot dir does not exist, creating...";
         try
         {
-            duoplot::filesystem::create_directory(duoplot_dir_path);
+            lumos::filesystem::create_directory(duoplot_dir_path);
         }
         catch (const std::exception& e)
         {
@@ -29,9 +29,9 @@ ConfigurationAgent::ConfigurationAgent() : is_valid_{true}
             return;
         }
     }
-    configuration_file_path_ = duoplot::filesystem::path(duoplot_dir_path / "configuration.json");
+    configuration_file_path_ = lumos::filesystem::path(duoplot_dir_path / "configuration.json");
 
-    if (!duoplot::filesystem::exists(configuration_file_path_))
+    if (!lumos::filesystem::exists(configuration_file_path_))
     {
         LUMOS_LOG_INFO() << "The file \"" << configuration_file_path_ << "\" file does not exist, creating...";
         try

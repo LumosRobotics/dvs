@@ -11,7 +11,7 @@
 #include "axes/structures/grid_vectors.h"
 #include "axes/structures/view_angles.h"
 #include "axes/text_rendering.h"
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 #include "opengl_low_level/opengl_header.h"
 #include "project_state/project_settings.h"
 #include "shader.h"

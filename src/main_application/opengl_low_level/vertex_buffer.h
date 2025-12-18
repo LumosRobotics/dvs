@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 #include "opengl_low_level/opengl_header.h"
 
 enum OGLPrimitiveType : uint64_t

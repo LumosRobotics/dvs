@@ -24,49 +24,49 @@ TabSettings::TabSettings(const nlohmann::json& j)
 
     for (size_t k = 0; k < j["elements"].size(); k++)
     {
-        const duoplot::GuiElementType type{parseGuiElementType(j["elements"][k])};
+        const lumos::GuiElementType type{parseGuiElementType(j["elements"][k])};
 
-        if (type == duoplot::GuiElementType::PlotPane)
+        if (type == lumos::GuiElementType::PlotPane)
         {
             elements.emplace_back(std::make_shared<PlotPaneSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::Button)
+        else if (type == lumos::GuiElementType::Button)
         {
             elements.emplace_back(std::make_shared<ButtonSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::Slider)
+        else if (type == lumos::GuiElementType::Slider)
         {
             elements.emplace_back(std::make_shared<SliderSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::Checkbox)
+        else if (type == lumos::GuiElementType::Checkbox)
         {
             elements.emplace_back(std::make_shared<CheckboxSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::EditableText)
+        else if (type == lumos::GuiElementType::EditableText)
         {
             elements.emplace_back(std::make_shared<EditableTextSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::DropdownMenu)
+        else if (type == lumos::GuiElementType::DropdownMenu)
         {
             elements.emplace_back(std::make_shared<DropdownMenuSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::ListBox)
+        else if (type == lumos::GuiElementType::ListBox)
         {
             elements.emplace_back(std::make_shared<ListBoxSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::RadioButtonGroup)
+        else if (type == lumos::GuiElementType::RadioButtonGroup)
         {
             elements.emplace_back(std::make_shared<RadioButtonGroupSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::ScrollingText)
+        else if (type == lumos::GuiElementType::ScrollingText)
         {
             elements.emplace_back(std::make_shared<ScrollingTextSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::TextLabel)
+        else if (type == lumos::GuiElementType::TextLabel)
         {
             elements.emplace_back(std::make_shared<TextLabelSettings>(j["elements"][k]));
         }
-        else if (type == duoplot::GuiElementType::StaticBox)
+        else if (type == lumos::GuiElementType::StaticBox)
         {
             elements.emplace_back(std::make_shared<StaticBoxSettings>(j["elements"][k]));
         }
@@ -157,63 +157,63 @@ bool areDerivedElementEqual(const std::shared_ptr<ElementSettings>& lhs, const s
 
     switch (lhs->type)
     {
-        case duoplot::GuiElementType::PlotPane: {
+        case lumos::GuiElementType::PlotPane: {
             const std::shared_ptr<PlotPaneSettings> lhs_casted = std::dynamic_pointer_cast<PlotPaneSettings>(lhs);
             const std::shared_ptr<PlotPaneSettings> rhs_casted = std::dynamic_pointer_cast<PlotPaneSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::Button: {
+        case lumos::GuiElementType::Button: {
             const std::shared_ptr<ButtonSettings> lhs_casted = std::dynamic_pointer_cast<ButtonSettings>(lhs);
             const std::shared_ptr<ButtonSettings> rhs_casted = std::dynamic_pointer_cast<ButtonSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::Slider: {
+        case lumos::GuiElementType::Slider: {
             const std::shared_ptr<SliderSettings> lhs_casted = std::dynamic_pointer_cast<SliderSettings>(lhs);
             const std::shared_ptr<SliderSettings> rhs_casted = std::dynamic_pointer_cast<SliderSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::Checkbox: {
+        case lumos::GuiElementType::Checkbox: {
             const std::shared_ptr<CheckboxSettings> lhs_casted = std::dynamic_pointer_cast<CheckboxSettings>(lhs);
             const std::shared_ptr<CheckboxSettings> rhs_casted = std::dynamic_pointer_cast<CheckboxSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::EditableText: {
+        case lumos::GuiElementType::EditableText: {
             const std::shared_ptr<EditableTextSettings> lhs_casted =
                 std::dynamic_pointer_cast<EditableTextSettings>(lhs);
             const std::shared_ptr<EditableTextSettings> rhs_casted =
                 std::dynamic_pointer_cast<EditableTextSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::DropdownMenu: {
+        case lumos::GuiElementType::DropdownMenu: {
             const std::shared_ptr<DropdownMenuSettings> lhs_casted =
                 std::dynamic_pointer_cast<DropdownMenuSettings>(lhs);
             const std::shared_ptr<DropdownMenuSettings> rhs_casted =
                 std::dynamic_pointer_cast<DropdownMenuSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::ListBox: {
+        case lumos::GuiElementType::ListBox: {
             const std::shared_ptr<ListBoxSettings> lhs_casted = std::dynamic_pointer_cast<ListBoxSettings>(lhs);
             const std::shared_ptr<ListBoxSettings> rhs_casted = std::dynamic_pointer_cast<ListBoxSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::RadioButtonGroup: {
+        case lumos::GuiElementType::RadioButtonGroup: {
             const std::shared_ptr<RadioButtonGroupSettings> lhs_casted =
                 std::dynamic_pointer_cast<RadioButtonGroupSettings>(lhs);
             const std::shared_ptr<RadioButtonGroupSettings> rhs_casted =
                 std::dynamic_pointer_cast<RadioButtonGroupSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::TextLabel: {
+        case lumos::GuiElementType::TextLabel: {
             const std::shared_ptr<TextLabelSettings> lhs_casted = std::dynamic_pointer_cast<TextLabelSettings>(lhs);
             const std::shared_ptr<TextLabelSettings> rhs_casted = std::dynamic_pointer_cast<TextLabelSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::StaticBox: {
+        case lumos::GuiElementType::StaticBox: {
             const std::shared_ptr<StaticBoxSettings> lhs_casted = std::dynamic_pointer_cast<StaticBoxSettings>(lhs);
             const std::shared_ptr<StaticBoxSettings> rhs_casted = std::dynamic_pointer_cast<StaticBoxSettings>(rhs);
             return *lhs_casted == *rhs_casted;
         }
-        case duoplot::GuiElementType::ScrollingText: {
+        case lumos::GuiElementType::ScrollingText: {
             const std::shared_ptr<ScrollingTextSettings> lhs_casted =
                 std::dynamic_pointer_cast<ScrollingTextSettings>(lhs);
             const std::shared_ptr<ScrollingTextSettings> rhs_casted =

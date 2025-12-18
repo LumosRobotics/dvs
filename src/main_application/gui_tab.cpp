@@ -111,7 +111,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
 
     for (const std::shared_ptr<ElementSettings>& elem_settings : tab_settings.elements)
     {
-        if (elem_settings->type == duoplot::GuiElementType::PlotPane)
+        if (elem_settings->type == lumos::GuiElementType::PlotPane)
         {
             PlotPane* const pp = new PlotPane(parent_window_,
                                               elem_settings,
@@ -128,7 +128,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
 
             plot_panes_.push_back(pp);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::Button)
+        else if (elem_settings->type == lumos::GuiElementType::Button)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -148,7 +148,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             button_->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(button_);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::Slider)
+        else if (elem_settings->type == lumos::GuiElementType::Slider)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -168,7 +168,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             slider_->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(slider_);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::Checkbox)
+        else if (elem_settings->type == lumos::GuiElementType::Checkbox)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -188,7 +188,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             checkbox->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(checkbox);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::TextLabel)
+        else if (elem_settings->type == lumos::GuiElementType::TextLabel)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -208,7 +208,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             text_label->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(text_label);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::ListBox)
+        else if (elem_settings->type == lumos::GuiElementType::ListBox)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -228,7 +228,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             list_box->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(list_box);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::EditableText)
+        else if (elem_settings->type == lumos::GuiElementType::EditableText)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -248,7 +248,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             text_entry->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(text_entry);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::DropdownMenu)
+        else if (elem_settings->type == lumos::GuiElementType::DropdownMenu)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -268,7 +268,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             dropdown_menu->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(dropdown_menu);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::RadioButtonGroup)
+        else if (elem_settings->type == lumos::GuiElementType::RadioButtonGroup)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());
@@ -289,7 +289,7 @@ WindowTab::WindowTab(wxFrame* parent_window,
             radio_button_group->updateSizeFromParent(parent_window_->GetSize());
             gui_elements_.push_back(radio_button_group);
         }
-        else if (elem_settings->type == duoplot::GuiElementType::ScrollingText)
+        else if (elem_settings->type == lumos::GuiElementType::ScrollingText)
         {
             auto const [elem_pos, elem_size] =
                 getPosAndSizeInPixelCoords(parent_window_->GetSize(), elem_settings.get());

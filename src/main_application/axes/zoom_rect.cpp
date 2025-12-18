@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using namespace duoplot;
+using namespace lumos;
 
 float rect_vertices[] = {
     -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,

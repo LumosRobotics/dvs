@@ -1,6 +1,6 @@
 #include "communication/data_receiver.h"
 
-#include "duoplot/fillable_uint8_array.h"
+#include "lumos/plotting/fillable_uint8_array.h"
 
 DataReceiver::DataReceiver()
 {
@@ -14,7 +14,7 @@ DataReceiver::DataReceiver()
 
     tcp_servaddr_.sin_family = AF_INET;
     tcp_servaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
-    tcp_servaddr_.sin_port = htons(duoplot::internal::kTcpPortNum);
+    tcp_servaddr_.sin_port = htons(lumos::internal::kTcpPortNum);
 
     if ((bind(tcp_sockfd_, (struct sockaddr*)&tcp_servaddr_, sizeof(tcp_servaddr_))) != 0)
     {
@@ -84,7 +84,7 @@ ReceivedData DataReceiver::receiveAndGetDataFromTcp()
     uint64_t received_magic_num;
     std::memcpy(&received_magic_num, rec_buffer + 1, sizeof(uint64_t));  // +1 because first byte is endianness
 
-    if (received_magic_num != duoplot::internal::kMagicNumber)
+    if (received_magic_num != lumos::internal::kMagicNumber)
     {
         close(tcp_connfd_);
         throw std::runtime_error("Invalid magic number received!");

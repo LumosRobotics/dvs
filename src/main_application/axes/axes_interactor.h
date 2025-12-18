@@ -9,9 +9,9 @@
 #include "axes/structures/axes_settings.h"
 #include "axes/structures/grid_vectors.h"
 #include "axes/structures/view_angles.h"
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 double findFirstPointInInterval(const double min_point,
                                 const double max_point,

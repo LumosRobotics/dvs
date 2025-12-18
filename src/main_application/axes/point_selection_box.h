@@ -6,7 +6,7 @@
 #include "axes/axes_side_configuration.h"
 #include "axes/legend_properties.h"
 #include "axes/text_rendering.h"
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 #include "opengl_low_level/opengl_header.h"
 #include "opengl_low_level/vertex_buffer.h"
 #include "shader.h"
@@ -17,7 +17,7 @@ private:
     TextRenderer text_renderer_;
     ShaderCollection shader_collection_;
     VertexBuffer pane_vao_;
-    duoplot::Vector<float> pane_vertices_;
+    lumos::Vector<float> pane_vertices_;
 
 public:
     PointSelectionBox(const TextRenderer& text_renderer, const ShaderCollection& shader_collection);

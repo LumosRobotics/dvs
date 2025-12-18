@@ -6,8 +6,8 @@
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 
-#include "duoplot/enumerations.h"
-#include "duoplot/logging.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/logging.h"
 #include "misc/rgb_triplet.h"
 
 constexpr RGBTriplet<float> hexToRgbTripletf(const std::uint32_t hex_val)
@@ -20,107 +20,107 @@ constexpr RGBTriplet<float> hexToRgbTripletf(const std::uint32_t hex_val)
         static_cast<float>(r) / 255.0f, static_cast<float>(g) / 255.0f, static_cast<float>(b) / 255.0f};
 }
 
-inline duoplot::GuiElementType parseGuiElementType(const nlohmann::json& j)
+inline lumos::GuiElementType parseGuiElementType(const nlohmann::json& j)
 {
     const std::string type_string = j["type"];
 
     if (type_string == "BUTTON")
     {
-        return duoplot::GuiElementType::Button;
+        return lumos::GuiElementType::Button;
     }
     else if (type_string == "SLIDER")
     {
-        return duoplot::GuiElementType::Slider;
+        return lumos::GuiElementType::Slider;
     }
     else if (type_string == "CHECKBOX")
     {
-        return duoplot::GuiElementType::Checkbox;
+        return lumos::GuiElementType::Checkbox;
     }
     else if (type_string == "EDITABLE_TEXT")
     {
-        return duoplot::GuiElementType::EditableText;
+        return lumos::GuiElementType::EditableText;
     }
     else if (type_string == "DROPDOWN_MENU")
     {
-        return duoplot::GuiElementType::DropdownMenu;
+        return lumos::GuiElementType::DropdownMenu;
     }
     else if (type_string == "LISTBOX")
     {
-        return duoplot::GuiElementType::ListBox;
+        return lumos::GuiElementType::ListBox;
     }
     else if (type_string == "RADIO_BUTTON_GROUP")
     {
-        return duoplot::GuiElementType::RadioButtonGroup;
+        return lumos::GuiElementType::RadioButtonGroup;
     }
     else if (type_string == "TEXT_LABEL")
     {
-        return duoplot::GuiElementType::TextLabel;
+        return lumos::GuiElementType::TextLabel;
     }
     else if (type_string == "STATIC_BOX")
     {
-        return duoplot::GuiElementType::StaticBox;
+        return lumos::GuiElementType::StaticBox;
     }
     else if (type_string == "PLOT_PANE")
     {
-        return duoplot::GuiElementType::PlotPane;
+        return lumos::GuiElementType::PlotPane;
     }
     else if (type_string == "SCROLLING_TEXT")
     {
-        return duoplot::GuiElementType::ScrollingText;
+        return lumos::GuiElementType::ScrollingText;
     }
     else
     {
-        return duoplot::GuiElementType::Unknown;
+        return lumos::GuiElementType::Unknown;
     }
 }
 
-inline std::string guiElementTypeToString(const duoplot::GuiElementType& type)
+inline std::string guiElementTypeToString(const lumos::GuiElementType& type)
 {
     std::string res;
 
     switch (type)
     {
-        case duoplot::GuiElementType::Button: {
+        case lumos::GuiElementType::Button: {
             res = "BUTTON";
             break;
         }
-        case duoplot::GuiElementType::Slider: {
+        case lumos::GuiElementType::Slider: {
             res = "SLIDER";
             break;
         }
-        case duoplot::GuiElementType::Checkbox: {
+        case lumos::GuiElementType::Checkbox: {
             res = "CHECKBOX";
             break;
         }
-        case duoplot::GuiElementType::EditableText: {
+        case lumos::GuiElementType::EditableText: {
             res = "EDITABLE_TEXT";
             break;
         }
-        case duoplot::GuiElementType::DropdownMenu: {
+        case lumos::GuiElementType::DropdownMenu: {
             res = "DROPDOWN_MENU";
             break;
         }
-        case duoplot::GuiElementType::ListBox: {
+        case lumos::GuiElementType::ListBox: {
             res = "LISTBOX";
             break;
         }
-        case duoplot::GuiElementType::RadioButtonGroup: {
+        case lumos::GuiElementType::RadioButtonGroup: {
             res = "RADIO_BUTTON_GROUP";
             break;
         }
-        case duoplot::GuiElementType::TextLabel: {
+        case lumos::GuiElementType::TextLabel: {
             res = "TEXT_LABEL";
             break;
         }
-        case duoplot::GuiElementType::StaticBox: {
+        case lumos::GuiElementType::StaticBox: {
             res = "STATIC_BOX";
             break;
         }
-        case duoplot::GuiElementType::PlotPane: {
+        case lumos::GuiElementType::PlotPane: {
             res = "PLOT_PANE";
             break;
         }
-        case duoplot::GuiElementType::ScrollingText: {
+        case lumos::GuiElementType::ScrollingText: {
             res = "SCROLLING_TEXT";
             break;
         }

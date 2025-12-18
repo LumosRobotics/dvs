@@ -11,13 +11,13 @@
 #include "axes/structures/grid_vectors.h"
 #include "color.h"
 #include "communication/received_data.h"
-#include "duoplot/enumerations.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/math.h"
 #include "gui_element_state.h"
 #include "input_data.h"
 #include "project_state/project_settings.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 enum class CursorSquareState
 {

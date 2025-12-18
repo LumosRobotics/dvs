@@ -8,7 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "duoplot/logging.h"
+#include "lumos/logging.h"
 #include "filesystem.h"
 
 struct AppPreferences

@@ -5,10 +5,10 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-#include "duoplot/math/math.h"
+#include "lumos/math.h"
 #include "misc/misc.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 AxesRenderer::AxesRenderer(const ShaderCollection& shader_collection,
                            const PlotPaneSettings& plot_pane_settings,

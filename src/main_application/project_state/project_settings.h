@@ -7,9 +7,9 @@
 #include <optional>
 #include <stdexcept>
 
-#include "duoplot/enumerations.h"
-#include "duoplot/logging.h"
-#include "duoplot/plot_properties.h"
+#include "lumos/plotting/enumerations.h"
+#include "lumos/logging.h"
+#include "lumos/plotting/plot_properties.h"
 #include "misc/rgb_triplet.h"
 #include "project_state/helper_functions.h"
 #include "serial_interface/definitions.h"
@@ -27,7 +27,7 @@ struct ElementSettings
 
     int z_order;
 
-    duoplot::GuiElementType type;
+    lumos::GuiElementType type;
 
     ElementSettings();
     explicit ElementSettings(const nlohmann::json& j);
@@ -92,9 +92,9 @@ struct SubscribedStreamSettings
     float alpha{1.0f};
     uint8_t line_width{1U};
     uint8_t point_size{1U};
-    std::optional<duoplot::properties::Color> color{std::nullopt};
-    duoplot::properties::LineStyle line_style{duoplot::properties::LineStyle::SOLID};
-    duoplot::properties::ScatterStyle scatter_style{duoplot::properties::ScatterStyle::CIRCLE};
+    std::optional<lumos::properties::Color> color{std::nullopt};
+    lumos::properties::LineStyle line_style{lumos::properties::LineStyle::SOLID};
+    lumos::properties::ScatterStyle scatter_style{lumos::properties::ScatterStyle::CIRCLE};
     std::string label{};
 
     SubscribedStreamSettings() = default;

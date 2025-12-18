@@ -7,13 +7,13 @@
 #include "axes/legend_properties.h"
 #include "color_picker.h"
 #include "communication/received_data.h"
-#include "duoplot/internal.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/internal.h"
+#include "lumos/math.h"
 #include "input_data.h"
 #include "misc/rgb_triplet.h"
 
-using namespace duoplot;
-using namespace duoplot::internal;
+using namespace lumos;
+using namespace lumos::internal;
 
 class PlotObjectBase;
 struct ShaderCollection;
@@ -43,9 +43,9 @@ public:
                  ReceivedData& received_data,
                  const std::shared_ptr<const ConvertedDataBase>& converted_data);
     void setTransform(const ItemId id,
-                      const MatrixFixed<double, 3, 3>& rotation,
+                      const FixedSizeMatrix<double, 3, 3>& rotation,
                       const Vec3<double>& translation,
-                      const MatrixFixed<double, 3, 3>& scale);
+                      const FixedSizeMatrix<double, 3, 3>& scale);
     std::vector<LegendProperties> getLegendStrings() const;
     void propertiesExtension(const ItemId id, const UserSuppliedProperties& user_supplied_properties);
     void propertiesExtensionMultiple(const ReceivedData& received_data);
