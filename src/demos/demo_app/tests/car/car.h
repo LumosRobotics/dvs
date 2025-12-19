@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "debug_value_args.h"
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace car
 {
@@ -77,10 +77,10 @@ std::tuple<Vector<float>, Vector<float>, Vector<float>> generatePath()
     const float y_mul = 7.0f;
     const float y_off = 80.0f;
     // xv = t * t_mul;
-    // yv = duoplot::tan(t) * y_mul + y_off;
+    // yv = lumos::tan(t) * y_mul + y_off;
 
     yv = linspaceFromBoundariesAndCount(-8.94344f, 168.943f, num_its);
-    xv = t_mul * duoplot::atan((yv - y_off) / y_mul);
+    xv = t_mul * lumos::atan((yv - y_off) / y_mul);
 
     for (size_t k = 0; k < (num_its - 1U); k++)
     {

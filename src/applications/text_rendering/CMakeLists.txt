@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.14.3 FATAL_ERROR)
 
 project(text_rendering)
 
-include_directories(${REPO_DIR}/src/interfaces/cpp)
+# include_directories(${REPO_DIR}/src/interfaces/cpp)
+include_directories(${REPO_DIR}/third_party/LumosAlgo/src)
 
 
 set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )

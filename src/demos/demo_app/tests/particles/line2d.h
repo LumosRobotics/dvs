@@ -1,7 +1,7 @@
 #ifndef DEMOS_TESTS_PARTICLES_LINE2D_H_
 #define DEMOS_TESTS_PARTICLES_LINE2D_H_
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
 namespace particles
 {

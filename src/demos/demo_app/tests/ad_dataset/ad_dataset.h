@@ -9,9 +9,9 @@
 #include <string>
 #include <tuple>
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace ad_dataset
 {

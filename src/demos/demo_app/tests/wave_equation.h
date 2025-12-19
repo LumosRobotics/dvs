@@ -1,9 +1,9 @@
 #ifndef DEMOS_TESTS_WAVE_EQUATION_H_
 #define DEMOS_TESTS_WAVE_EQUATION_H_
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace wave_equation
 {

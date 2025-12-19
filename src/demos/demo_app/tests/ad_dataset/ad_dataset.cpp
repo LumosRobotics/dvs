@@ -1,7 +1,7 @@
 #include "ad_dataset.h"
 
 #include <curses.h>
-#include <duoplot/timing.h>
+#include "lumos/plotting/timing.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -12,7 +12,7 @@ namespace ad_dataset
 
 DatasetReaderFast::DatasetReaderFast(const std::string& dataset_file)
 {
-    auto t0 = duoplot::timing::getTimeNow();
+    auto t0 = lumos::timing::getTimeNow();
     std::ifstream input_file(dataset_file, std::ios::binary);
 
     input_file.read(reinterpret_cast<char*>(&total_num_bytes_), sizeof(size_t));
@@ -28,9 +28,9 @@ DatasetReaderFast::DatasetReaderFast(const std::string& dataset_file)
     input_file.read(reinterpret_cast<char*>(file_raw_data_), total_num_bytes_);
 
     readFiles();
-    auto t1 = duoplot::timing::getTimeNow();
+    auto t1 = lumos::timing::getTimeNow();
 
-    std::cout << "Read in time: " << duoplot::timing::timePointsToMsDouble(t0, t1) << std::endl;
+    std::cout << "Read in time: " << lumos::timing::timePointsToMsDouble(t0, t1) << std::endl;
 }
 
 void DatasetReaderFast::readFiles()
@@ -396,15 +396,15 @@ void testBasic()
     bool should_run_free = false;
     int current_frame = 0;
 
-    duoplot::gui::startGuiReceiveThread();
+    lumos::gui::startGuiReceiveThread();
 
-    duoplot::gui::registerGuiCallback(
-        "slider0", [&should_run_free, &current_frame](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback(
+        "slider0", [&should_run_free, &current_frame](const lumos::gui::SliderHandle& gui_element_handle) -> void {
             current_frame = gui_element_handle.getValue();
         });
 
-    duoplot::gui::registerGuiCallback(
-        "button0", [&should_run_free, &current_frame](const duoplot::gui::ButtonHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback(
+        "button0", [&should_run_free, &current_frame](const lumos::gui::ButtonHandle& gui_element_handle) -> void {
             should_run_free = !should_run_free;
 
             std::cout << "Current frame: " << current_frame << std::endl;

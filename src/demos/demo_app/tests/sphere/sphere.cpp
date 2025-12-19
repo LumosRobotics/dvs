@@ -6,9 +6,9 @@
 #include <iostream>
 
 #include "debug_value_args.h"
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace sphere
 {

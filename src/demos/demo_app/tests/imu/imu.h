@@ -8,9 +8,9 @@
 #include <nlohmann/json.hpp>
 #include <tuple>
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace imu
 {
@@ -21,7 +21,7 @@ properties::Transform operator*(const properties::Transform& t0, const propertie
 
     res.rotation = t1.rotation * t1.scale * t0.rotation * t0.scale;
     res.translation = t1.rotation * t1.scale * t0.translation + t1.translation;
-    res.scale = diagMatrixFixed<double>({1.0, 1.0, 1.0});
+    res.scale = diagFixedSizeMatrix<double>({1.0, 1.0, 1.0});
 
     // Pt0 = R0 * S0 * p + t0
     // Pt1 = (R1 * S1 * R0 * S0 * p) + (R1 * S1 * t0) + (t1)

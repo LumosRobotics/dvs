@@ -7,8 +7,8 @@
 
 #include <OpenGL/gl3.h>
 
-#include "duoplot/internal.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/internal.h"
+#include "lumos/math/math.h"
 
 template <typename T> struct RGBTriplet
 {
@@ -73,15 +73,15 @@ public:
         glUniform3f(handle_, col.red, col.green, col.blue);
     }
 
-    void setVec(const duoplot::Vec3f& v)
+    void setVec(const lumos::Vec3f& v)
     {
         glUniform3f(handle_, v.x, v.y, v.z);
     }
 
-    void setVec(const duoplot::Vec3d& v)
+    void setVec(const lumos::Vec3d& v)
     {
         // TODO: Is this correct? Vec3d is double precision, but glUniform3f takes floats
-        duoplot::Vec3d vf{v.x, v.y, v.z};
+        lumos::Vec3d vf{v.x, v.y, v.z};
         glUniform3f(handle_, vf.x, vf.y, vf.z);
     }
 

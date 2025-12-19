@@ -6,11 +6,11 @@
 #include <array>
 
 #include "debug_value_reader.h"
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 // #include <box2d/b2_prismatic_joint.h>
 // src/externals/box2d/include/box2d/b2_prismatic_joint.h
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace joints
 {
@@ -533,8 +533,8 @@ private:
         return shp;
     }
 
-    static constexpr duoplot::ItemId kLaunchSquareId = properties::ID0;
-    static constexpr duoplot::ItemId kSpinningSquareId = properties::ID1;
+    static constexpr lumos::ItemId kLaunchSquareId = properties::ID0;
+    static constexpr lumos::ItemId kSpinningSquareId = properties::ID1;
 
     float t = 0.0f;
     std::vector<Shape> shapes_;

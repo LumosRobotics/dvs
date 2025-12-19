@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 #include "tests/slam/color_maps.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace slam
 {

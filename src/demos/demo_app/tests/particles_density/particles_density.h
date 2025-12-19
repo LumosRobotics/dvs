@@ -7,10 +7,10 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 #include "misc/rgb_triplet.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace particles_density
 {

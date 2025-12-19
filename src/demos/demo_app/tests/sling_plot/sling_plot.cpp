@@ -1,12 +1,12 @@
 #include "tests/sling_plot/sling_plot.h"
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 #include "tests/slam/color_maps.h"
 
 namespace sling_plot
 {
 
-using namespace duoplot;
+using namespace lumos;
 
 void updateSling(Vector<float>& x, Vector<float>& y, Vector<float>& vx, Vector<float>& vy)
 {

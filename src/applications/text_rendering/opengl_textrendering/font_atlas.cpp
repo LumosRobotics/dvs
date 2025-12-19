@@ -97,7 +97,7 @@ void font_atlas::create_atlas()
 			}
 
 			glTexSubImage2D(
-				textureID,
+				GL_TEXTURE_2D,
 				0,
 				x,
 				0,

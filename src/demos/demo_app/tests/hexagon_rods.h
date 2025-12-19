@@ -1,9 +1,9 @@
 #ifndef DEMOS_TESTS_HEXAGON_RODS_H
 #define DEMOS_TESTS_HEXAGON_RODS_H
 
-#include "duoplot/duoplot.h"
+#include "lumos/plotting/duoplot.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 namespace hexagon_rods
 {

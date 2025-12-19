@@ -3,7 +3,7 @@
 #include <wx/event.h>
 #include <wx/glcanvas.h>
 
-using namespace duoplot::internal;
+using namespace lumos::internal;
 
 wxGLAttributes GuiPane::getGLAttributes() const
 {

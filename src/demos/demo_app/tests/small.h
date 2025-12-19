@@ -415,12 +415,12 @@ void testFakeContour()
         }
     }
 
-    double min_val = duoplot::min(z);
-    double max_val = duoplot::max(z);
+    double min_val = lumos::min(z);
+    double max_val = lumos::max(z);
 
     z = z + (std::abs(min_val) * 2.0);
-    min_val = duoplot::min(z);
-    max_val = duoplot::max(z);
+    min_val = lumos::min(z);
+    max_val = lumos::max(z);
 
     ImageRGB<std::uint8_t> img(num_rows, num_cols);
 
@@ -846,25 +846,25 @@ void testTransitioningSurfs()
 
     const Matrix<double> rd = x - 0.5;
     const Matrix<double> cd = y - 0.5;
-    const Matrix<double> r_val = duoplot::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 10.0;
+    const Matrix<double> r_val = lumos::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 10.0;
 
-    surfaces(0) = duoplot::sin(r_val) / r_val;
+    surfaces(0) = lumos::sin(r_val) / r_val;
 
-    const Matrix<double> r_val1 = duoplot::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 20.0;
+    const Matrix<double> r_val1 = lumos::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 20.0;
 
-    surfaces(1) = duoplot::sin(r_val1) / r_val1;
+    surfaces(1) = lumos::sin(r_val1) / r_val1;
 
-    const Matrix<double> r_val2 = duoplot::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 30.0;
+    const Matrix<double> r_val2 = lumos::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 30.0;
 
     surfaces(2) = elementWiseMultiply(rd, rd) - elementWiseMultiply(cd, cd);
 
-    const Matrix<double> r_val3 = duoplot::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 40.0;
+    const Matrix<double> r_val3 = lumos::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 40.0;
 
     surfaces(3) = elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd);
 
-    const Matrix<double> r_val4 = duoplot::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 50.0;
+    const Matrix<double> r_val4 = lumos::sqrt(elementWiseMultiply(rd, rd) + elementWiseMultiply(cd, cd)) * 50.0;
 
-    surfaces(4) = duoplot::sin(r_val4) / r_val4;
+    surfaces(4) = lumos::sin(r_val4) / r_val4;
 
     /////////////////////////////////////////////////////////////////////////
     //////////////////////////// Create surfaces ////////////////////////////
@@ -912,9 +912,9 @@ void testIsoSurfaces()
     Matrix<double> u{uv_mats.first}, v{uv_mats.second};
 
     const Matrix<double> r = 2.0 + sin(7.0 * u + 5.0 * v);
-    // const Matrix<double> x = elementWiseMultiply(r, elementWiseMultiply(duoplot::cos(u), duoplot::sin(v)));
-    // const Matrix<double> y = elementWiseMultiply(r, elementWiseMultiply(duoplot::sin(u), duoplot::sin(v)));
-    // const Matrix<double> z = elementWiseMultiply(r, duoplot::cos(v));
+    // const Matrix<double> x = elementWiseMultiply(r, elementWiseMultiply(lumos::cos(u), lumos::sin(v)));
+    // const Matrix<double> y = elementWiseMultiply(r, elementWiseMultiply(lumos::sin(u), lumos::sin(v)));
+    // const Matrix<double> z = elementWiseMultiply(r, lumos::cos(v));
 
     const Matrix<double> x = elementWiseMultiply(u, sin(v));
     const Matrix<double> y = elementWiseMultiply(-u, cos(v));
@@ -955,12 +955,12 @@ void testHyperboloid()
 
         // if(f < )
 
-        // const Matrix<double> x = a * elementWiseMultiply(duoplot::sqrt(f + v2), cos(theta));
-        // const Matrix<double> y = b * elementWiseMultiply(duoplot::sqrt(f + v2), sin(theta));
+        // const Matrix<double> x = a * elementWiseMultiply(lumos::sqrt(f + v2), cos(theta));
+        // const Matrix<double> y = b * elementWiseMultiply(lumos::sqrt(f + v2), sin(theta));
         // const Matrix<double> z = c * sinh(v);
 
-        const Matrix<double> x = a * elementWiseMultiply(duoplot::sqrt(f + v2), duoplot::cos(theta));
-        const Matrix<double> y = b * elementWiseMultiply(duoplot::sqrt(f + v2), duoplot::sin(theta));
+        const Matrix<double> x = a * elementWiseMultiply(lumos::sqrt(f + v2), lumos::cos(theta));
+        const Matrix<double> y = b * elementWiseMultiply(lumos::sqrt(f + v2), lumos::sin(theta));
         const Matrix<double> z = c * sinh(v);
 
         return {x, y, z};
@@ -1065,8 +1065,8 @@ void testSphere()
     Matrix<double> r{n_elems, n_elems};
     r.fill(1.0);
 
-    const Matrix<double> x = elementWiseMultiply(elementWiseMultiply(r, duoplot::sin(theta)), duoplot::cos(phi));
-    const Matrix<double> y = elementWiseMultiply(elementWiseMultiply(r, duoplot::sin(theta)), duoplot::sin(phi));
+    const Matrix<double> x = elementWiseMultiply(elementWiseMultiply(r, lumos::sin(theta)), lumos::cos(phi));
+    const Matrix<double> y = elementWiseMultiply(elementWiseMultiply(r, lumos::sin(theta)), lumos::sin(phi));
     const Matrix<double> z = elementWiseMultiply(r, cos(theta));
 
     setActiveView("p_view_0");
@@ -1338,7 +1338,7 @@ void testFilteringWithSliders()
         y_n(k) += r * 0.1;
     }
 
-    duoplot::gui::registerGuiCallback("slider0", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback("slider0", [&](const lumos::gui::SliderHandle& gui_element_handle) -> void {
         const double val0 = static_cast<double>(gui_element_handle.getValue()) / 100.0;
 
         Vector<double> y_f = y_n;
@@ -1356,7 +1356,7 @@ void testFilteringWithSliders()
         clearViewOnUpdate();
     });
 
-    duoplot::gui::startGuiReceiveThread();
+    lumos::gui::startGuiReceiveThread();
 
     setActiveView("p_view_0");
     clearView();
@@ -1482,7 +1482,7 @@ void testPidTuner()
         using Vd = Vector<double>;
         using Vid = VectorInitializer<double>;
 
-        duoplot::gui::getGuiElementHandle<duoplot::gui::TextLabelHandle>("tl_rt").setLabel("Rise time: " +
+        lumos::gui::getGuiElementHandle<lumos::gui::TextLabelHandle>("tl_rt").setLabel("Rise time: " +
                                                                                            std::to_string(t(ss_idx)));
 
         setActiveView("p_view_0");
@@ -1529,31 +1529,31 @@ void testPidTuner()
         clearViewOnUpdate();
     };
 
-    duoplot::gui::registerGuiCallback("slider_kp", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback("slider_kp", [&](const lumos::gui::SliderHandle& gui_element_handle) -> void {
         const double val_kp = gui_element_handle.getNormalizedValue();
         const double val_ki =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_ki").getNormalizedValue();
         const double val_kd =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
     });
 
-    duoplot::gui::registerGuiCallback("slider_ki", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback("slider_ki", [&](const lumos::gui::SliderHandle& gui_element_handle) -> void {
         const double val_kp =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kp").getNormalizedValue();
         const double val_ki = gui_element_handle.getNormalizedValue();
         const double val_kd =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
     });
 
-    duoplot::gui::registerGuiCallback("slider_kd", [&](const duoplot::gui::SliderHandle& gui_element_handle) -> void {
+    lumos::gui::registerGuiCallback("slider_kd", [&](const lumos::gui::SliderHandle& gui_element_handle) -> void {
         const double val_kp =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kp").getNormalizedValue();
         const double val_ki =
-            duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+            lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_ki").getNormalizedValue();
         const double val_kd = gui_element_handle.getNormalizedValue();
 
         plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
@@ -1561,7 +1561,7 @@ void testPidTuner()
 
     run_sim(sim_params, x, vx);
 
-    duoplot::gui::startGuiReceiveThread();
+    lumos::gui::startGuiReceiveThread();
 
     setActiveView("p_view_0");
     clearView();
@@ -1574,11 +1574,11 @@ void testPidTuner()
     axis({0.0, -0.5}, {t(end_idx), 0.5});
 
     const double val_kp =
-        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kp").getNormalizedValue();
+        lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kp").getNormalizedValue();
     const double val_ki =
-        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_ki").getNormalizedValue();
+        lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_ki").getNormalizedValue();
     const double val_kd =
-        duoplot::gui::getGuiElementHandle<duoplot::gui::SliderHandle>("slider_kd").getNormalizedValue();
+        lumos::gui::getGuiElementHandle<lumos::gui::SliderHandle>("slider_kd").getNormalizedValue();
 
     plot_data(val_kp, val_ki, val_kd, sim_params, t, x, vx);
 
@@ -2054,10 +2054,10 @@ void testSwirls()
     const double t_end = 2.0 * M_PI;
 
     const Vector<double> t = linspaceFromBoundariesAndCount<double>(0.0, t_end, n_elems);
-    const Vectord xc = duoplot::sin(t);
-    const Vectord yc = duoplot::cos(t);
+    const Vectord xc = lumos::sin(t);
+    const Vectord yc = lumos::cos(t);
 
-    const Vectord xs = duoplot::sin(t + xc / 4.0);
+    const Vectord xs = lumos::sin(t + xc / 4.0);
 
     const auto col = properties::Color::BLACK;
     const auto lw = properties::LineWidth(1.0f);
@@ -2152,8 +2152,8 @@ void testBouncingBalls()
     const double radius2 = radius * radius;
 
     const Vector<double> t = linspaceFromBoundariesAndCount<double>(0.0, 2.0 * M_PI, 100U);
-    const Vectord xc = radius * duoplot::sin(t);
-    const Vectord yc = radius * duoplot::cos(t);
+    const Vectord xc = radius * lumos::sin(t);
+    const Vectord yc = radius * lumos::cos(t);
 
     struct Ball
     {

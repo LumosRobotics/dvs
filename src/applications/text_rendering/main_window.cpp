@@ -8,11 +8,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "duoplot/constants.h"
-#include "duoplot/duoplot.h"
-#include "duoplot/math/math.h"
+#include "lumos/plotting/constants.h"
+#include "lumos/lumos.h"
+#include "lumos/math/math.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 MainWindow::MainWindow() : wxFrame(NULL, wxID_ANY, "", wxPoint(30, 30), wxSize(500, 500))
 {

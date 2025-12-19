@@ -18,7 +18,7 @@
 #include "text_rendering.h"
 #include "vertex_buffer.h"
 
-using namespace duoplot;
+using namespace lumos;
 
 class GuiPane : public wxGLCanvas
 {

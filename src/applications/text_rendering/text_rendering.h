@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "duoplot/math/math.h"
+#include "lumos/math/math.h"
 #include "opengl_textrendering/font_atlas.h"
 #include "opengl_textrendering/label_text_store.h"
 
@@ -49,7 +49,7 @@ public:
 };
 
 bool initFreetype();
-duoplot::Vec2f calculateStringSize(const std::string_view& text,
+lumos::Vec2f calculateStringSize(const std::string_view& text,
                                const float scale,
                                const float axes_width,
                                const float axes_height);

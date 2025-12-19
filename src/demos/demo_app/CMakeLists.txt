@@ -6,7 +6,7 @@ include_directories(${REPO_DIR}/src/externals/liquidfun/liquidfun/Box2D)
 
 include_directories(${REPO_DIR}/src/externals/reactphysics3d/include)
 
-include_directories(${REPO_DIR}/src/interfaces/cpp)
+include_directories(${REPO_DIR}/third_party/LumosAlgo/src)
 include_directories(${REPO_DIR}/src/main_application)
 include_directories(${REPO_DIR}/src/common)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
