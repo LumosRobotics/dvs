@@ -1,6 +1,7 @@
 #include "plot_pane_background.h"
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <vector>
 

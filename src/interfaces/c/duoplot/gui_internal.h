@@ -1,21 +1,7 @@
 #ifndef DUOPLOT_GUI_INTERNAL_H
 #define DUOPLOT_GUI_INTERNAL_H
 
-#include <arpa/inet.h>
-#include <errno.h>
-#include <net/if.h>
-#include <netinet/if_ether.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/resource.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "socket_compat.h"
 
 #include "duoplot/constants.h"
 #include "duoplot/gui_element_map.h"
@@ -38,7 +24,7 @@ DUOPLOT_WEAK void duoplot_internal_initTcpSocket()
 
     // Set reuse address that's already in use (probably by exited duoplot instance)
     int true_val = 1;
-    setsockopt(*tcp_sockfd, SOL_SOCKET, SO_REUSEADDR, &true_val, sizeof(int));
+    setsockopt(*tcp_sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&true_val, sizeof(int));
 
     bzero(&tcp_servaddr, sizeof(tcp_servaddr));
 
@@ -89,7 +75,7 @@ DUOPLOT_WEAK duoplot_internal_ReceivedGuiData duoplot_internal_receiveGuiData()
     }
 
     uint64_t num_expected_bytes;
-    read(tcp_connfd, &num_expected_bytes, sizeof(uint64_t));
+    socket_recv(tcp_connfd, &num_expected_bytes, sizeof(uint64_t));
 
     duoplot_internal_ReceivedGuiData received_data;
 
@@ -103,7 +89,7 @@ DUOPLOT_WEAK duoplot_internal_ReceivedGuiData duoplot_internal_receiveGuiData()
 
     while (true)
     {
-        const ssize_t num_received_bytes = read(tcp_connfd, rec_buffer + total_num_received_bytes, num_bytes_left);
+        const ssize_t num_received_bytes = socket_recv(tcp_connfd, rec_buffer + total_num_received_bytes, num_bytes_left);
 
         total_num_received_bytes += num_received_bytes;
         num_bytes_left -= (size_t)(num_received_bytes);
@@ -114,7 +100,7 @@ DUOPLOT_WEAK duoplot_internal_ReceivedGuiData duoplot_internal_receiveGuiData()
         }
     }
 
-    close(tcp_connfd);
+    socket_close(tcp_connfd);
 
     return received_data;
 }

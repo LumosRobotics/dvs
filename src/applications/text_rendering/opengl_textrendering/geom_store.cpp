@@ -37,16 +37,6 @@ void geom_store::set_geometry()
 	text_shader.create_shader("/Users/danielpi/work/dvs/src/applications/text_rendering/opengl_textrendering/shaders/text_vert_shader.vert", "/Users/danielpi/work/dvs/src/applications/text_rendering/opengl_textrendering/shaders/text_frag_shader.frag");
 	text_shader.setUniform("zoomscale", 1.0f);
 	text_shader.setUniform("u_Texture", 0);
-
-	// Add the labels
-	all_labels.init();
-	 all_labels.add_text("Length = 98.76532101", glm::vec2(-0.8, -0.3), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 45, 0.0004f);
-	 all_labels.add_text("Pulled Pork Sandwich!!", glm::vec2(-0.4, 0), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, -15, 0.0003f);
-	 all_labels.add_text("Hello@", glm::vec2(-0.8, 0.3), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 5.0f, 0.0003f);
-
-	// all_labels.add_text("C", glm::vec2(-0.8, -0.6), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0, 0.04f, 0, 0);
-	all_labels.set_buffers();
-
 }
 
 

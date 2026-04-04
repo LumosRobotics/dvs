@@ -172,15 +172,11 @@ std::string getUsername()
     return username_str;*/
 }
 
+#ifdef PLATFORM_APPLE_M
+
 std::string getConfigDirRoot()
 {
     return "/Users/" + getUsername() + "/Library/Preferences";
-}
-
-lumos::filesystem::path getConfigDir()
-{
-    // The path received from getConfigDirRoot() is assumed to exist
-    return lumos::filesystem::path{getConfigDirRoot() / lumos::filesystem::path{"duoplot"}};
 }
 
 std::string getApplicationRootPath()
@@ -208,7 +204,27 @@ std::string getApplicationRootPath()
     return res;
 }
 
-// #endif
+#endif
+
+#ifdef PLATFORM_LINUX_M
+
+std::string getConfigDirRoot()
+{
+    const char* xdg_config = getenv("XDG_CONFIG_HOME");
+    if (xdg_config)
+    {
+        return std::string(xdg_config);
+    }
+    return getHomeDirPath().first + "/.config";
+}
+
+#endif
+
+lumos::filesystem::path getConfigDir()
+{
+    // The path received from getConfigDirRoot() is assumed to exist
+    return lumos::filesystem::path{getConfigDirRoot() / lumos::filesystem::path{"duoplot"}};
+}
 
 std::string getResourcesPathString()
 {

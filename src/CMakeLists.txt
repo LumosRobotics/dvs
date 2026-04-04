@@ -19,8 +19,10 @@ endif()
 
 if(PLATFORM_LINUX)
     include(cmake/linux.cmake)
-else()
+elseif(PLATFORM_APPLE)
     include(cmake/macos.cmake)
+elseif(PLATFORM_WINDOWS)
+    include(cmake/windows.cmake)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -38,7 +40,11 @@ include_directories(${REPO_DIR}/src/)
 include_directories(${REPO_DIR}/src/common)
 
 # Googletest
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/build/lib)
+if(PLATFORM_WINDOWS)
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/build_windows/lib)
+else()
+    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/build/lib)
+endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/googletest/include)
 
 # Qt6
@@ -52,41 +58,50 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/nlohmann/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/glm/)
 
 # ****** wxWidgets ******
-# find_package(wxWidgets COMPONENTS core base gl adv)
+# On macOS: use vendored headers+libs (built for osx_cocoa).
+# On Linux: use system wxWidgets found by linux.cmake's find_package call.
+if(PLATFORM_APPLE)
+    set(WX_CUSTOM_INC_PATH ${REPO_DIR}/src/externals/wxwidgets/include)
+    set(WX_CUSTOM_LIB_PATH ${REPO_DIR}/src/externals/wxwidgets/lib)
 
-set(WX_CUSTOM_INC_PATH ${REPO_DIR}/src/externals/wxwidgets/include)
-set(WX_CUSTOM_LIB_PATH ${REPO_DIR}/src/externals/wxwidgets/lib)
-
-include_directories(${WX_CUSTOM_INC_PATH})
-link_directories(${WX_CUSTOM_LIB_PATH})
+    include_directories(${WX_CUSTOM_INC_PATH})
+    link_directories(${WX_CUSTOM_LIB_PATH})
+endif()
 
 
 # ****** freetype ******
 include_directories(${REPO_DIR}/src/externals/freetype/build/include)
 include_directories(${REPO_DIR}/src/externals/freetype/include)
 
-set(GTEST_LIB_FILES libgtest.a
-                    libgtest_main.a
-                    pthread)
+if(PLATFORM_WINDOWS)
+    # MinGW/Windows: GTest is built with pthreads disabled, no pthread link needed.
+    set(GTEST_LIB_FILES libgtest.a libgtest_main.a)
+else()
+    set(GTEST_LIB_FILES libgtest.a libgtest_main.a pthread)
+endif()
 
 # ****** OpenGL ******
-find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
-
-include_directories(${OPENGL_INCLUDE_DIRS})
+# Not available in Windows cross-compilation; only test targets are built there.
+if(NOT PLATFORM_WINDOWS)
+    find_package(OpenGL REQUIRED)
+    find_package(GLUT REQUIRED)
+    include_directories(${OPENGL_INCLUDE_DIRS})
+endif()
 
 # Adding subdirectories
-add_subdirectory(applications/gui_testing)
-add_subdirectory(applications/text_rendering)
-add_subdirectory(applications/real_time_gui)
+# On Windows (cross-compilation) only the test targets are built — no GUI/GL dependencies.
+if(NOT PLATFORM_WINDOWS)
+    add_subdirectory(applications/gui_testing)
+    # add_subdirectory(applications/text_rendering)
+    add_subdirectory(applications/real_time_gui)
+    add_subdirectory(interfaces/test/c)
+    add_subdirectory(interfaces/test/cpp)
+    add_subdirectory(demos/demo_app)
+    add_subdirectory(demos/plot_stuff)
+    add_subdirectory(main_application)
+    add_subdirectory(qt_application)
+    add_subdirectory(applications/module_application)
+    add_subdirectory(applications/text_rendering/glfw)
+endif()
 add_subdirectory(system_test)
-add_subdirectory(interfaces/test/c)
-add_subdirectory(interfaces/test/cpp)
-add_subdirectory(demos/demo_app)
-add_subdirectory(demos/plot_stuff)
-add_subdirectory(main_application)
-add_subdirectory(qt_application)
 add_subdirectory(test)
-add_subdirectory(applications/module_application)
-
-add_subdirectory(applications/text_rendering/glfw)

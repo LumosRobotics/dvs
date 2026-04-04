@@ -2,8 +2,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#ifdef PLATFORM_APPLE_M
 #include <mach/clock.h>
 #include <mach/mach.h>
+#endif
 #include <paths.h>
 #include <pthread.h>
 #include <stdio.h>

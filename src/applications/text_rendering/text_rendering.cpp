@@ -56,6 +56,7 @@ TextRenderer::TextRenderer()
     label_store_.init();
 
     label_store_.add_text("Length = 98.76532101", glm::vec2(-0.8, -0.3), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 45, 0.0004f);
+    label_store_.add_text("Big text!", glm::vec2(-1.5, -0.3), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0, 0.002f);
     label_store_.add_text("Pulled Pork Sandwich!!", glm::vec2(-0.4, 0), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, -15, 0.0003f);
     label_store_.add_text("Hello", glm::vec2(-0.8, 0.3), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 5.0f, 0.0003f);
 

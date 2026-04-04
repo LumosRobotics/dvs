@@ -96,7 +96,9 @@ MainWindow::MainWindow(const std::vector<std::string>& cmdl_args)
     control_state_ = 0U;
 
     SetMenuBar(menu_bar_);
+#ifdef PLATFORM_APPLE_M
     wxMenuBar::MacSetCommonMenuBar(menu_bar_);
+#endif
 
     Bind(wxEVT_MENU, &MainWindow::newProjectCallback, this, wxID_NEW);
     Bind(wxEVT_MENU, &MainWindow::saveProjectCallback, this, wxID_SAVE);

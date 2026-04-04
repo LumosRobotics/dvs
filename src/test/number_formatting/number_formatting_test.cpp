@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "duoplot/duoplot.h"
 #include "misc/misc.h"
 
 //////// Testing getIntExponent ////////

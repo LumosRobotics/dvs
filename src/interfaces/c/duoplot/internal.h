@@ -82,8 +82,8 @@ DUOPLOT_WEAK void duoplot_internal_sendThroughTcpInterface(const uint8_t* const 
 
     const uint64_t num_bytes_to_send = num_bytes;
 
-    write(*tcp_sockfd, &num_bytes_to_send, sizeof(uint64_t));
-    write(*tcp_sockfd, data_blob, num_bytes);
+    socket_send(*tcp_sockfd, &num_bytes_to_send, sizeof(uint64_t));
+    socket_send(*tcp_sockfd, data_blob, num_bytes);
 }
 
 #define DUOPLOT_INTERNAL_APPEND_PROPERTIES(__hdr, __first_prop)                                                        \

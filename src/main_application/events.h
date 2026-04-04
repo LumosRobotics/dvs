@@ -2,6 +2,7 @@
 #define MAIN_APPLICATION_EVENTS_H_
 
 #include <wx/wx.h>
+#include <cstdint>
 
 wxDECLARE_EVENT(EDIT_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(NO_ELEMENT_SELECTED, wxCommandEvent);

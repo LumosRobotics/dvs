@@ -55,15 +55,14 @@ target_link_libraries(text_rendering ${wxWidgets_LIBRARIES}
                                     ${OPENGL_LIBRARIES}
                                     ${GLUT_LIBRARY}
                                     ${PLATFORM_LIBRARIES}
-                                    /Users/danielpi/work/dvs/src/externals/freetype/build/libfreetype.a)
+                                    ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
 message("GLEW_LIBRARY: ${${GLEW_LIBRARY}}")
 add_executable(text_rendering_app ${EXAMPLE_APP_FILES})
-target_link_libraries(text_rendering_app 
+target_link_libraries(text_rendering_app
                                      ${OPENGL_LIBRARIES}
                                      ${GLUT_LIBRARY}
                                      ${PLATFORM_LIBRARIES}
-                                     /usr/local/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.dylib
-                                     /usr/local/Cellar/glew/2.2.0_1/lib/libGLEW.dylib
+                                     ${GLEW_LIBRARIES}
                                      glfw
-                                     /Users/danielpi/work/dvs/src/externals/freetype/build/libfreetype.a)
+                                     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
 target_include_directories(text_rendering_app PUBLIC ${GLEW_INCLUDE_DIRS})

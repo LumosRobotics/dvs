@@ -111,8 +111,17 @@ set(CPP_SOURCE_FILES main.cpp
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${REPO_DIR}/src/build/)
 
 add_executable(duoplot ${CPP_SOURCE_FILES})
+# The vendored static libfreetype.a was built with PNG, HarfBuzz, BZip2, and
+# BrotliDec support, so those libraries must be linked on Linux.
+if(PLATFORM_LINUX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(HARFBUZZ REQUIRED harfbuzz)
+    set(FREETYPE_EXTRA_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
+endif()
+
 target_link_libraries(duoplot ${wxWidgets_LIBRARIES}
                           ${OPENGL_LIBRARIES}
-                          ${GLUT_LIBRARY}
+                          $<IF:$<TARGET_EXISTS:GLUT::GLUT>,GLUT::GLUT,${GLUT_LIBRARY}>
                           ${PLATFORM_LIBRARIES}
-                          ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
+                          ${REPO_DIR}/src/externals/freetype/build/libfreetype.a
+                          ${FREETYPE_EXTRA_LIBS})

@@ -1,4 +1,6 @@
+#ifdef PLATFORM_APPLE_M
 #include <CoreFoundation/CoreFoundation.h>
+#endif
 #include <unistd.h>
 #include <wx/wx.h>
 
