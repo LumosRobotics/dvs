@@ -44,7 +44,7 @@ void geom_store::set_geometry()
 	all_labels.init("/Users/danielpi/work/dvs/src/resources/fonts/Roboto-Regular.ttf");
 
 	// Plain ASCII
-	all_labels.add_text("Hello, HarfBuzz!", glm::vec2(-0.85f, 0.75f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.0f, 0.0003f);
+	all_labels.add_text("Hello, HarfBuzz!", glm::vec2(-0.85f, 0.15f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.0f, 0.0003f);
 
 	// Accented Latin characters
 	all_labels.add_text("café, naïve, résumé, jalapeño", glm::vec2(-0.85f, 0.55f), glm::vec3(0.4f, 1.0f, 0.5f), 1.0f, 0.0f, 0.00025f);
@@ -53,7 +53,7 @@ void geom_store::set_geometry()
 	all_labels.add_text("Ångström, Zürich, São Paulo", glm::vec2(-0.85f, 0.35f), glm::vec3(0.3f, 0.8f, 1.0f), 1.0f, 0.0f, 0.00025f);
 
 	// Greek letters
-	all_labels.add_text("α β γ δ ε ζ η θ λ μ π σ φ ψ ω", glm::vec2(-0.85f, 0.15f), glm::vec3(1.0f, 0.85f, 0.2f), 1.0f, 0.0f, 0.00025f);
+	all_labels.add_text("α β γ δ ε ζ η θ λ μ π σ φ ψ ω", glm::vec2(-0.85f, 0.35f), glm::vec3(1.0f, 0.85f, 0.2f), 1.0f, 0.0f, 0.00095f);
 
 	// Mathematical symbols and operators
 	all_labels.add_text("E = mc²,  ∑ xᵢ,  ∫ f(x) dx", glm::vec2(-0.85f, -0.05f), glm::vec3(1.0f, 0.5f, 0.8f), 1.0f, 0.0f, 0.00025f);
