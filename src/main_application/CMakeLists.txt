@@ -111,12 +111,14 @@ set(CPP_SOURCE_FILES main.cpp
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${REPO_DIR}/src/build/)
 
 add_executable(duoplot ${CPP_SOURCE_FILES})
-# The vendored static libfreetype.a was built with PNG, HarfBuzz, BZip2, and
-# BrotliDec support, so those libraries must be linked on Linux.
+# The vendored static libfreetype.a was built with HarfBuzz support, so
+# libharfbuzz must be linked on both Linux and macOS.
 if(PLATFORM_LINUX)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(HARFBUZZ REQUIRED harfbuzz)
     set(FREETYPE_EXTRA_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
+elseif(PLATFORM_APPLE)
+    set(FREETYPE_EXTRA_LIBS ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
 endif()
 
 target_link_libraries(duoplot ${wxWidgets_LIBRARIES}

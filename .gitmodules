@@ -43,3 +43,6 @@
 [submodule "third_party/LumosAlgo"]
 	path = third_party/LumosAlgo
 	url = git@github.com:LumosRobotics/LumosAlgo.git
+[submodule "src/externals/harfbuzz"]
+	path = src/externals/harfbuzz
+	url = https://github.com/harfbuzz/harfbuzz.git
