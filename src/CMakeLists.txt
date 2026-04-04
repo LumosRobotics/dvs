@@ -92,7 +92,7 @@ endif()
 # On Windows (cross-compilation) only the test targets are built — no GUI/GL dependencies.
 if(NOT PLATFORM_WINDOWS)
     add_subdirectory(applications/gui_testing)
-    # add_subdirectory(applications/text_rendering)
+    add_subdirectory(applications/text_rendering)
     add_subdirectory(applications/real_time_gui)
     add_subdirectory(interfaces/test/c)
     add_subdirectory(interfaces/test/cpp)

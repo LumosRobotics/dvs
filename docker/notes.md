@@ -2,6 +2,25 @@
 docker build -f Dockerfile.dev -t stockdb_image_dev .
 docker build -f Dockerfile.prod -t stockdb_image_prod .
 
+#### Ubuntu build image
+docker build -f docker/Dockerfile.ubuntu -t dvs_ubuntu .
+
+#### Run Ubuntu build container (mount repo)
+docker run -it --rm -v $(pwd):/workspace dvs_ubuntu
+
+#### Inside container: build FreeType submodule first
+cd /workspace/src/externals/freetype
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+
+#### Inside container: configure and build qt_duoplot
+cd /workspace/src
+cmake -B build \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu \
+      -G Ninja
+cmake --build build --target qt_duoplot -j$(nproc)
+
 #### Run dev image
 docker run -it --name stockdb_container_dev -v /Users/annotelldaniel/docker_mount:/root/mnt -p 7352:7352 -p 6934:6934 stockdb_image_dev fish
 

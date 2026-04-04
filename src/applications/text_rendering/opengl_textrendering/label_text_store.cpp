@@ -1,238 +1,190 @@
 #include "label_text_store.h"
+#include <cmath>
+#include <set>
+#include <hb.h>
 
-
-label_text_store::label_text_store()
-	:total_char_count(0)
+void label_text_store::init(const std::string& font_path, uint32_t pixel_size)
 {
-	// Constructor
-}
-
-label_text_store::~label_text_store()
-{
-	// Destructor
-}
-
-void label_text_store::init()
-{
-	// Clear all the label
-	main_font.create_atlas();
-	total_char_count = 0;
+    labels.clear();
+    total_glyph_count = 0;
+    main_font.init(font_path, pixel_size);
 }
 
 void label_text_store::add_text(const std::string& label, glm::vec2 label_loc, glm::vec3 label_color,
-	float geom_scale, float label_angle, float font_size)
+    float /*geom_scale*/, float label_angle, float font_size)
 {
-	// Create a temporary element
-	label_text temp_label;
-	temp_label.label = label;
-	temp_label.label_loc = label_loc;
-	temp_label.label_color = label_color;
-	temp_label.label_angle = label_angle;
-	temp_label.label_size = font_size;
-
-	// Add to the list
-	labels.push_back(temp_label);
-
-	// Add to the char_count
-	total_char_count = total_char_count + label.length();
+    label_text t;
+    t.label       = label;
+    t.label_loc   = label_loc;
+    t.label_color = label_color;
+    t.label_angle = label_angle;
+    t.label_size  = font_size;
+    labels.push_back(t);
 }
 
 void label_text_store::set_buffers()
 {
+    // Phase 1: shape every label to collect all glyph IDs that will be rendered.
+    // This drives atlas construction so the atlas covers exactly the needed glyphs
+    // (including any Unicode characters, not just ASCII).
+    std::set<uint32_t> glyph_id_set;
+    uint32_t max_chars = 0;
+    for (const auto& lb : labels) {
+        hb_buffer_t* hb_buf = hb_buffer_create();
+        hb_buffer_add_utf8(hb_buf, lb.label.c_str(), -1, 0, -1);
+        hb_buffer_guess_segment_properties(hb_buf);
+        hb_shape(main_font.hb_font, hb_buf, nullptr, 0);
 
-	// Define the label vertices of the model (4 vertex (to form a triangle) 2 position, 2 origin, 2 texture coordinate, 1 char ID)
-	uint32_t label_vertex_count = 4 * 6 * total_char_count;
-	float* label_vertices = new float[label_vertex_count];
+        unsigned int        glyph_count = 0;
+        hb_glyph_info_t* glyph_info = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+        for (unsigned int i = 0; i < glyph_count; i++) {
+            glyph_id_set.insert(glyph_info[i].codepoint);
+        }
+        max_chars += glyph_count;
+        hb_buffer_destroy(hb_buf);
+    }
 
-	// 6 indices to form a triangle
-	uint32_t label_indices_count = 6 * total_char_count;
-	uint32_t* label_indices = new uint32_t[label_indices_count];
+    // Phase 2: build the GPU atlas for exactly those glyphs.
+    std::vector<uint32_t> glyph_ids(glyph_id_set.begin(), glyph_id_set.end());
+    main_font.build_atlas(glyph_ids);
 
-	uint32_t label_v_index = 0;
-	uint32_t label_i_index = 0;
+    // Phase 3: build vertex/index buffers.
+    // Vertex layout: vec2 pos, vec2 origin, vec2 uv, vec3 color = 9 floats, 4 vertices per glyph.
+    const uint32_t floats_per_vertex = 9;
+    const uint32_t verts_per_glyph   = 4;
+    const uint32_t idx_per_glyph     = 6;
 
-	for (auto& lb : labels)
-	{
-		// Fill the buffers for every individual character
-		get_buffer(lb, label_vertices, label_v_index, label_indices, label_i_index);
-	}
+    float*    vertices = new float[max_chars * verts_per_glyph * floats_per_vertex];
+    uint32_t* indices  = new uint32_t[max_chars * idx_per_glyph];
 
-	// Create a layout
-	VertexBufferLayout label_layout;
-	label_layout.AddFloat(2);  // Position
-	label_layout.AddFloat(2);  // Origin
-	label_layout.AddFloat(2); // Texture coordinate
+    uint32_t v_index = 0;
+    uint32_t i_index = 0;
+    uint32_t actual_glyphs = 0;
 
-	uint32_t label_vertex_size = label_vertex_count * sizeof(float);
+    for (const auto& lb : labels) {
+        actual_glyphs += get_buffer(lb, vertices, v_index, indices, i_index);
+    }
+    total_glyph_count = actual_glyphs;
 
-	// Create the buffers
-	label_buffers.CreateBuffers((void*)label_vertices, label_vertex_size,
-		(uint32_t*)label_indices, label_indices_count, label_layout);
+    VertexBufferLayout layout;
+    layout.AddFloat(2);  // position
+    layout.AddFloat(2);  // origin (for rotation)
+    layout.AddFloat(2);  // UV coords
+    layout.AddFloat(3);  // color
 
-	// Delete the dynamic array (From heap)
-	delete[] label_vertices;
-	delete[] label_indices;
+    uint32_t vb_size = v_index * static_cast<uint32_t>(sizeof(float));
+    label_buffers.CreateBuffers(vertices, vb_size, indices, i_index, layout);
+
+    delete[] vertices;
+    delete[] indices;
 }
 
 void label_text_store::paint_text()
 {
-	// Paint all the labels
-	label_buffers.Bind();
+    if (total_glyph_count == 0) return;
 
-	glActiveTexture(GL_TEXTURE0);
-	//// Bind the texture to the slot
-	glBindTexture(GL_TEXTURE_2D, main_font.textureID);
-
-	glDrawElements(GL_TRIANGLES, 6 * total_char_count, GL_UNSIGNED_INT, 0);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	label_buffers.UnBind();
+    label_buffers.Bind();
+    glActiveTexture(GL_TEXTURE0);
+    main_font.bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(6 * total_glyph_count), GL_UNSIGNED_INT, 0);
+    main_font.unbind();
+    label_buffers.UnBind();
 }
 
-
-void label_text_store::get_buffer(const label_text& lb,
-	float* vertices, uint32_t& vertex_index, uint32_t* indices, uint32_t& indices_index)
+uint32_t label_text_store::get_buffer(const label_text& lb,
+    float* vertices, uint32_t& vertex_index, uint32_t* indices, uint32_t& indices_index)
 {
-	// Store the x,y location
-	glm::vec2 loc = lb.label_loc;
-	float x = loc.x;
-	float y = loc.y;
-	float scale =lb.label_size;
-	glm::vec2 rotated_pt;
+    // Shape the string with HarfBuzz to get glyph IDs and positions with proper
+    // kerning, ligatures, and bidirectional ordering.
+    hb_buffer_t* hb_buf = hb_buffer_create();
+    hb_buffer_add_utf8(hb_buf, lb.label.c_str(), -1, 0, -1);
+    hb_buffer_guess_segment_properties(hb_buf);
+    hb_shape(main_font.hb_font, hb_buf, nullptr, 0);
 
-	for (int i = 0; i < lb.label.length(); i++) 
-	{
-		// get the atlas information
-		char ch = lb.label[i];
+    unsigned int         glyph_count = 0;
+    hb_glyph_info_t*     glyph_info  = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+    hb_glyph_position_t* glyph_pos   = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
 
-		const Character ch_data = main_font.ch_atlas[ch];
+    const glm::vec2 loc   = lb.label_loc;
+    const float     scale = lb.label_size;
+    float cx = loc.x;
+    float cy = loc.y;
 
-		float xpos = x + (ch_data.Bearing.x * scale);
-		float ypos = y - (ch_data.Size.y - ch_data.Bearing.y) * scale;
+    uint32_t glyphs_written = 0;
 
-		float w = ch_data.Size.x * scale;
-		float h = ch_data.Size.y * scale;
+    for (unsigned int i = 0; i < glyph_count; i++) {
+        const uint32_t gid = glyph_info[i].codepoint;  // FreeType glyph index
 
-		float margin = 0.00002; // This value prevents the minor overlap with the next char when rendering
+        // HarfBuzz positions in 26.6 fixed-point (divide by 64 for pixels).
+        const float x_offset  = (glyph_pos[i].x_offset  / 64.0f) * scale;
+        const float y_offset  = (glyph_pos[i].y_offset  / 64.0f) * scale;
+        const float x_advance = (glyph_pos[i].x_advance / 64.0f) * scale;
 
-		// Point 1
-		// Vertices [0,0] // 0th point
-		rotated_pt = rotate_pt(loc, glm::vec2(xpos, ypos + h), lb.label_angle);
+        auto it = main_font.glyph_map.find(gid);
+        if (it == main_font.glyph_map.end()) {
+            // Glyph not in atlas (e.g. control chars); still advance the cursor.
+            cx += x_advance;
+            continue;
+        }
+        const GlyphData& gd = it->second;
 
-		vertices[vertex_index + 0] = rotated_pt.x;
-		vertices[vertex_index + 1] = rotated_pt.y;
+        const float xpos = cx + x_offset + gd.bearing.x * scale;
+        const float ypos = cy + y_offset - (gd.size.y - gd.bearing.y) * scale;
+        const float w    = gd.size.x * scale;
+        const float h    = gd.size.y * scale;
 
-		// Label origin
-		vertices[vertex_index + 2] = loc.x;
-		vertices[vertex_index + 3] = loc.y;
+        // Small inset to avoid single-pixel bleed between adjacent atlas glyphs.
+        constexpr float margin = 0.00002f;
 
-		// Texture Glyph coordinate
-		vertices[vertex_index + 4] = ch_data.top_left.x + margin;
-		vertices[vertex_index + 5] = ch_data.top_left.y;
+        const glm::vec2 uv_tl = gd.uv_top_left  + glm::vec2( margin, 0.0f);
+        const glm::vec2 uv_br = gd.uv_bot_right  + glm::vec2(-margin, 0.0f);
 
-		// Iterate
-		vertex_index = vertex_index + 6;
+        // Helper: write one vertex (pos, origin, uv, color) = 9 floats.
+        auto write_vertex = [&](float px, float py, float u, float v) {
+            glm::vec2 rp = rotate_pt(loc, glm::vec2(px, py), lb.label_angle);
+            vertices[vertex_index + 0] = rp.x;
+            vertices[vertex_index + 1] = rp.y;
+            vertices[vertex_index + 2] = loc.x;
+            vertices[vertex_index + 3] = loc.y;
+            vertices[vertex_index + 4] = u;
+            vertices[vertex_index + 5] = v;
+            vertices[vertex_index + 6] = lb.label_color.r;
+            vertices[vertex_index + 7] = lb.label_color.g;
+            vertices[vertex_index + 8] = lb.label_color.b;
+            vertex_index += 9;
+        };
 
-		//__________________________________________________________________________________________
+        // 4 corners of the glyph quad (counter-clockwise: top-left, bottom-left, bottom-right, top-right).
+        write_vertex(xpos,     ypos + h, uv_tl.x, uv_tl.y);  // 0: top-left
+        write_vertex(xpos,     ypos,     uv_tl.x, uv_br.y);  // 1: bottom-left
+        write_vertex(xpos + w, ypos,     uv_br.x, uv_br.y);  // 2: bottom-right
+        write_vertex(xpos + w, ypos + h, uv_br.x, uv_tl.y);  // 3: top-right
 
-		// Point 2
-		// Vertices [0,1] // 1th point
-		rotated_pt = rotate_pt(loc, glm::vec2(xpos, ypos), lb.label_angle);
+        // Two triangles: (0,1,2) and (2,3,0).
+        const uint32_t base = (indices_index / 6) * 4;
+        indices[indices_index + 0] = base + 0;
+        indices[indices_index + 1] = base + 1;
+        indices[indices_index + 2] = base + 2;
+        indices[indices_index + 3] = base + 2;
+        indices[indices_index + 4] = base + 3;
+        indices[indices_index + 5] = base + 0;
+        indices_index += 6;
 
-		vertices[vertex_index + 0] = rotated_pt.x;
-		vertices[vertex_index + 1] = rotated_pt.y;
+        cx += x_advance;
+        glyphs_written++;
+    }
 
-		// Label origin
-		vertices[vertex_index + 2] = loc.x;
-		vertices[vertex_index + 3] = loc.y;
-
-		// Texture Glyph coordinate
-		vertices[vertex_index + 4] = ch_data.top_left.x+ margin;
-		vertices[vertex_index + 5] = ch_data.bot_right.y;
-
-		// Iterate
-		vertex_index = vertex_index + 6;
-
-		//__________________________________________________________________________________________
-
-		// Point 3
-		// Vertices [1,1] // 2th point
-		rotated_pt = rotate_pt(loc, glm::vec2(xpos+w, ypos), lb.label_angle);
-
-		vertices[vertex_index + 0] = rotated_pt.x;
-		vertices[vertex_index + 1] = rotated_pt.y;
-
-		// Label origin
-		vertices[vertex_index + 2] = loc.x;
-		vertices[vertex_index + 3] = loc.y;
-
-		// Texture Glyph coordinate
-		vertices[vertex_index + 4] = ch_data.bot_right.x - margin;
-		vertices[vertex_index + 5] = ch_data.bot_right.y;
-
-		// Iterate
-		vertex_index = vertex_index + 6;
-
-		//__________________________________________________________________________________________
-
-		// Point 4
-		// Vertices [1,0] // 3th point
-		rotated_pt = rotate_pt(loc, glm::vec2(xpos + w, ypos+h), lb.label_angle);
-
-		vertices[vertex_index + 0] = rotated_pt.x;
-		vertices[vertex_index + 1] = rotated_pt.y;
-
-		// Label origin
-		vertices[vertex_index + 2] = loc.x;
-		vertices[vertex_index + 3] = loc.y;
-
-		// Texture Glyph coordinate
-		vertices[vertex_index + 4] = ch_data.bot_right.x - margin;
-		vertices[vertex_index + 5] = ch_data.top_left.y;
-
-		// Iterate
-		vertex_index = vertex_index + 6;
-
-		//__________________________________________________________________________________________
-		x += (ch_data.Advance >> 6) * scale;
-
-		//__________________________________________________________________________________________
-
-
-		// Fix the index buffers
-		// Set the node indices
-		uint32_t t_id = ((indices_index / 6) * 4);
-		// Triangle 0,1,2
-		indices[indices_index + 0] = t_id + 0;
-		indices[indices_index + 1] = t_id + 1;
-		indices[indices_index + 2] = t_id + 2;
-
-		// Triangle 2,3,0
-		indices[indices_index + 3] = t_id + 2;
-		indices[indices_index + 4] = t_id + 3;
-		indices[indices_index + 5] = t_id + 0;
-
-		// Increment
-		indices_index = indices_index + 6;
-	}
-
+    hb_buffer_destroy(hb_buf);
+    return glyphs_written;
 }
 
-
-glm::vec2 label_text_store::rotate_pt(const glm::vec2& rotate_about, const glm::vec2& pt, const float rotation_angle)
+glm::vec2 label_text_store::rotate_pt(const glm::vec2& rotate_about, const glm::vec2& pt, float rotation_angle)
 {
-	// Return the rotation point
-	glm::vec2 translated_pt = pt - rotate_about;
-
-	// Apply rotation
-	const float radians = (rotation_angle * M_PI) / 180.0f; // convert degrees to radians
-	const float cos_theta = cos(radians);
-	const float sin_theta = sin(radians);
-
-	// Rotated point of the corners
-	glm::vec2 rotated_pt = glm::vec2((translated_pt.x * cos_theta) - (translated_pt.y * sin_theta),
-		(translated_pt.x * sin_theta) + (translated_pt.y * cos_theta));
-
-	return (rotated_pt + rotate_about);
+    const glm::vec2 translated = pt - rotate_about;
+    const float radians   = (rotation_angle * static_cast<float>(M_PI)) / 180.0f;
+    const float cos_theta = std::cos(radians);
+    const float sin_theta = std::sin(radians);
+    const glm::vec2 rotated(translated.x * cos_theta - translated.y * sin_theta,
+                            translated.x * sin_theta + translated.y * cos_theta);
+    return rotated + rotate_about;
 }

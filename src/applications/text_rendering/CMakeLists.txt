@@ -23,7 +23,16 @@ set( GLFW-CMAKE-STARTER-SRC
 
 find_package(GLEW REQUIRED)
 
-include_directories($(GLEW_INCLUDE_DIRS))
+# GLM (inherit from parent or add explicitly for standalone builds)
+if(NOT DEFINED REPO_DIR)
+    message(FATAL_ERROR "REPO_DIR must be defined (set by the parent CMakeLists or passed via -DREPO_DIR=)")
+endif()
+include_directories(${REPO_DIR}/src/externals/glm)
+
+# HarfBuzz (vendored)
+set(HARFBUZZ_INC ${REPO_DIR}/src/externals/harfbuzz/build/include/harfbuzz)
+set(HARFBUZZ_LIB ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
+include_directories(${HARFBUZZ_INC})
 
 set(CPP_SOURCE_FILES main.cpp
                      gui_pane.cpp
@@ -55,14 +64,17 @@ target_link_libraries(text_rendering ${wxWidgets_LIBRARIES}
                                     ${OPENGL_LIBRARIES}
                                     ${GLUT_LIBRARY}
                                     ${PLATFORM_LIBRARIES}
-                                    ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
-message("GLEW_LIBRARY: ${${GLEW_LIBRARY}}")
+                                    ${REPO_DIR}/src/externals/freetype/build/libfreetype.a
+                                    ${HARFBUZZ_LIB})
 add_executable(text_rendering_app ${EXAMPLE_APP_FILES})
+# Use GLEW::GLEW imported target (provided by glew-config.cmake); the old
+# ${GLEW_LIBRARIES} variable is not set by the config-file package.
 target_link_libraries(text_rendering_app
                                      ${OPENGL_LIBRARIES}
                                      ${GLUT_LIBRARY}
                                      ${PLATFORM_LIBRARIES}
-                                     ${GLEW_LIBRARIES}
+                                     GLEW::GLEW
                                      glfw
-                                     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
+                                     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a
+                                     ${HARFBUZZ_LIB})
 target_include_directories(text_rendering_app PUBLIC ${GLEW_INCLUDE_DIRS})

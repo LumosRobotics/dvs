@@ -1,0 +1,43 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install MinGW-w64 cross-compiler and build tools
+RUN apt-get update && apt-get install -y \
+        git \
+        build-essential \
+        cmake \
+        ninja-build \
+        pkg-config \
+        fish \
+        vim \
+        # MinGW-w64 cross-compiler targeting Windows x86-64
+        gcc-mingw-w64-x86-64 \
+        g++-mingw-w64-x86-64 \
+        binutils-mingw-w64-x86-64 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Cross-compile GoogleTest for Windows (run inside container after mounting the repo):
+#
+#   cd /workspace/src/externals/googletest
+#   cmake -S . -B build_windows \
+#         -DCMAKE_TOOLCHAIN_FILE=/workspace/src/cmake/toolchain-mingw64.cmake \
+#         -DCMAKE_BUILD_TYPE=Release \
+#         -Dgtest_disable_pthreads=ON \
+#         -DBUILD_SHARED_LIBS=OFF \
+#         -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=/workspace/src/externals/googletest/build_windows/lib
+#   cmake --build build_windows -j$(nproc)
+#
+# Then configure and build the Windows test targets:
+#
+#   cmake -S /workspace/src -B /tmp/dvs-windows-build \
+#         -DCMAKE_TOOLCHAIN_FILE=/workspace/src/cmake/toolchain-mingw64.cmake \
+#         -DCMAKE_BUILD_TYPE=Debug
+#   cmake --build /tmp/dvs-windows-build --target test-number-formatting -j$(nproc)
+#
+# The output is a Windows PE executable: src/build/test-number-formatting.exe
+# It can be run on Windows or via Wine: wine src/build/test-number-formatting.exe
+#
+CMD ["fish"]

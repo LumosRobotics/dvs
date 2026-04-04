@@ -2,44 +2,51 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
-#include <OpenGL/gl3.h>
+// OpenGL types (uint32_t / GLuint) come from whichever GL header the
+// translation unit has already included (glew or OpenGL/gl3.h).
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include "buffers/gBuffers.h"
-#include <filesystem>
 
-// FreeType
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <hb.h>
+#include <hb-ft.h>
 
-/// Holds all state information relevant to a character as loaded using FreeType
-struct Character
+// Per-glyph data stored in the atlas, keyed by FreeType glyph index.
+struct GlyphData
 {
-	glm::ivec2   Size;      // Size of glyph (width & height)
-	glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
-
-	// note that advance is number of 1/64 pixels)
-	// (ch.Advance >> 6) // bitshift by 6 to get value in pixels (2^6 = 64)
-	uint32_t Advance;   // Horizontal offset to advance to next glyph
-
-	glm::vec2 top_left; // location of this character in the atlas - top left [0,0]
-	glm::vec2 bot_right; // location of this character in the atlas - bot right [1,1]
+    glm::ivec2 size;         // bitmap width, rows
+    glm::ivec2 bearing;      // bitmap_left, bitmap_top
+    glm::vec2  uv_top_left;
+    glm::vec2  uv_bot_right;
 };
 
 class font_atlas
 {
 public:
-	uint32_t textureID;
-	uint32_t TextureWidth; // Total width of the atlas
-	uint32_t TextureHeight; // Total height of the atlas
-	std::map<char, Character> ch_atlas;
+    uint32_t   texture_id   = 0;
+    uint32_t   atlas_width  = 0;
+    uint32_t   atlas_height = 0;
 
-	font_atlas();
-	~font_atlas();
-	void create_atlas(); // Function to create the atlas
-	void Bind_atlas();
-	void UnBind_atlas();
+    FT_Library ft_lib  = nullptr;
+    FT_Face    ft_face = nullptr;
+    hb_font_t* hb_font = nullptr;  // kept alive for shaping
+
+    // key = FreeType glyph index (not Unicode codepoint)
+    std::map<uint32_t, GlyphData> glyph_map;
+
+    font_atlas() = default;
+    ~font_atlas();
+
+    // Load font file and create the FreeType face + HarfBuzz font.
+    // Does NOT build the GPU texture yet — call build_atlas() after collecting glyphs.
+    bool init(const std::string& font_path, uint32_t pixel_size = 128);
+
+    // Build the GPU texture atlas for the given set of FreeType glyph indices.
+    // May be called once after all text strings are known.
+    bool build_atlas(const std::vector<uint32_t>& glyph_ids);
+
+    void bind();
+    void unbind();
 };
-

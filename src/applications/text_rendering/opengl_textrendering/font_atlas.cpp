@@ -1,134 +1,103 @@
-
 #include "font_atlas.h"
+#include <algorithm>
 
-font_atlas::font_atlas()
-	:textureID(0), TextureWidth(0), TextureHeight(0)
-{
-
-}
+// Pick up GL types from whichever OpenGL header the TU has already included.
+#if !defined(__GLEW_H__) && !defined(GLEW_H) && !defined(__gl3_h_) && !defined(__gl_h_)
+    #include <OpenGL/gl3.h>
+#endif
 
 font_atlas::~font_atlas()
 {
+    if (hb_font)    { hb_font_destroy(hb_font);  hb_font  = nullptr; }
+    if (ft_face)    { FT_Done_Face(ft_face);      ft_face  = nullptr; }
+    if (ft_lib)     { FT_Done_FreeType(ft_lib);   ft_lib   = nullptr; }
+    if (texture_id) { glDeleteTextures(1, &texture_id); texture_id = 0; }
 }
 
-void font_atlas::create_atlas()
+bool font_atlas::init(const std::string& font_path, uint32_t pixel_size)
 {
-	// FreeType
-	// --------
-	FT_Library ft;
-	// All functions return a value different than 0 whenever an error occurred
-	if (FT_Init_FreeType(&ft))
-	{
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-		return;
-	}
+    if (FT_Init_FreeType(&ft_lib)) {
+        std::cerr << "ERROR::FREETYPE: Could not init FreeType Library\n";
+        return false;
+    }
+    if (FT_New_Face(ft_lib, font_path.c_str(), 0, &ft_face)) {
+        std::cerr << "ERROR::FREETYPE: Failed to load font: " << font_path << "\n";
+        return false;
+    }
+    FT_Set_Pixel_Sizes(ft_face, 0, pixel_size);
 
-	// load font as face
-	const std::string kFontPath = "/Users/danielpi/work/dvs/src/resources/fonts/Roboto-Regular.ttf";
-	// const std::string kFontPath = "/Users/danielpi/work/dvs/src/applications/text_rendering/opengl_textrendering/shaders/ttf_FreeSans.ttf";
-
-	FT_Face face;
-	if (FT_New_Face(ft, kFontPath.c_str(), 0, &face)) {
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-		return;
-	}
-	else
-	{
-		// Clear the previous map (if any)
-		ch_atlas.clear();
-
-		// set the font size
-		FT_Set_Pixel_Sizes(face, 0, 128);
-
-		// Below line keep the unpack alignment otherwise fonts will be skewed
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		// initialize variables to keep track of texture atlas size
-		int atlas_width = 0;
-		int atlas_height = 0;
-
-		// loop through the characters and load their glyphs
-		for (unsigned char c = 0; c < 128; c++)
-		{
-			// load glyph
-			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-			{
-				std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-				continue;
-			}
-
-			// update atlas size variables
-			atlas_width += face->glyph->bitmap.width;
-			atlas_height = std::max(atlas_height, static_cast<int>(face->glyph->bitmap.rows));
-		}
-
-		// generate texture for the atlas
-		glGenTextures(1, &textureID);
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RED,
-			atlas_width,
-			atlas_height,
-			0,
-			GL_RED,
-			GL_UNSIGNED_BYTE,
-			nullptr
-		);
-
-		// set texture options
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		// initialize x position for next glyph
-		int x = 0;
-
-		// loop through the characters again and add their glyphs to the atlas
-		for (unsigned char c = 0; c < 128; c++)
-		{
-			// load glyph
-			if (FT_Load_Char(face, static_cast<char>(c), FT_LOAD_RENDER))
-			{
-				std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-				continue;
-			}
-
-			glTexSubImage2D(
-				GL_TEXTURE_2D,
-				0,
-				x,
-				0,
-				face->glyph->bitmap.width,
-				face->glyph->bitmap.rows,
-				GL_RED,
-				GL_UNSIGNED_BYTE,
-				face->glyph->bitmap.buffer
-			);
-
-			// store glyph information in character map
-			Character character;
-
-			character.Size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
-			character.Bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
-			character.Advance = face->glyph->advance.x;
-
-			// compute glyph texture coordinates
-			character.top_left.x = static_cast<float>(x) / static_cast<float>(atlas_width);
-			character.top_left.y = 0.0f;
-			character.bot_right.x = static_cast<float>(x + character.Size.x) / static_cast<float>(atlas_width);
-			character.bot_right.y = static_cast<float>(character.Size.y) / static_cast<float>(atlas_height);
-
-			ch_atlas.insert(std::pair<char, Character>(c, character));
-
-			// update x position for next glyph
-			x += face->glyph->bitmap.width;
-		}
-	}
-
-	// destroy FreeType once we're finished
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
+    // Create the HarfBuzz font — kept alive so callers can shape text before
+    // the atlas is built.
+    hb_font = hb_ft_font_create(ft_face, nullptr);
+    return true;
 }
+
+bool font_atlas::build_atlas(const std::vector<uint32_t>& glyph_ids)
+{
+    if (glyph_ids.empty()) return true;
+
+    // Rebuild: destroy any previous texture.
+    if (texture_id) {
+        glDeleteTextures(1, &texture_id);
+        texture_id = 0;
+    }
+    glyph_map.clear();
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // First pass: measure total atlas width and maximum height.
+    int total_width = 0;
+    int max_height  = 0;
+    for (uint32_t gid : glyph_ids) {
+        if (FT_Load_Glyph(ft_face, gid, FT_LOAD_RENDER)) continue;
+        total_width += static_cast<int>(ft_face->glyph->bitmap.width);
+        max_height   = std::max(max_height, static_cast<int>(ft_face->glyph->bitmap.rows));
+    }
+    atlas_width  = static_cast<uint32_t>(total_width);
+    atlas_height = static_cast<uint32_t>(max_height);
+
+    if (atlas_width == 0 || atlas_height == 0) return false;
+
+    // Allocate the atlas texture.
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+                 static_cast<GLsizei>(atlas_width),
+                 static_cast<GLsizei>(atlas_height),
+                 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // Second pass: upload each glyph bitmap and record UV coordinates.
+    int x = 0;
+    for (uint32_t gid : glyph_ids) {
+        if (FT_Load_Glyph(ft_face, gid, FT_LOAD_RENDER)) continue;
+
+        const auto& bm = ft_face->glyph->bitmap;
+        if (bm.width > 0 && bm.rows > 0) {
+            glTexSubImage2D(GL_TEXTURE_2D, 0,
+                            x, 0,
+                            static_cast<GLsizei>(bm.width),
+                            static_cast<GLsizei>(bm.rows),
+                            GL_RED, GL_UNSIGNED_BYTE, bm.buffer);
+        }
+
+        GlyphData gd;
+        gd.size    = glm::ivec2(bm.width, bm.rows);
+        gd.bearing = glm::ivec2(ft_face->glyph->bitmap_left, ft_face->glyph->bitmap_top);
+        gd.uv_top_left  = glm::vec2(static_cast<float>(x) / atlas_width, 0.0f);
+        gd.uv_bot_right = glm::vec2(static_cast<float>(x + bm.width) / atlas_width,
+                                    static_cast<float>(bm.rows)       / atlas_height);
+        glyph_map[gid] = gd;
+
+        x += static_cast<int>(bm.width);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return true;
+}
+
+void font_atlas::bind()   { glBindTexture(GL_TEXTURE_2D, texture_id); }
+void font_atlas::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }

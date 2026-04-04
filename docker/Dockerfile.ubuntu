@@ -1,0 +1,61 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build tools and system dependencies
+RUN apt-get update && apt-get install -y \
+        git \
+        build-essential \
+        cmake \
+        ninja-build \
+        pkg-config \
+        python3 \
+        fish \
+        vim \
+        gdb \
+        openssh-server \
+        # Qt6
+        qt6-base-dev \
+        libqt6opengl6-dev \
+        qt6-base-dev-tools \
+        # OpenGL / GLUT / GLFW / GLEW
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        freeglut3-dev \
+        libglfw3-dev \
+        libglew-dev \
+        # FreeType build deps
+        zlib1g-dev \
+        libpng-dev \
+        # wxWidgets (for main_application / legacy build)
+        libwxgtk3.2-dev \
+        # GTK and X11 (needed by wxWidgets on Linux)
+        libgtk-3-dev \
+        libx11-dev \
+        libxrandr-dev \
+        libxinerama-dev \
+        libxcursor-dev \
+        libxi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Build FreeType from the vendored submodule.
+# This must be done before the main CMake configure step because
+# the build links against src/externals/freetype/build/libfreetype.a.
+# Run this inside the container after mounting/cloning the repo:
+#
+#   cd /workspace/src/externals/freetype
+#   cmake -B build -DCMAKE_BUILD_TYPE=Release
+#   cmake --build build -j$(nproc)
+#
+# Then configure and build the main project:
+#
+#   cd /workspace/src
+#   cmake -B build \
+#         -DCMAKE_BUILD_TYPE=Debug \
+#         -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu \
+#         -G Ninja
+#   cmake --build build --target qt_duoplot -j$(nproc)
+#
+CMD ["fish"]

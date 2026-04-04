@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
-#include <OpenGL/gl3.h>
+#if defined(__GLEW_H__) || defined(GLEW_H)
+#else
+    #include <OpenGL/gl3.h>
+#endif
 
 class IndexBuffer
 {

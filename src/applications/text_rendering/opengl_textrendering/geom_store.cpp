@@ -1,4 +1,6 @@
 #include "geom_store.h"
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 geom_store::geom_store()
 {
@@ -37,6 +39,35 @@ void geom_store::set_geometry()
 	text_shader.create_shader("/Users/danielpi/work/dvs/src/applications/text_rendering/opengl_textrendering/shaders/text_vert_shader.vert", "/Users/danielpi/work/dvs/src/applications/text_rendering/opengl_textrendering/shaders/text_frag_shader.frag");
 	text_shader.setUniform("zoomscale", 1.0f);
 	text_shader.setUniform("u_Texture", 0);
+
+	// Initialize labels — mix of plain ASCII, accented Latin, Greek, and maths.
+	all_labels.init("/Users/danielpi/work/dvs/src/resources/fonts/Roboto-Regular.ttf");
+
+	// Plain ASCII
+	all_labels.add_text("Hello, HarfBuzz!", glm::vec2(-0.85f, 0.75f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.0f, 0.0003f);
+
+	// Accented Latin characters
+	all_labels.add_text("café, naïve, résumé, jalapeño", glm::vec2(-0.85f, 0.55f), glm::vec3(0.4f, 1.0f, 0.5f), 1.0f, 0.0f, 0.00025f);
+
+	// More accented / extended Latin
+	all_labels.add_text("Ångström, Zürich, São Paulo", glm::vec2(-0.85f, 0.35f), glm::vec3(0.3f, 0.8f, 1.0f), 1.0f, 0.0f, 0.00025f);
+
+	// Greek letters
+	all_labels.add_text("α β γ δ ε ζ η θ λ μ π σ φ ψ ω", glm::vec2(-0.85f, 0.15f), glm::vec3(1.0f, 0.85f, 0.2f), 1.0f, 0.0f, 0.00025f);
+
+	// Mathematical symbols and operators
+	all_labels.add_text("E = mc²,  ∑ xᵢ,  ∫ f(x) dx", glm::vec2(-0.85f, -0.05f), glm::vec3(1.0f, 0.5f, 0.8f), 1.0f, 0.0f, 0.00025f);
+
+	// Inequalities, arrows, and set notation
+	all_labels.add_text("x ≤ y ≥ z,  a ≠ b,  ∞,  ±3.14", glm::vec2(-0.85f, -0.25f), glm::vec3(0.8f, 0.6f, 1.0f), 1.0f, 0.0f, 0.00025f);
+
+	// Currency symbols
+	all_labels.add_text("€ 12.50,  £ 9.99,  ¥ 1200,  ¢ 50", glm::vec2(-0.85f, -0.45f), glm::vec3(1.0f, 0.75f, 0.3f), 1.0f, 0.0f, 0.00025f);
+
+	// Ligatures (fi, fl, ff) — HarfBuzz substitutes these automatically
+	all_labels.add_text("office, fluffy, efficient, affirm", glm::vec2(-0.85f, -0.65f), glm::vec3(0.7f, 0.9f, 0.7f), 1.0f, 0.0f, 0.00025f);
+
+	all_labels.set_buffers();
 }
 
 
