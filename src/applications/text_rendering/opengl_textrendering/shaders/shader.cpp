@@ -92,6 +92,34 @@ uint32_t shader::loadShader(GLenum type,const char* fileName)
 }
 
 
+static uint32_t compileFromSource(GLenum type, const char* src)
+{
+	char infoLog[512];
+	int success;
+
+	uint32_t id = glCreateShader(type);
+	glShaderSource(id, 1, &src, nullptr);
+	glCompileShader(id);
+
+	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(id, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::COULD_NOT_COMPILE_SHADER (from source)\n";
+		std::cout << infoLog << "\n";
+	}
+	return id;
+}
+
+void shader::create_shader_from_source(const char* vert_src, const char* frag_src)
+{
+	uint32_t vs = compileFromSource(GL_VERTEX_SHADER,   vert_src);
+	uint32_t fs = compileFromSource(GL_FRAGMENT_SHADER, frag_src);
+	linkProgram(vs, fs);
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+}
+
 // Link vertex and fragment shaders to create shader program
 void shader::linkProgram(uint32_t vertexShader, uint32_t fragmentShader)
 {

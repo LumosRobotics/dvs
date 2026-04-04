@@ -81,9 +81,13 @@ GuiPane::GuiPane(wxFrame* parent)
     wxGLCanvas::SetCurrent(*m_context);
     wxPaintDC(this);  // TODO: Can be removed?
     initShaders();
-    shader_collection_.new_text_shader.use();
-    glUniform1i(shader_collection_.new_text_shader.uniform_handles.text_sampler, 0);
-    text_renderer_ = new TextRenderer();
+    text_renderer_ = new text_renderer();
+    text_renderer_->init("/Users/danielpi/work/dvs/src/resources/fonts/Roboto-Regular.ttf");
+    text_renderer_->add_text("Length = 98.76532101", glm::vec2(-0.8f, -0.3f), glm::vec3(1.0f, 1.0f, 0.0f), 45.0f, 0.0004f);
+    text_renderer_->add_text("Big text!", glm::vec2(-1.5f, -0.3f), glm::vec3(1.0f, 1.0f, 0.0f), 0.0f, 0.002f);
+    text_renderer_->add_text("Pulled Pork Sandwich!!", glm::vec2(-0.4f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), -15.0f, 0.0003f);
+    text_renderer_->add_text("Hello", glm::vec2(-0.8f, 0.3f), glm::vec3(1.0f, 1.0f, 1.0f), 5.0f, 0.0003f);
+    text_renderer_->build();
 
     glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
     
@@ -144,10 +148,7 @@ void GuiPane::render(wxPaintEvent& WXUNUSED(evt))
     // text_renderer_->renderTextFromLeftCenter("A,a\"^jlghyk-lp1q2{3}4[5]6(78)9@0", -0.95, 0.0, 0.0003f, 500, 478);
     text_renderer_->renderTextTest('A', -0.95, -0.95, 0.0003f, 500, 478);*/
 
-    shader_collection_.new_text_shader.use();
-    shader_collection_.new_text_shader.uniform_handles.zoomscale.setFloat(1.0f);
-
-    text_renderer_->renderTextNew("Helloooo", -0.95, -0.95, 0.0003f, 500, 478);
+    text_renderer_->render(1.0f);
 
     /*float size = 0.0005f, y = -0.9f;
 

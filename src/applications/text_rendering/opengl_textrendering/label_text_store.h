@@ -18,8 +18,6 @@ struct label_text
 class label_text_store
 {
 public:
-    font_atlas main_font;
-
     label_text_store() = default;
     ~label_text_store() = default;
 
@@ -27,7 +25,7 @@ public:
     void init(const std::string& font_path, uint32_t pixel_size = 128);
 
     void add_text(const std::string& label, glm::vec2 text_loc, glm::vec3 text_color,
-                  float geom_scale, float font_angle, float font_size);
+                  float font_angle, float font_size);
 
     // Build GPU buffers from all added labels (call after all add_text calls).
     void set_buffers();
@@ -35,6 +33,7 @@ public:
     void paint_text();
 
 private:
+    font_atlas           main_font;
     gBuffers             label_buffers;
     std::vector<label_text> labels;
     uint32_t             total_glyph_count = 0; // actual shaped glyph count after set_buffers

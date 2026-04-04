@@ -35,6 +35,7 @@ public:
 	~shader(); // Destructor to clean up OpenGL resources
 
 	void create_shader(const char* vertexFile, const char* fragmentFile);// Function that takes vertex and fragment shader file path
+	void create_shader_from_source(const char* vert_src, const char* frag_src); // Compile from in-memory GLSL strings
 	// Shader usage functions
 	void Bind(); // Function to use the shader program
 	void UnBind(); // Function to unuse the shader program

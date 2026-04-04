@@ -4,7 +4,7 @@
 // compile error on macOS.
 #include "shaders/shader.h"
 #include "buffers/gBuffers.h"
-#include "label_text_store.h"
+#include "../text_rendering.h"
 
 class geom_store
 {
@@ -17,9 +17,8 @@ public:
 private:
 	void set_simple_triangle(float* vertices, uint32_t& vertices_count,
 		uint32_t* indices, uint32_t& indices_count);
-	gBuffers tri_buffers;
-	label_text_store all_labels;
+	gBuffers       tri_buffers;
+	text_renderer  all_labels;
 
 	shader tri_shader;
-	shader text_shader;
 };

@@ -1,57 +1,39 @@
-#ifndef MAIN_APPLICATION_AXES_TEXT_RENDERING_H_
-#define MAIN_APPLICATION_AXES_TEXT_RENDERING_H_
-
-#include <glm/glm.hpp>
+#pragma once
 #include <string>
-#include <string_view>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
-#include "lumos/math/math.h"
-#include "opengl_textrendering/font_atlas.h"
-#include "opengl_textrendering/label_text_store.h"
+// Forward declarations — keeps GL/impl headers out of the public interface.
+class label_text_store;
+class shader;
 
-#include <OpenGL/gl3.h>
-
-class TextRenderer
+class text_renderer
 {
-private:
-    unsigned int vao_, vbo_;
-    label_text_store label_store_;
-
 public:
-    TextRenderer();
-    /*void renderTextFromCenter(const std::string_view& text,
-                              float x,
-                              float y,
-                              float scale,
-                              const float axes_width,
-                              const float axes_height) const;
-    void renderTextFromRightCenter(const std::string_view& text,
-                                   float x,
-                                   float y,
-                                   float scale,
-                                   const float axes_width,
-                                   const float axes_height) const;
-    void renderTextFromLeftCenter(const std::string_view& text,
-                                  float x,
-                                  float y,
-                                  float scale,
-                                  const float axes_width,
-                                  const float axes_height) const;
-    void renderTextTest(
-        const char c_val, float x, float y, float scale, const float axes_width, const float axes_height) const;*/
-    
-    void renderTextNew(const std::string_view& text,
-                                  float x,
-                                  float y,
-                                  float scale,
-                                  const float axes_width,
-                                  const float axes_height);
+    text_renderer();
+    ~text_renderer();
+    text_renderer(const text_renderer&)            = delete;
+    text_renderer& operator=(const text_renderer&) = delete;
+
+    // Load font file.  Call before add_text / build.
+    bool init(const std::string& font_path, uint32_t pixel_size = 128);
+
+    void add_text(const std::string& label,
+                  glm::vec2 text_loc,
+                  glm::vec3 text_color,
+                  float     font_angle,
+                  float     font_size);
+
+    // Shape all labels, build atlas, upload GPU buffers.  Call once after add_text.
+    void build();
+
+    // Bind shader, draw, unbind.  Call every frame.
+    void render(float zoom_scale = 1.0f);
+
+private:
+    label_text_store* store_;
+    shader*           text_shader_;
+    bool              built_ = false;
+
+    bool init_shader();
 };
-
-bool initFreetype();
-lumos::Vec2f calculateStringSize(const std::string_view& text,
-                               const float scale,
-                               const float axes_width,
-                               const float axes_height);
-
-#endif  // MAIN_APPLICATION_AXES_TEXT_RENDERING_H_

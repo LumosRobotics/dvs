@@ -11,7 +11,7 @@ void label_text_store::init(const std::string& font_path, uint32_t pixel_size)
 }
 
 void label_text_store::add_text(const std::string& label, glm::vec2 label_loc, glm::vec3 label_color,
-    float /*geom_scale*/, float label_angle, float font_size)
+    float label_angle, float font_size)
 {
     label_text t;
     t.label       = label;

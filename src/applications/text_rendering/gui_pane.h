@@ -29,7 +29,7 @@ private:
     ShaderCollection shader_collection_;
 
     wxGLAttributes getGLAttributes() const;
-    TextRenderer* text_renderer_;
+    text_renderer* text_renderer_;
 
     void initShaders();
 

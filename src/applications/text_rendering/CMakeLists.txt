@@ -40,6 +40,7 @@ set(CPP_SOURCE_FILES main.cpp
                      text_rendering.cpp
                      opengl_textrendering/font_atlas.cpp
                      opengl_textrendering/label_text_store.cpp
+                     opengl_textrendering/shaders/shader.cpp
                      opengl_textrendering/buffers/IndexBuffer.cpp
                      opengl_textrendering/buffers/VertexArray.cpp
                      opengl_textrendering/buffers/VertexBuffer.cpp
@@ -48,6 +49,7 @@ set(CPP_SOURCE_FILES main.cpp
                      main_window.cpp)
 
 set(EXAMPLE_APP_FILES main_app.cpp
+                      text_rendering.cpp
                       opengl_textrendering/font_atlas.cpp
                       opengl_textrendering/buffers/VertexBufferLayout.cpp
                       opengl_textrendering/buffers/VertexBuffer.cpp
@@ -64,8 +66,10 @@ target_link_libraries(text_rendering ${wxWidgets_LIBRARIES}
                                     ${OPENGL_LIBRARIES}
                                     ${GLUT_LIBRARY}
                                     ${PLATFORM_LIBRARIES}
+                                    GLEW::GLEW
                                     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a
                                     ${HARFBUZZ_LIB})
+target_include_directories(text_rendering PUBLIC ${GLEW_INCLUDE_DIRS})
 add_executable(text_rendering_app ${EXAMPLE_APP_FILES})
 # Use GLEW::GLEW imported target (provided by glew-config.cmake); the old
 # ${GLEW_LIBRARIES} variable is not set by the config-file package.
