@@ -11,6 +11,18 @@ include_directories(${REPO_DIR}/src/qt_application)
 include_directories(${REPO_DIR}/third_party/LumosAlgo/src)
 include_directories(${REPO_DIR}/src/main_application)
 include_directories(${REPO_DIR}/src/common)
+include_directories(${REPO_DIR}/src/externals/glm)
+
+# HarfBuzz headers for the text renderer.
+if(PLATFORM_LINUX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(HARFBUZZ REQUIRED harfbuzz)
+    include_directories(${HARFBUZZ_INCLUDE_DIRS})
+    set(HARFBUZZ_LINK_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
+elseif(PLATFORM_APPLE)
+    include_directories(${REPO_DIR}/src/externals/harfbuzz/build/include/harfbuzz)
+    set(HARFBUZZ_LINK_LIBS ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
+endif()
 
 # LumosConfig
 include_directories(${REPO_DIR}/third_party/LumosConfig)
@@ -42,6 +54,13 @@ set(CPP_SOURCE_FILES
     axes/plot_pane_background.cpp
     axes/point_selection_box.cpp
     axes/text_rendering.cpp
+    axes/text_rendering_impl/font_atlas.cpp
+    axes/text_rendering_impl/label_text_store.cpp
+    axes/text_rendering_impl/buffers/VertexBufferLayout.cpp
+    axes/text_rendering_impl/buffers/VertexBuffer.cpp
+    axes/text_rendering_impl/buffers/VertexArray.cpp
+    axes/text_rendering_impl/buffers/IndexBuffer.cpp
+    axes/text_rendering_impl/buffers/gBuffers.cpp
     axes/zoom_rect.cpp
     axes/structures/axes_limits.cpp
     axes/structures/axes_settings.cpp
@@ -126,4 +145,5 @@ target_link_libraries(qt_duoplot
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a
+    ${HARFBUZZ_LINK_LIBS}
 )

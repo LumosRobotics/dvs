@@ -1,254 +1,256 @@
+// text_rendering.cpp — HarfBuzz/atlas-based text renderer for duoplot.
+// opengl_header.h must come first so GL symbols are defined before any other
+// header tries to use them.
+#include "opengl_low_level/opengl_header.h"
 
+#include <hb.h>
+#include <hb-ft.h>
+
+#include "axes/text_rendering_impl/label_text_store.h"
+#include "platform_paths.h"
 #include "text_rendering.h"
 
-#include <ft2build.h>
-
 #include <iostream>
-#include <map>
-#include FT_FREETYPE_H
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "opengl_low_level/opengl_header.h"
-#include "platform_paths.h"
-#include "shader.h"
 
 using namespace lumos;
 
-namespace
-{
-struct Character
-{
-    unsigned int texture_id;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
-    unsigned int increment;
-};
-
-std::map<GLchar, Character> characters;
-
-bool is_initialized = false;
-
-const std::string kFontPath = getResourcesPathString() + "fonts/Roboto-Regular.ttf";
+namespace {
 
 constexpr float kTextScaleParameter = 1000.0f;
 
+const std::string kFontPath = getResourcesPathString() + "fonts/Roboto-Regular.ttf";
+
+constexpr char kVertSrc[] = R"glsl(
+#version 330 core
+
+uniform float zoomscale;
+
+layout(location = 0) in vec2 position;
+layout(location = 1) in vec2 origin;
+layout(location = 2) in vec2 textureCoord;
+layout(location = 3) in vec3 color;
+
+out vec3 v_textureColor;
+out vec2 v_textureCoord;
+
+void main()
+{
+    mat4 scalingMatrix = mat4(1.0) * zoomscale;
+    scalingMatrix[3][3] = 1.0;
+
+    vec4 finalPosition   = scalingMatrix * vec4(position, 0.0, 1.0);
+    vec4 finalTextOrigin = scalingMatrix * vec4(origin,   0.0, 1.0);
+
+    vec2 scaled_pt = vec2(finalPosition.x - finalTextOrigin.x,
+                          finalPosition.y - finalTextOrigin.y) / zoomscale;
+
+    gl_Position    = vec4(finalPosition.x + scaled_pt.x,
+                          finalPosition.y + scaled_pt.y, 0.0, 1.0);
+    v_textureCoord = textureCoord;
+    v_textureColor = color;
+}
+)glsl";
+
+constexpr char kFragSrc[] = R"glsl(
+#version 330 core
+uniform sampler2D u_Texture;
+
+in vec3 v_textureColor;
+in vec2 v_textureCoord;
+
+out vec4 f_Color;
+
+void main()
+{
+    vec4 texColor = vec4(1.0, 1.0, 1.0, texture(u_Texture, v_textureCoord).r);
+    f_Color = vec4(v_textureColor, 1.0f) * texColor;
+}
+)glsl";
+
+GLuint compileShader(GLenum type, const char* src)
+{
+    GLuint id = glCreateShader(type);
+    glShaderSource(id, 1, &src, nullptr);
+    glCompileShader(id);
+
+    GLint success = 0;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetShaderInfoLog(id, 512, nullptr, log);
+        std::cerr << "Shader compile error: " << log << "\n";
+    }
+    return id;
+}
+
 }  // namespace
 
-TextRenderer::TextRenderer()
+// Static member definitions.
+label_text_store* TextRenderer::s_store_     = nullptr;
+unsigned int      TextRenderer::s_shader_id_ = 0;
+bool              TextRenderer::s_initialized_ = false;
+
+// ---- TextRenderer ----
+
+TextRenderer::TextRenderer() {}
+
+TextRenderer::TextRenderer(const TextRenderer& other)
+    : current_color_(other.current_color_)
 {
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    // pending_labels_ starts empty — don't copy in-flight labels.
 }
 
-void TextRenderer::renderTextFromCenter(
-    const std::string_view& text, float x, float y, float scale, const float axes_width, const float axes_height) const
+TextRenderer& TextRenderer::operator=(const TextRenderer& other)
 {
-    const Vec2f text_size = calculateStringSize(text, scale, axes_width, axes_height);
-    this->renderTextFromLeftCenter(text, x - text_size.x / 2.0f, y, scale, axes_width, axes_height);
+    if (this != &other) {
+        current_color_ = other.current_color_;
+        pending_labels_.clear();
+    }
+    return *this;
 }
 
-void TextRenderer::renderTextFromRightCenter(
-    const std::string_view& text, float x, float y, float scale, const float axes_width, const float axes_height) const
+void TextRenderer::setColor(float r, float g, float b)
 {
-    const Vec2f text_size = calculateStringSize(text, scale, axes_width, axes_height);
-    this->renderTextFromLeftCenter(text, x - text_size.x, y, scale, axes_width, axes_height);
+    current_color_ = glm::vec3(r, g, b);
 }
 
-void TextRenderer::renderTextFromLeftCenter(
-    const std::string_view& text, float x, float y, float scale, const float axes_width, const float axes_height) const
+void TextRenderer::renderTextFromCenter(const std::string_view& text,
+                                        float x, float y,
+                                        float scale,
+                                        float axes_width, float axes_height)
 {
-    glEnable(GL_CULL_FACE);
+    const Vec2f sz = calculateStringSize(text, scale, axes_width, axes_height);
+    renderTextFromLeftCenter(text, x - sz.x / 2.0f, y, scale, axes_width, axes_height);
+}
+
+void TextRenderer::renderTextFromRightCenter(const std::string_view& text,
+                                             float x, float y,
+                                             float scale,
+                                             float axes_width, float axes_height)
+{
+    const Vec2f sz = calculateStringSize(text, scale, axes_width, axes_height);
+    renderTextFromLeftCenter(text, x - sz.x, y, scale, axes_width, axes_height);
+}
+
+void TextRenderer::renderTextFromLeftCenter(const std::string_view& text,
+                                            float x, float y,
+                                            float scale,
+                                            float axes_width, float axes_height)
+{
+    if (!s_initialized_ || text.empty()) return;
+
+    const float x_scale = scale * kTextScaleParameter / axes_width;
+    const float y_scale = scale * kTextScaleParameter / axes_height;
+
+    // Shift y down by half the text height for vertical centering.
+    const Vec2f sz = calculateStringSize(text, scale, axes_width, axes_height);
+    const float loc_y = y - sz.y / 2.0f;
+
+    pending_labels_.push_back({std::string(text),
+                               glm::vec2(x, loc_y),
+                               current_color_,
+                               x_scale,
+                               y_scale});
+}
+
+void TextRenderer::flush()
+{
+    if (!s_initialized_ || pending_labels_.empty()) return;
+
+    s_store_->labels.clear();
+    for (const auto& lbl : pending_labels_) {
+        s_store_->add_text(lbl.text, lbl.loc, lbl.color, 0.0f, lbl.x_scale, lbl.y_scale);
+    }
+    s_store_->set_buffers();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
 
-    const Vec2f text_size = calculateStringSize(text, scale, axes_width, axes_height);
-    y -= text_size.y / 2.0f;
+    glUseProgram(s_shader_id_);
+    glUniform1i(glGetUniformLocation(s_shader_id_, "u_Texture"), 0);
+    glUniform1f(glGetUniformLocation(s_shader_id_, "zoomscale"), 1.0f);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(vao);
+    s_store_->paint_text();
 
-    const float sx = kTextScaleParameter / axes_width;
-    const float sy = kTextScaleParameter / axes_height;
-
-    for (size_t k = 0; k < text.length(); k++)
-    {
-        const Character& ch = characters[text[k]];
-
-        float xpos = x + ch.bearing.x * scale;
-        float ypos = y;
-
-        const float w = ch.size.x * scale * sx;
-        const float h = ch.size.y * scale * sy;
-
-        if (text[k] == '-')
-        {
-            ypos = ypos + 18.0f * 1000.0f * scale / axes_height;
-            xpos = xpos - 3.0f * 1000.0f * scale / axes_height;
-        }
-        else if ((text[k] == 'j') || (text[k] == 'y') || (text[k] == 'g'))
-        {
-            ypos = ypos - 15000.0f * scale / axes_height;
-        }
-        else if ((text[k] == 'p') || (text[k] == 'q'))
-        {
-            ypos = ypos - 14000.0f * scale / axes_height;
-        }
-
-        const float vertices[6][4] = {{xpos, ypos + h, 0.0f, 0.0f},
-                                      {xpos, ypos, 0.0f, 1.0f},
-                                      {xpos + w, ypos, 1.0f, 1.0f},
-
-                                      {xpos, ypos + h, 0.0f, 0.0f},
-                                      {xpos + w, ypos, 1.0f, 1.0f},
-                                      {xpos + w, ypos + h, 1.0f, 0.0f}};
-
-        glBindTexture(GL_TEXTURE_2D, ch.texture_id);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        x += (ch.increment >> 6) * scale * sx;
-    }
-
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glDisable(GL_CULL_FACE);
+    glUseProgram(0);
     glDisable(GL_BLEND);
+
+    pending_labels_.clear();
 }
+
+// ---- Free functions ----
 
 bool initFreetype()
 {
-    if (is_initialized)
-    {
-        // return true;
-    }
+    if (TextRenderer::s_initialized_) return true;
 
-    FT_Library ft;
-
-    if (FT_Init_FreeType(&ft))
-    {
-        std::cout << "Could not initialize font library." << std::endl;
+    TextRenderer::s_store_ = new label_text_store();
+    if (!TextRenderer::s_store_->main_font.init(kFontPath, 68)) {
+        std::cerr << "initFreetype: failed to load font: " << kFontPath << "\n";
+        delete TextRenderer::s_store_;
+        TextRenderer::s_store_ = nullptr;
         return false;
     }
 
-    FT_Face face;
-    if (FT_New_Face(ft, kFontPath.c_str(), 0, &face))
-    {
-        std::cout << "Failed to load font" << std::endl;
-        return false;
+    // Compile and link the text shader.
+    GLuint vs = compileShader(GL_VERTEX_SHADER,   kVertSrc);
+    GLuint fs = compileShader(GL_FRAGMENT_SHADER, kFragSrc);
+    TextRenderer::s_shader_id_ = glCreateProgram();
+    glAttachShader(TextRenderer::s_shader_id_, vs);
+    glAttachShader(TextRenderer::s_shader_id_, fs);
+    glLinkProgram(TextRenderer::s_shader_id_);
+
+    GLint success = 0;
+    glGetProgramiv(TextRenderer::s_shader_id_, GL_LINK_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetProgramInfoLog(TextRenderer::s_shader_id_, 512, nullptr, log);
+        std::cerr << "Text shader link error: " << log << "\n";
+        TextRenderer::s_shader_id_ = 0;
     }
 
-    FT_Set_Pixel_Sizes(face, 0, 68);
+    glDeleteShader(vs);
+    glDeleteShader(fs);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    for (unsigned char c = 0; c < 128; c++)
-    {
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-        {
-            std::cout << "Could not load glyph '" << c << "'" << std::endl;
-            continue;
-        }
-
-        unsigned int texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GL_RED,
-                     face->glyph->bitmap.width,
-                     face->glyph->bitmap.rows,
-                     0,
-                     GL_RED,
-                     GL_UNSIGNED_BYTE,
-                     face->glyph->bitmap.buffer);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // GL_CLAMP_TO_BORDER or GL_CLAMP_TO_EDGE?
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        Character character = {texture,
-                               glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                               glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                               static_cast<unsigned int>(face->glyph->advance.x)};
-        characters.insert(std::pair<char, Character>(c, character));
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
-
-    is_initialized = true;
-
-    return true;
+    TextRenderer::s_initialized_ = (TextRenderer::s_shader_id_ != 0);
+    return TextRenderer::s_initialized_;
 }
 
-// Calculates relative string size in the pane it's in, which is in the interval [-1.0, 1.0]
-// So a width of 2.0 covers the full pane from left to right
 Vec2f calculateStringSize(const std::string_view& text,
                           const float scale,
                           const float axes_width,
                           const float axes_height)
 {
-    if (text.length() == 0)
-    {
-        return Vec2f(0.0f, 0.0f);
+    if (!TextRenderer::s_initialized_ || text.empty()) return Vec2f(0.0f, 0.0f);
+
+    const std::string str(text);
+    hb_buffer_t* hb_buf = hb_buffer_create();
+    hb_buffer_add_utf8(hb_buf, str.c_str(), -1, 0, -1);
+    hb_buffer_guess_segment_properties(hb_buf);
+    hb_shape(TextRenderer::s_store_->main_font.hb_font, hb_buf, nullptr, 0);
+
+    unsigned int         glyph_count = 0;
+    hb_glyph_position_t* glyph_pos   = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
+
+    float total_advance = 0.0f;
+    for (unsigned int i = 0; i < glyph_count; i++) {
+        total_advance += glyph_pos[i].x_advance / 64.0f;
     }
+    hb_buffer_destroy(hb_buf);
 
-    float x = 0.0f;
+    const float x_scale = scale * kTextScaleParameter / axes_width;
+    const float y_scale = scale * kTextScaleParameter / axes_height;
 
-    const float sx = kTextScaleParameter / axes_width;
-    const float sy = kTextScaleParameter / axes_height;
+    // The vertex shader (zoomscale=1) doubles offsets from the text origin.
+    // Account for that here so centering math is consistent.
+    const float width  = total_advance * x_scale * 2.0f;
 
-    float x_min, x_max, y_min, y_max;
+    // Approximate height from the font's ascender value.
+    const float ascender = TextRenderer::s_store_->main_font.ft_face
+                               ? (TextRenderer::s_store_->main_font.ft_face->ascender / 64.0f)
+                               : 0.0f;
+    const float height = ascender * y_scale * 2.0f;
 
-    Character ch = characters[text[0]];
-
-    x_min = ch.bearing.x * scale;
-    x_max = x_min;
-    y_min = -(ch.size.y - ch.bearing.y) * scale;
-    y_max = y_min;
-
-    for (size_t k = 0; k < text.length(); k++)
-    {
-        const Character& ch = characters[text[k]];
-
-        const float xpos = x + ch.bearing.x * scale;
-        const float ypos = -(ch.size.y - ch.bearing.y) * scale;
-
-        const float w = ch.size.x * scale * sx;
-        const float h = ch.size.y * scale * sy;
-
-        x_min = std::min(x_min, xpos);
-        x_min = std::min(x_min, xpos + w);
-
-        x_max = std::max(x_min, xpos);
-        x_max = std::max(x_min, xpos + w);
-
-        y_min = std::min(y_min, ypos);
-        y_min = std::min(y_min, ypos + h);
-
-        y_max = std::max(y_min, ypos);
-        y_max = std::max(y_min, ypos + h);
-
-        x += (ch.increment >> 6) * scale * sx;
-    }
-
-    return Vec2f(x_max - x_min, y_max - y_min);
+    return Vec2f(width, height);
 }

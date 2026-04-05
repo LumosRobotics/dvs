@@ -5,6 +5,11 @@ project(main-app)
 include_directories(${REPO_DIR}/src/main_application)
 include_directories(${REPO_DIR}/third_party/LumosAlgo/src)
 
+# HarfBuzz headers (macOS: vendored; Linux: resolved after pkg_check_modules below).
+if(PLATFORM_APPLE)
+    include_directories(${REPO_DIR}/src/externals/harfbuzz/build/include/harfbuzz)
+endif()
+
 set(CPP_SOURCE_FILES main.cpp
                      axes/axes_interactor.cpp
 
@@ -16,6 +21,13 @@ set(CPP_SOURCE_FILES main.cpp
                      axes/grid_numbers.cpp
                      axes/plot_box_grid.cpp
                      axes/text_rendering.cpp
+                     axes/text_rendering_impl/font_atlas.cpp
+                     axes/text_rendering_impl/label_text_store.cpp
+                     axes/text_rendering_impl/buffers/VertexBufferLayout.cpp
+                     axes/text_rendering_impl/buffers/VertexBuffer.cpp
+                     axes/text_rendering_impl/buffers/VertexArray.cpp
+                     axes/text_rendering_impl/buffers/IndexBuffer.cpp
+                     axes/text_rendering_impl/buffers/gBuffers.cpp
                      axes/legend_renderer.cpp
                      axes/point_selection_box.cpp
 
@@ -116,6 +128,7 @@ add_executable(duoplot ${CPP_SOURCE_FILES})
 if(PLATFORM_LINUX)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(HARFBUZZ REQUIRED harfbuzz)
+    include_directories(${HARFBUZZ_INCLUDE_DIRS})
     set(FREETYPE_EXTRA_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
 elseif(PLATFORM_APPLE)
     set(FREETYPE_EXTRA_LIBS ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
