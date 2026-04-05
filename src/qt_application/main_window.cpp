@@ -78,7 +78,7 @@ MainWindow::MainWindow(const std::vector<std::string>& cmdl_args)
     tray_icon_->setOnFileNew([this]()  { newProject(); });
     tray_icon_->setOnFileOpen([this]() {
         const QString path = QFileDialog::getOpenFileName(nullptr, "Open Project", "",
-                                                          "Duoplot Project (*.dvs)");
+                                                          "Duoplot Project (*.duoplt)");
         if (!path.isEmpty())
             openExistingFile(path.toStdString());
     });
@@ -227,7 +227,7 @@ void MainWindow::setupWindows(const ProjectSettings& project_settings)
         connect(window, &GuiWindow::openProjectRequested,  this, [this]() {
             const QString path = QFileDialog::getOpenFileName(
                 nullptr, tr("Open Project"), QString(),
-                tr("Duoplot Project (*.dvs);;All Files (*)"));
+                tr("Duoplot Project (*.duoplot);;All Files (*)"));
             if (!path.isEmpty())
                 openExistingFile(path.toStdString());
         });
@@ -608,7 +608,7 @@ void MainWindow::saveProjectAs()
 {
     const QString path = QFileDialog::getSaveFileName(
         nullptr, tr("Save Project As"), current_project_file_,
-        tr("Duoplot Project (*.dvs);;All Files (*)"));
+        tr("Duoplot Project (*.duoplot);;All Files (*)"));
     if (path.isEmpty())
         return;
 
@@ -702,7 +702,7 @@ void MainWindow::newWindowWithoutFileModification(const std::string& element_han
     connect(window, &GuiWindow::openProjectRequested,  this, [this]() {
         const QString path = QFileDialog::getOpenFileName(
             nullptr, tr("Open Project"), QString(),
-            tr("Duoplot Project (*.dvs);;All Files (*)"));
+            tr("Duoplot Project (*.duoplot);;All Files (*)"));
         if (!path.isEmpty())
             openExistingFile(path.toStdString());
     });

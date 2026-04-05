@@ -112,6 +112,12 @@ void PlotPane::initializeGL()
     // Create plot data handler
     plot_data_handler_ = new PlotDataHandler(shader_collection_);
 
+    // Set default view/axes so an empty pane renders the axes box immediately
+    axes_interactor_.setViewAngles(0.0, M_PI / 2.0);
+    axes_interactor_.setAxesLimits(Vec3d(-1.0, -1.0, -1.0), Vec3d(1.0, 1.0, 1.0));
+    axes_set_ = true;
+    view_set_ = true;
+
     LUMOS_LOG_INFO() << "OpenGL initialized in PlotPane";
 }
 
@@ -133,9 +139,7 @@ void PlotPane::paintGL()
 
     processActionQueue();
 
-    if (axes_set_ && view_set_)
-    {
-        const Vec2f pane_size(width(), height());
+    const Vec2f pane_size(width(), height());
 
         // Create axes side configuration based on view angles
         const AxesSideConfiguration axes_side_configuration{axes_interactor_.getViewAngles(), perspective_projection_};
@@ -177,9 +181,9 @@ void PlotPane::paintGL()
             // point_selection_.render();
         }
 
-        glDisable(GL_DEPTH_TEST);
-    }
+    glDisable(GL_DEPTH_TEST);
 }
+
 
 void PlotPane::initShaders()
 {
@@ -283,6 +287,9 @@ void PlotPane::clearPane()
     {
         plot_data_handler_->clear();
     }
+    // Reset to default view — keep rendering the empty axes box
+    axes_interactor_.setViewAngles(0.0, M_PI / 2.0);
+    axes_interactor_.setAxesLimits(Vec3d(-1.0, -1.0, -1.0), Vec3d(1.0, 1.0, 1.0));
     axes_set_ = false;
     view_set_ = false;
 }
@@ -453,13 +460,16 @@ void PlotPane::updateSizeFromParent(const QSize& parent_size)
 
 void PlotPane::keyPressedElementSpecific(const char key)
 {
-    // Handle plot-specific key presses
-    // TODO: Implement key bindings for view manipulation, etc.
-    LUMOS_LOG_DEBUG() << "PlotPane key pressed: " << key;
+    const char k = key | 0x20;  // to lowercase
+    if (k == 'r')
+        axes_interactor_.setMouseInteractionType(MouseInteractionType::ROTATE);
+    else if (k == 'z')
+        axes_interactor_.setMouseInteractionType(MouseInteractionType::ZOOM);
+    else if (k == 'p')
+        axes_interactor_.setMouseInteractionType(MouseInteractionType::PAN);
+    update();
 }
 
-void PlotPane::keyReleasedElementSpecific(const char key)
+void PlotPane::keyReleasedElementSpecific(const char /*key*/)
 {
-    // Handle plot-specific key releases
-    LUMOS_LOG_DEBUG() << "PlotPane key released: " << key;
 }

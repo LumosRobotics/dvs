@@ -280,12 +280,18 @@ ApplicationGuiElement* WindowTab::getGuiElement(const std::string& element_handl
 
 void WindowTab::notifyChildrenOnKeyPressed(const char key)
 {
-    // Key events are handled via Qt's event system, no need to manually propagate
+    for (auto* pane : plot_panes_)
+        pane->keyPressedElementSpecific(key);
+    for (auto* elem : gui_elements_)
+        elem->keyPressedElementSpecific(key);
 }
 
 void WindowTab::notifyChildrenOnKeyReleased(const char key)
 {
-    // Key events are handled via Qt's event system, no need to manually propagate
+    for (auto* pane : plot_panes_)
+        pane->keyReleasedElementSpecific(key);
+    for (auto* elem : gui_elements_)
+        elem->keyReleasedElementSpecific(key);
 }
 
 bool WindowTab::deleteElementIfItExists(const std::string& element_handle_string)
