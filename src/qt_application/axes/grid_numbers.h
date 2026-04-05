@@ -14,10 +14,8 @@
 #include "lumos/math/math.h"
 #include "opengl_low_level/opengl_header.h"
 #include "project_state/project_settings.h"
-#include "shader.h"
 
-void drawGridNumbers(const TextRenderer& text_renderer,
-                     const TextShader* const text_shader,
+void drawGridNumbers(TextRenderer& text_renderer,
                      const AxesLimits& axes_limits,
                      const ViewAngles& view_angles,
                      const PlotPaneSettings& plot_pane_settings,

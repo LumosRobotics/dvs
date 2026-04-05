@@ -21,7 +21,9 @@ if(PLATFORM_LINUX)
     set(HARFBUZZ_LINK_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
 elseif(PLATFORM_APPLE)
     include_directories(${REPO_DIR}/src/externals/harfbuzz/build/include/harfbuzz)
-    set(HARFBUZZ_LINK_LIBS ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
+    set(HARFBUZZ_LINK_LIBS
+        ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a
+        png z bz2)
 endif()
 
 # LumosConfig
@@ -54,13 +56,13 @@ set(CPP_SOURCE_FILES
     axes/plot_pane_background.cpp
     axes/point_selection_box.cpp
     axes/text_rendering.cpp
-    axes/text_rendering_impl/font_atlas.cpp
-    axes/text_rendering_impl/label_text_store.cpp
-    axes/text_rendering_impl/buffers/VertexBufferLayout.cpp
-    axes/text_rendering_impl/buffers/VertexBuffer.cpp
-    axes/text_rendering_impl/buffers/VertexArray.cpp
-    axes/text_rendering_impl/buffers/IndexBuffer.cpp
-    axes/text_rendering_impl/buffers/gBuffers.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/font_atlas.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/label_text_store.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/buffers/VertexBufferLayout.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/buffers/VertexBuffer.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/buffers/VertexArray.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/buffers/IndexBuffer.cpp
+    ${REPO_DIR}/src/main_application/axes/text_rendering_impl/buffers/gBuffers.cpp
     axes/zoom_rect.cpp
     axes/structures/axes_limits.cpp
     axes/structures/axes_settings.cpp

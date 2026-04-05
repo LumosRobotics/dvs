@@ -312,8 +312,7 @@ void LegendRenderer::render(const std::vector<LegendProperties>& legend_properti
         }
     }
 
-    shader_collection_.text_shader.use();
-    glUniform3f(shader_collection_.text_shader.uniform_handles.text_color, 0.0f, 0.0f, 0.0f);
+    text_renderer_.setColor(0.0f, 0.0f, 0.0f);
 
     for (size_t k = 0; k < legend_properties.size(); k++)
     {
@@ -325,6 +324,7 @@ void LegendRenderer::render(const std::vector<LegendProperties>& legend_properti
         text_renderer_.renderTextFromLeftCenter(
             legend_properties[k].label, xp, zp, scale_factor_ * 0.0005f, axes_width, axes_height);
     }
+    text_renderer_.flush();
 }
 
 LegendRenderer::LegendRenderer(const TextRenderer& text_renderer, const ShaderCollection& shader_collection)

@@ -20,14 +20,11 @@ AxesRenderer::AxesRenderer(const ShaderCollection& shader_collection,
       plot_pane_background_{plot_pane_settings_.pane_radius},
       tab_background_color_{tab_background_color}
 {
-    shader_collection_.text_shader.use();
     axes_square_ = false;
     scale_on_rotation_ = true;
     glEnable(GL_DEPTH_CLAMP);
 
     initFreetype();
-
-    glUniform1i(shader_collection_.text_shader.uniform_handles.text_sampler, 0);
 
     if (plot_pane_settings_.clipping_on)
     {
@@ -196,9 +193,7 @@ void AxesRenderer::renderHandle()
 
 void AxesRenderer::renderTitle()
 {
-    shader_collection_.text_shader.use();
-
-    glUniform3f(shader_collection_.text_shader.uniform_handles.text_color, 0.0, 0.0, 0.0);
+    text_renderer_.setColor(0.0f, 0.0f, 0.0f);
 
     const float x_coord = 5.0f / width_;
     const float y_coord = 1.0f - 20.0f / height_;
@@ -273,10 +268,8 @@ void AxesRenderer::renderInteractionLetter()
 
 void AxesRenderer::renderViewAngles()
 {
-    shader_collection_.text_shader.use();
-
     // return;  // TODO: For demo, rendering view angles is not used
-    glUniform3f(shader_collection_.text_shader.uniform_handles.text_color, 0.0, 0.0, 0.0);
+    text_renderer_.setColor(0.0f, 0.0f, 0.0f);
 
     const int az = static_cast<int>(view_angles_.getSnappedAzimuth() * 180.0 / M_PI);
     const int el = static_cast<int>(view_angles_.getSnappedElevation() * 180.0 / M_PI);
@@ -345,7 +338,6 @@ void AxesRenderer::render()
     }
 
     drawGridNumbers(text_renderer_,
-                    &shader_collection_.text_shader,
                     axes_limits_,
                     view_angles_,
                     plot_pane_settings_,
@@ -357,6 +349,7 @@ void AxesRenderer::render()
                     grid_vectors_,
                     axes_side_configuration_,
                     use_perspective_proj_);
+    text_renderer_.flush();
 }
 
 void AxesRenderer::renderLegend()

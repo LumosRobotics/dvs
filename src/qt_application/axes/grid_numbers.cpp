@@ -13,7 +13,7 @@
 
 const float kTextScale{0.00045f};
 
-void drawXLetter(const TextRenderer& text_renderer,
+void drawXLetter(TextRenderer& text_renderer,
                  const glm::mat4& view_model,
                  const glm::vec4& v_viewport,
                  const glm::mat4& projection,
@@ -30,7 +30,7 @@ void drawXLetter(const TextRenderer& text_renderer,
     text_renderer.renderTextFromRightCenter("X", v_projected[0], v_projected[1], 0.0004f, width, height);
 }
 
-void drawYLetter(const TextRenderer& text_renderer,
+void drawYLetter(TextRenderer& text_renderer,
                  const glm::mat4& view_model,
                  const glm::vec4& v_viewport,
                  const glm::mat4& projection,
@@ -47,7 +47,7 @@ void drawYLetter(const TextRenderer& text_renderer,
     text_renderer.renderTextFromRightCenter("Y", v_projected[0], v_projected[1], 0.0004f, width, height);
 }
 
-void drawZLetter(const TextRenderer& text_renderer,
+void drawZLetter(TextRenderer& text_renderer,
                  const glm::mat4& view_model,
                  const glm::vec4& v_viewport,
                  const glm::mat4& projection,
@@ -65,7 +65,7 @@ void drawZLetter(const TextRenderer& text_renderer,
     text_renderer.renderTextFromRightCenter("Z", v_projected[0], v_projected[1], 0.0004f, width, height);
 }
 
-void drawXAxisNumbers(const TextRenderer& text_renderer,
+void drawXAxisNumbers(TextRenderer& text_renderer,
                       const PlotPaneSettings& plot_pane_settings,
                       const glm::mat4& view_model,
                       const glm::vec4& v_viewport,
@@ -77,7 +77,6 @@ void drawXAxisNumbers(const TextRenderer& text_renderer,
                       const SnappingAxis snapping_axis,
                       const Vec3d& axes_center,
                       const GridVectors& gv,
-                      const GLint text_color_uniform,
                       const AxesSideConfiguration& axes_side_configuration,
                       const float distance_multiplier,
                       const bool perspective_projection)
@@ -91,7 +90,7 @@ void drawXAxisNumbers(const TextRenderer& text_renderer,
     if (plot_pane_settings.axes_letters_on)
     {
         const auto c = plot_pane_settings.axes_letters_color;
-        glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+        text_renderer.setColor(c.red, c.green, c.blue);
         drawXLetter(
             text_renderer, view_model, v_viewport, projection, width, height, y, z, z_value_distance_multiplier);
     }
@@ -101,7 +100,7 @@ void drawXAxisNumbers(const TextRenderer& text_renderer,
         return;
     }
     const auto c = plot_pane_settings.axes_numbers_color;
-    glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+    text_renderer.setColor(c.red, c.green, c.blue);
 
     const bool cond2 =
         ((azimuth <= 0) && (azimuth >= (-M_PI / 2.0))) || ((azimuth >= (M_PI / 2.0)) && (azimuth <= (M_PI)));
@@ -125,7 +124,7 @@ void drawXAxisNumbers(const TextRenderer& text_renderer,
     }
 }
 
-void drawYAxisNumbers(const TextRenderer& text_renderer,
+void drawYAxisNumbers(TextRenderer& text_renderer,
                       const PlotPaneSettings& plot_pane_settings,
                       const glm::mat4& view_model,
                       const glm::vec4& v_viewport,
@@ -138,7 +137,6 @@ void drawYAxisNumbers(const TextRenderer& text_renderer,
                       const SnappingAxis snapping_axis,
                       const Vec3d& axes_center,
                       const GridVectors& gv,
-                      const GLint text_color_uniform,
                       const AxesSideConfiguration& axes_side_configuration,
                       const float distance_multiplier,
                       const bool perspective_projection)
@@ -154,7 +152,7 @@ void drawYAxisNumbers(const TextRenderer& text_renderer,
     if (plot_pane_settings.axes_letters_on)
     {
         const auto c = plot_pane_settings.axes_letters_color;
-        glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+        text_renderer.setColor(c.red, c.green, c.blue);
         drawYLetter(
             text_renderer, view_model, v_viewport, projection, width, height, x, z, z_value_distance_multiplier);
     }
@@ -164,7 +162,7 @@ void drawYAxisNumbers(const TextRenderer& text_renderer,
         return;
     }
     const auto c = plot_pane_settings.axes_numbers_color;
-    glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+    text_renderer.setColor(c.red, c.green, c.blue);
 
     for (size_t k = 0; k < gv.y.num_valid_values; k++)
     {
@@ -196,7 +194,7 @@ void drawYAxisNumbers(const TextRenderer& text_renderer,
     }
 }
 
-void drawZAxisNumbers(const TextRenderer& text_renderer,
+void drawZAxisNumbers(TextRenderer& text_renderer,
                       const PlotPaneSettings& plot_pane_settings,
                       const glm::mat4& view_model,
                       const glm::vec4& v_viewport,
@@ -208,7 +206,6 @@ void drawZAxisNumbers(const TextRenderer& text_renderer,
                       const float height,
                       const Vec3d& axes_center,
                       const GridVectors& gv,
-                      const GLint text_color_uniform,
                       const AxesSideConfiguration& axes_side_configuration,
                       const float distance_multiplier,
                       const bool perspective_projection)
@@ -242,7 +239,7 @@ void drawZAxisNumbers(const TextRenderer& text_renderer,
     if (plot_pane_settings.axes_letters_on)
     {
         const auto c = plot_pane_settings.axes_letters_color;
-        glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+        text_renderer.setColor(c.red, c.green, c.blue);
         drawZLetter(text_renderer,
                     view_model,
                     v_viewport,
@@ -260,7 +257,7 @@ void drawZAxisNumbers(const TextRenderer& text_renderer,
         return;
     }
     const auto c = plot_pane_settings.axes_numbers_color;
-    glUniform3f(text_color_uniform, c.red, c.green, c.blue);
+    text_renderer.setColor(c.red, c.green, c.blue);
 
     for (size_t k = 0; k < gv.z.num_valid_values; k++)
     {
@@ -281,8 +278,7 @@ void drawZAxisNumbers(const TextRenderer& text_renderer,
     }
 }
 
-void drawGridNumbers(const TextRenderer& text_renderer,
-                     const TextShader* const text_shader,
+void drawGridNumbers(TextRenderer& text_renderer,
                      const AxesLimits& axes_limits,
                      const ViewAngles& view_angles,
                      const PlotPaneSettings& plot_pane_settings,
@@ -295,7 +291,6 @@ void drawGridNumbers(const TextRenderer& text_renderer,
                      const AxesSideConfiguration& axes_side_configuration,
                      const bool perspective_projection)
 {
-    text_shader->use();
 
     glm::mat4 model_mat_local = model_mat;
 
@@ -347,7 +342,6 @@ void drawGridNumbers(const TextRenderer& text_renderer,
                          view_angles.getSnappingAxis(),
                          axes_center,
                          gv,
-                         text_shader->uniform_handles.text_color,
                          axes_side_configuration,
                          distance_multiplier,
                          perspective_projection);
@@ -367,7 +361,6 @@ void drawGridNumbers(const TextRenderer& text_renderer,
                          view_angles.getSnappingAxis(),
                          axes_center,
                          gv,
-                         text_shader->uniform_handles.text_color,
                          axes_side_configuration,
                          distance_multiplier,
                          perspective_projection);
@@ -386,7 +379,6 @@ void drawGridNumbers(const TextRenderer& text_renderer,
                          height,
                          axes_center,
                          gv,
-                         text_shader->uniform_handles.text_color,
                          axes_side_configuration,
                          distance_multiplier,
                          perspective_projection);
