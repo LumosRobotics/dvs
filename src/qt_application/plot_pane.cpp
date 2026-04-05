@@ -20,12 +20,18 @@ PlotPane::PlotPane(QWidget* parent,
                    const std::shared_ptr<ElementSettings>& element_settings,
                    const std::function<void(const char key)>& notify_main_window_key_pressed,
                    const std::function<void(const char key)>& notify_main_window_key_released,
-                   const std::function<void()>& notify_main_window_about_modification)
+                   const std::function<void()>& notify_main_window_about_modification,
+                   const std::function<void(const QPoint& pos, const std::string& elem_name)>& notify_parent_right_click,
+                   const std::function<void(const QPoint& pos, const QSize& size, bool is_editing)>& notify_tab_about_editing,
+                   const std::function<void(const std::string&)>& on_text_output)
     : QOpenGLWidget(parent),
       ApplicationGuiElement(element_settings,
                            notify_main_window_key_pressed,
                            notify_main_window_key_released,
-                           notify_main_window_about_modification),
+                           notify_main_window_about_modification,
+                           notify_parent_right_click,
+                           on_text_output),
+      notify_tab_about_editing_(notify_tab_about_editing),
       axes_interactor_(axes_settings_, width(), height()),
       axes_renderer_(nullptr),
       axes_set_(false),
@@ -314,18 +320,19 @@ void PlotPane::mousePressEvent(QMouseEvent* event)
     }
     else if (event->button() == Qt::RightButton)
     {
-        // Right-click: zoom mode with shift
         if (event->modifiers() & Qt::ShiftModifier)
         {
             is_zooming_ = true;
             shift_pressed_at_mouse_press_ = true;
             axes_interactor_.setOverriddenMouseInteractionType(MouseInteractionType::ZOOM);
             axes_interactor_.registerMousePressed(mouse_pos_normalized);
-            LUMOS_LOG_DEBUG() << "Right-click with shift: zoom mode enabled";
         }
         else
         {
-            LUMOS_LOG_DEBUG() << "Right-click at position: (" << event->pos().x() << ", " << event->pos().y() << ")";
+            if (notify_parent_right_click_)
+            {
+                notify_parent_right_click_(event->pos(), element_settings_->handle_string);
+            }
         }
     }
 }

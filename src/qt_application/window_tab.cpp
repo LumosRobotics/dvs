@@ -1,7 +1,20 @@
 #include "window_tab.h"
 
+#include "gui_elements.h"
 #include "lumos/logging/logging.h"
 #include "project_state/project_settings.h"
+
+// ---------------------------------------------------------------------------
+// Helper: compute initial pixel rect from fractional element settings
+// ---------------------------------------------------------------------------
+static QRect getPosAndSizeInPixels(QWidget* parent, const ElementSettings* s)
+{
+    return QRect(
+        static_cast<int>(s->x * parent->width()),
+        static_cast<int>(s->y * parent->height()),
+        static_cast<int>(s->width * parent->width()),
+        static_cast<int>(s->height * parent->height()));
+}
 
 WindowTab::WindowTab(
     QWidget* parent_widget,
@@ -12,7 +25,8 @@ WindowTab::WindowTab(
     const std::function<void(const QPoint& pos, const std::string& elem_name)>&
         notify_parent_window_right_mouse_pressed,
     const std::function<void(const std::string&)>& notify_main_window_element_deleted,
-    const std::function<void()>& notify_main_window_about_modification)
+    const std::function<void()>& notify_main_window_about_modification,
+    const std::function<void(const std::string&)>& on_text_output)
     : name_(tab_settings.name),
       parent_widget_(parent_widget),
       notify_main_window_key_pressed_(notify_main_window_key_pressed),
@@ -20,6 +34,7 @@ WindowTab::WindowTab(
       notify_parent_window_right_mouse_pressed_(notify_parent_window_right_mouse_pressed),
       notify_main_window_element_deleted_(notify_main_window_element_deleted),
       notify_main_window_about_modification_(notify_main_window_about_modification),
+      on_text_output_(on_text_output),
       current_element_idx_(0),
       background_color_(tab_settings.background_color),
       element_x_offset_(element_x_offset)
@@ -27,11 +42,52 @@ WindowTab::WindowTab(
     // Create GUI elements from settings
     for (const auto& element_settings : tab_settings.elements)
     {
-        if (element_settings->type == lumos::GuiElementType::PlotPane)
+        using ET = lumos::GuiElementType;
+        switch (element_settings->type)
         {
-            createNewPlotPane(element_settings);
+            case ET::PlotPane:
+                createNewPlotPane(element_settings);
+                break;
+            case ET::Button:
+                if (auto s = std::dynamic_pointer_cast<ButtonSettings>(element_settings))
+                    createNewButton(s);
+                break;
+            case ET::Slider:
+                if (auto s = std::dynamic_pointer_cast<SliderSettings>(element_settings))
+                    createNewSlider(s);
+                break;
+            case ET::Checkbox:
+                if (auto s = std::dynamic_pointer_cast<CheckboxSettings>(element_settings))
+                    createNewCheckbox(s);
+                break;
+            case ET::TextLabel:
+                if (auto s = std::dynamic_pointer_cast<TextLabelSettings>(element_settings))
+                    createNewTextLabel(s);
+                break;
+            case ET::EditableText:
+                if (auto s = std::dynamic_pointer_cast<EditableTextSettings>(element_settings))
+                    createNewEditableText(s);
+                break;
+            case ET::DropdownMenu:
+                if (auto s = std::dynamic_pointer_cast<DropdownMenuSettings>(element_settings))
+                    createNewDropdownMenu(s);
+                break;
+            case ET::RadioButtonGroup:
+                if (auto s = std::dynamic_pointer_cast<RadioButtonGroupSettings>(element_settings))
+                    createNewRadioButtonGroup(s);
+                break;
+            case ET::ListBox:
+                if (auto s = std::dynamic_pointer_cast<ListBoxSettings>(element_settings))
+                    createNewListBox(s);
+                break;
+            case ET::ScrollingText:
+                if (auto s = std::dynamic_pointer_cast<ScrollingTextSettings>(element_settings))
+                    createNewScrollingText(s);
+                break;
+            default:
+                LUMOS_LOG_WARNING() << "Unknown element type encountered in WindowTab constructor";
+                break;
         }
-        // TODO: Add other element types (buttons, sliders, etc.) when implemented
     }
 
     LUMOS_LOG_INFO() << "WindowTab '" << name_ << "' created with "
@@ -135,11 +191,16 @@ void WindowTab::createNewPlotPane(const std::string& element_handle_string)
 
 void WindowTab::createNewPlotPane(const std::shared_ptr<ElementSettings>& element_settings)
 {
+    auto notify_tab_about_editing = [](const QPoint&, const QSize&, bool) {};  // Phase 5 stub
+
     PlotPane* plot_pane = new PlotPane(parent_widget_,
                                        element_settings,
                                        notify_main_window_key_pressed_,
                                        notify_main_window_key_released_,
-                                       notify_main_window_about_modification_);
+                                       notify_main_window_about_modification_,
+                                       notify_parent_window_right_mouse_pressed_,
+                                       notify_tab_about_editing,
+                                       on_text_output_);
 
     plot_pane->setGeometry(
         static_cast<int>(element_settings->x) + element_x_offset_,
@@ -156,32 +217,20 @@ void WindowTab::createNewPlotPane(const std::shared_ptr<ElementSettings>& elemen
 
 void WindowTab::show()
 {
-    // Show plot panes (they're QWidgets)
-    for (auto* pane : plot_panes_)
+    for (auto* element : getAllGuiElements())
     {
-        pane->show();
+        if (auto* w = dynamic_cast<QWidget*>(element))
+            w->show();
     }
-
-    // Show other GUI elements (when implemented, they'll also be QWidgets)
-    // for (auto* element : gui_elements_)
-    // {
-    //     // Cast to QWidget when element types are added
-    // }
 }
 
 void WindowTab::hide()
 {
-    // Hide plot panes (they're QWidgets)
-    for (auto* pane : plot_panes_)
+    for (auto* element : getAllGuiElements())
     {
-        pane->hide();
+        if (auto* w = dynamic_cast<QWidget*>(element))
+            w->hide();
     }
-
-    // Hide other GUI elements (when implemented, they'll also be QWidgets)
-    // for (auto* element : gui_elements_)
-    // {
-    //     // Cast to QWidget when element types are added
-    // }
 }
 
 void WindowTab::updateSizeFromParent(const QSize new_size) const
@@ -288,4 +337,171 @@ std::vector<std::string> WindowTab::getElementNames() const
 void WindowTab::setName(const std::string& new_name)
 {
     name_ = new_name;
+}
+
+// ---------------------------------------------------------------------------
+// createNew* implementations for non-PlotPane elements
+// ---------------------------------------------------------------------------
+
+template <typename T>
+static ApplicationGuiElement* createGuiElement(
+    QWidget* parent_widget,
+    const std::shared_ptr<typename T::SettingsType>& settings,
+    const std::function<void(const char)>& key_pressed,
+    const std::function<void(const char)>& key_released,
+    const std::function<void()>& on_modification,
+    const std::function<void(const QPoint&, const std::string&)>& right_click,
+    const std::function<void(const std::string&)>& on_text_output)
+{
+    return new T(parent_widget, settings, key_pressed, key_released, on_modification, right_click, on_text_output);
+}
+
+ApplicationGuiElement* WindowTab::createNewButton(const std::shared_ptr<ButtonSettings>& settings)
+{
+    ButtonGuiElement* elem = new ButtonGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewSlider(const std::shared_ptr<SliderSettings>& settings)
+{
+    SliderGuiElement* elem = new SliderGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewCheckbox(const std::shared_ptr<CheckboxSettings>& settings)
+{
+    CheckboxGuiElement* elem = new CheckboxGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewTextLabel(const std::shared_ptr<TextLabelSettings>& settings)
+{
+    TextLabelGuiElement* elem = new TextLabelGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewEditableText(const std::shared_ptr<EditableTextSettings>& settings)
+{
+    EditableTextGuiElement* elem = new EditableTextGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewDropdownMenu(const std::shared_ptr<DropdownMenuSettings>& settings)
+{
+    DropdownMenuGuiElement* elem = new DropdownMenuGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewRadioButtonGroup(const std::shared_ptr<RadioButtonGroupSettings>& settings)
+{
+    RadioButtonGroupGuiElement* elem = new RadioButtonGroupGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewListBox(const std::shared_ptr<ListBoxSettings>& settings)
+{
+    ListBoxGuiElement* elem = new ListBoxGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+ApplicationGuiElement* WindowTab::createNewScrollingText(const std::shared_ptr<ScrollingTextSettings>& settings)
+{
+    ScrollingTextGuiElement* elem = new ScrollingTextGuiElement(
+        parent_widget_, settings,
+        notify_main_window_key_pressed_, notify_main_window_key_released_,
+        notify_main_window_about_modification_,
+        notify_parent_window_right_mouse_pressed_,
+        on_text_output_);
+    elem->setGeometry(getPosAndSizeInPixels(parent_widget_, settings.get()));
+    elem->show();
+    gui_elements_.push_back(elem);
+    return elem;
+}
+
+void WindowTab::raiseElement(const std::string& handle_string)
+{
+    for (auto* elem : getAllGuiElements())
+    {
+        if (elem->getHandleString() == handle_string)
+        {
+            if (auto* w = dynamic_cast<QWidget*>(elem))
+                w->raise();
+        }
+    }
+}
+
+void WindowTab::lowerElement(const std::string& handle_string)
+{
+    for (auto* elem : getAllGuiElements())
+    {
+        if (elem->getHandleString() == handle_string)
+        {
+            if (auto* w = dynamic_cast<QWidget*>(elem))
+                w->lower();
+        }
+    }
 }

@@ -49,7 +49,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/googletest/
 
 # Qt6
 set(CMAKE_PREFIX_PATH "/usr/local/opt/qt/lib/cmake")
-find_package(Qt6 COMPONENTS Core Widgets OpenGL OpenGLWidgets QUIET)
+find_package(Qt6 COMPONENTS Core Widgets OpenGL OpenGLWidgets SerialPort QUIET)
 
 # Nlohmann
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/nlohmann/include)

@@ -1,11 +1,21 @@
 #include "main_window.h"
 
 #include <QCloseEvent>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <cstring>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+#include <QFile>
+#include <QIcon>
 
 #include "lumos/plotting/enumerations.h"
 #include "lumos/logging/logging.h"
+#include "platform_paths.h"
 #include "plot_objects/plot_object_base/plot_object_base.h"
 #include "plot_objects/plot_objects.h"
+#include "serial_interface/raw_data_frame.h"
 
 using namespace lumos::internal;
 
@@ -19,12 +29,15 @@ MainWindow::MainWindow(const std::vector<std::string>& cmdl_args)
     : QMainWindow(nullptr),
       settings_(std::make_unique<SettingsHandler>("Duoplot")),
       data_receiver_(),
+      serial_interface_(nullptr),
       tcp_receive_thread_(nullptr),
       receive_timer_(nullptr),
       refresh_timer_(nullptr),
       current_window_num_(0),
       window_callback_id_(0),
       shutdown_in_progress_(false),
+      open_project_file_queued_(false),
+      new_window_queued_(false),
       current_element_name_(""),
       window_initialization_in_progress_(false)
 {
@@ -59,6 +72,40 @@ MainWindow::MainWindow(const std::vector<std::string>& cmdl_args)
 
     // Setup windows
     setupWindows(project_settings);
+
+    // Setup tray icon
+    tray_icon_ = new TrayIcon(this);
+    tray_icon_->setOnFileNew([this]()  { newProject(); });
+    tray_icon_->setOnFileOpen([this]() {
+        const QString path = QFileDialog::getOpenFileName(nullptr, "Open Project", "",
+                                                          "Duoplot Project (*.dvs)");
+        if (!path.isEmpty())
+            openExistingFile(path.toStdString());
+    });
+    tray_icon_->setOnFileSave([this]()   { saveProject(); });
+    tray_icon_->setOnFileSaveAs([this]() { saveProjectAs(); });
+    tray_icon_->setOnNewWindow([this]()  { newWindow(); });
+    tray_icon_->setOnShowWindow([this](const std::string& name) {
+        for (auto* w : windows_)
+        {
+            if (w->getName().toStdString() == name)
+            {
+                w->show();
+                w->raise();
+                w->activateWindow();
+                break;
+            }
+        }
+    });
+    // Register existing windows in the tray menu
+    for (auto* w : windows_)
+        tray_icon_->addWindow(w->getName().toStdString());
+    // Set tray icon image
+    const QString icon_path = QString::fromStdString(getResourcesPathString()) + "images/apple.ico";
+    if (QFile::exists(icon_path))
+        tray_icon_->setIcon(QIcon(icon_path));
+
+    tray_icon_->show();
 
     // Start TCP receive thread
     tcp_receive_thread_ = new std::thread(&MainWindow::tcpReceiveThreadFunction, this);
@@ -171,10 +218,28 @@ void MainWindow::setupWindows(const ProjectSettings& project_settings)
             notify_main_window_name_changed_,
             notify_main_window_about_modification_);
 
+        connect(window, &GuiWindow::serialConnectRequested, this, &MainWindow::connectSerialPort);
+        connect(window, &GuiWindow::guiElementCreated,     this, &MainWindow::onGuiElementCreated);
+        connect(window, &GuiWindow::newProjectRequested,   this, &MainWindow::newProject);
+        connect(window, &GuiWindow::saveProjectRequested,  this, &MainWindow::saveProject);
+        connect(window, &GuiWindow::saveProjectAsRequested,this, &MainWindow::saveProjectAs);
+        connect(window, &GuiWindow::newWindowRequested,    this, &MainWindow::newWindow);
+        connect(window, &GuiWindow::openProjectRequested,  this, [this]() {
+            const QString path = QFileDialog::getOpenFileName(
+                nullptr, tr("Open Project"), QString(),
+                tr("Duoplot Project (*.dvs);;All Files (*)"));
+            if (!path.isEmpty())
+                openExistingFile(path.toStdString());
+        });
+
         windows_.push_back(window);
         window->show();
         window_callback_id_++;
         current_window_num_++;
+
+        // Register in tray (tray_icon_ may be null during initial setup — added separately)
+        if (tray_icon_)
+            tray_icon_->addWindow(ws.name);
 
         // Collect all plot panes and GUI elements from this window
         for (ApplicationGuiElement* element : window->getAllGuiElements())
@@ -232,12 +297,96 @@ void MainWindow::tcpReceiveThreadFunction()
 
 void MainWindow::manageReceivedData(ReceivedData& received_data)
 {
+    // NOTE: called from tcpReceiveThreadFunction which already holds receive_mtx_.
     const Function fcn = received_data.getFunction();
 
-    // TODO: Handle special functions like OPEN_PROJECT_FILE, SCREENSHOT, etc.
+    if (fcn == Function::OPEN_PROJECT_FILE)
+    {
+        const CommunicationHeader& hdr = received_data.getCommunicationHeader();
+        queued_project_file_name_ =
+            hdr.get(CommunicationHeaderObjectType::PROJECT_FILE_NAME).as<properties::Label>().data;
+        open_project_file_queued_ = true;
+    }
+    else if (fcn == Function::SCREENSHOT)
+    {
+        const CommunicationHeader& hdr = received_data.getCommunicationHeader();
+        const std::string base_path =
+            hdr.get(CommunicationHeaderObjectType::SCREENSHOT_BASE_PATH).as<properties::Label>().data;
+        performScreenshot(base_path);
+    }
+    else if (fcn == Function::QUERY_FOR_SYNC_OF_GUI_DATA)
+    {
+        updateClientApplicationAboutGuiState();
+    }
+    else if (fcn == Function::SET_GUI_ELEMENT_LABEL)
+    {
+        handleGuiManipulation(received_data);
+    }
+    else
+    {
+        addActionToQueue(received_data);
+    }
+}
 
-    // For now, just add to queue
-    addActionToQueue(received_data);
+void MainWindow::handleGuiManipulation(ReceivedData& received_data)
+{
+    const CommunicationHeader& hdr = received_data.getCommunicationHeader();
+    const std::string handle_string =
+        hdr.get(CommunicationHeaderObjectType::HANDLE_STRING).as<properties::Label>().data;
+    const std::string label =
+        hdr.get(CommunicationHeaderObjectType::LABEL).as<properties::Label>().data;
+
+    if (gui_elements_.count(handle_string) > 0)
+    {
+        gui_elements_[handle_string]->setLabel(label);
+    }
+}
+
+void MainWindow::performScreenshot(const std::string& screenshot_base_path)
+{
+    LUMOS_LOG_INFO() << "Screenshot requested: " << screenshot_base_path;
+    for (auto* w : windows_)
+        w->screenshot(screenshot_base_path);
+}
+
+void MainWindow::updateClientApplicationAboutGuiState()
+{
+    // Collect non-PlotPane GUI elements that have interactive state
+    std::vector<ApplicationGuiElement*> interactive_elements;
+    for (const auto& kv : gui_elements_)
+    {
+        if (plot_panes_.count(kv.first) == 0)  // skip plot panes
+            interactive_elements.push_back(kv.second);
+    }
+
+    // Wire format: num_elements (uint8) + for each element: sendGuiData() binary block
+    // Compute total size
+    std::uint64_t total_bytes = sizeof(std::uint8_t);  // num_elements
+    for (const auto* elem : interactive_elements)
+    {
+        const std::uint8_t hl = static_cast<std::uint8_t>(elem->getHandleString().size());
+        total_bytes += sizeof(std::uint8_t) +   // type
+                       sizeof(std::uint8_t) +   // handle length
+                       hl +                     // handle string
+                       sizeof(std::uint32_t) +  // payload size
+                       elem->getGuiPayloadSize();
+    }
+
+    FillableUInt8Array arr{total_bytes};
+    arr.fillWithStaticType(static_cast<std::uint8_t>(interactive_elements.size()));
+
+    for (const auto* elem : interactive_elements)
+    {
+        const std::string& hs = elem->getHandleString();
+        const std::uint8_t hl = static_cast<std::uint8_t>(hs.size());
+        arr.fillWithStaticType(static_cast<std::uint8_t>(elem->getElementSettings()->type));
+        arr.fillWithStaticType(hl);
+        arr.fillWithDataFromPointer(hs.data(), hl);
+        arr.fillWithStaticType(static_cast<std::uint32_t>(elem->getGuiPayloadSize()));
+        elem->fillGuiPayload(arr);
+    }
+
+    lumos::internal::sendThroughTcpInterface(arr.view(), lumos::internal::kGuiTcpPortNum);
 }
 
 void MainWindow::addActionToQueue(ReceivedData& received_data)
@@ -247,6 +396,10 @@ void MainWindow::addActionToQueue(ReceivedData& received_data)
     if (fcn == Function::SET_CURRENT_ELEMENT)
     {
         setActiveView(received_data);
+    }
+    else if (fcn == Function::FLUSH_MULTIPLE_ELEMENTS)
+    {
+        mainWindowFlushMultipleElements(received_data);
     }
     else if (isPlotDataFunction(fcn))
     {
@@ -260,17 +413,83 @@ void MainWindow::addActionToQueue(ReceivedData& received_data)
         queued_data_[current_element_name_].push(std::make_unique<InputData>(
             received_data, converted_data, plot_object_attributes, user_supplied_properties));
     }
+    else if (fcn == Function::PROPERTIES_EXTENSION || fcn == Function::PROPERTIES_EXTENSION_MULTIPLE)
+    {
+        const CommunicationHeader& hdr{received_data.getCommunicationHeader()};
+        const PlotObjectAttributes plot_object_attributes{hdr};
+        const UserSuppliedProperties user_supplied_properties{hdr};
+        queued_data_[current_element_name_].push(
+            std::make_unique<InputData>(received_data, plot_object_attributes, user_supplied_properties));
+    }
     else
     {
-        // Other commands (AXES, VIEW, CLEAR, etc.)
+        // AXES, VIEW, CLEAR, FLUSH_ELEMENT, etc.
         queued_data_[current_element_name_].push(std::make_unique<InputData>(received_data));
+    }
+}
+
+void MainWindow::mainWindowFlushMultipleElements(const ReceivedData& received_data)
+{
+    const CommunicationHeader& hdr = received_data.getCommunicationHeader();
+    const uint8_t num_names = hdr.get(CommunicationHeaderObjectType::NUM_NAMES).as<uint8_t>();
+
+    const VectorConstView<uint8_t> name_lengths{received_data.payloadData(), static_cast<size_t>(num_names)};
+
+    std::vector<std::string> names;
+    size_t idx = num_names;
+
+    for (size_t k = 0; k < num_names; k++)
+    {
+        names.push_back("");
+        std::string& current_elem = names.back();
+        const uint8_t current_element_length = name_lengths(k);
+        for (size_t i = 0; i < current_element_length; i++)
+        {
+            current_elem += static_cast<char>(received_data.payloadData()[idx]);
+            idx++;
+        }
+    }
+
+    // Build a fake FLUSH_ELEMENT packet and queue it for each named element
+    CommunicationHeader faked_hdr{Function::FLUSH_ELEMENT};
+    const uint64_t num_bytes_hdr = faked_hdr.numBytes();
+    const uint64_t num_bytes = num_bytes_hdr + 1 + 2 * sizeof(uint64_t);
+
+    FillableUInt8Array fillable_array{num_bytes};
+    fillable_array.fillWithStaticType(isBigEndian());
+    fillable_array.fillWithStaticType(kMagicNumber);
+    fillable_array.fillWithStaticType(num_bytes);
+    faked_hdr.fillBufferWithData(fillable_array);
+
+    const UInt8ArrayView array_view{fillable_array.data(), fillable_array.size()};
+
+    for (const std::string& name : names)
+    {
+        ReceivedData fake_received_data{array_view.size()};
+        std::memcpy(fake_received_data.rawData(), array_view.data(), array_view.size());
+        fake_received_data.parseHeader();
+        queued_data_[name].push(std::make_unique<InputData>(fake_received_data));
     }
 }
 
 void MainWindow::setActiveView(const ReceivedData& received_data)
 {
     const CommunicationHeader& hdr = received_data.getCommunicationHeader();
-    current_element_name_ = hdr.get(CommunicationHeaderObjectType::ELEMENT_NAME).as<properties::Label>().data;
+    const std::string name =
+        hdr.get(CommunicationHeaderObjectType::ELEMENT_NAME).as<properties::Label>().data;
+
+    if (name.empty())
+    {
+        LUMOS_LOG_WARNING() << "SET_CURRENT_ELEMENT with empty name";
+        return;
+    }
+
+    current_element_name_ = name;
+
+    if (plot_panes_.count(current_element_name_) == 0)
+    {
+        new_window_queued_ = true;
+    }
 
     LUMOS_LOG_DEBUG() << "Set current element: " << current_element_name_;
 }
@@ -279,7 +498,19 @@ void MainWindow::receiveData()
 {
     std::lock_guard<std::mutex> lock(receive_mtx_);
 
-    // Process queued data for each element
+    if (open_project_file_queued_)
+    {
+        open_project_file_queued_ = false;
+        openExistingFile(queued_project_file_name_);
+    }
+
+    if (new_window_queued_)
+    {
+        new_window_queued_ = false;
+        newWindowWithoutFileModification(current_element_name_);
+    }
+
+    // Dispatch queued data to matching plot panes
     for (auto& qa : queued_data_)
     {
         if (!qa.second.empty())
@@ -288,8 +519,7 @@ void MainWindow::receiveData()
 
             if (plot_panes_.count(element_handle_string) > 0U)
             {
-                PlotPane* plot_pane = plot_panes_[element_handle_string];
-                plot_pane->pushQueue(qa.second);
+                plot_panes_[element_handle_string]->pushQueue(qa.second);
             }
         }
     }
@@ -299,6 +529,7 @@ void MainWindow::onReceiveTimer()
 {
     if (!shutdown_in_progress_)
     {
+        handleSerialData();
         receiveData();
     }
 }
@@ -318,26 +549,110 @@ void MainWindow::onRefreshTimer()
 
 void MainWindow::newProject()
 {
-    LUMOS_LOG_INFO() << "New project requested";
-    // TODO: Implement new project functionality
+    LUMOS_LOG_INFO() << "New project";
+    current_project_file_.clear();
+    removeAllWindows();
+
+    ProjectSettings ps;
+    WindowSettings ws;
+    ws.name = "main";
+    ws.x = 100;
+    ws.y = 100;
+    ws.width = 1200;
+    ws.height = 800;
+    TabSettings ts;
+    ts.name = "tab0";
+    ws.tabs.push_back(ts);
+    ps.pushBackWindowSettings(ws);
+
+    setupWindows(ps);
+    if (tray_icon_)
+    {
+        for (auto* w : windows_)
+            tray_icon_->addWindow(w->getName().toStdString());
+    }
 }
 
 void MainWindow::saveProject()
 {
-    LUMOS_LOG_INFO() << "Save project requested";
-    // TODO: Implement project saving
+    if (current_project_file_.isEmpty())
+    {
+        saveProjectAs();
+        return;
+    }
+
+    ProjectSettings ps;
+    for (const auto* w : windows_)
+        ps.pushBackWindowSettings(w->getWindowSettings());
+
+    std::ofstream out_file(current_project_file_.toStdString());
+    if (!out_file.is_open())
+    {
+        LUMOS_LOG_ERROR() << "Failed to open file for writing: " << current_project_file_.toStdString();
+        QMessageBox::critical(nullptr, tr("Save Failed"),
+                              tr("Could not open file for writing:\n") + current_project_file_);
+        return;
+    }
+
+    out_file << ps.toJson().dump(4);
+    LUMOS_LOG_INFO() << "Project saved to: " << current_project_file_.toStdString();
+
+    for (auto* w : windows_)
+    {
+        w->setIsFileSavedForLabel(true);
+        w->setProjectName(QFileInfo(current_project_file_).baseName());
+    }
 }
 
 void MainWindow::saveProjectAs()
 {
-    LUMOS_LOG_INFO() << "Save project as requested";
-    // TODO: Implement project saving
+    const QString path = QFileDialog::getSaveFileName(
+        nullptr, tr("Save Project As"), current_project_file_,
+        tr("Duoplot Project (*.dvs);;All Files (*)"));
+    if (path.isEmpty())
+        return;
+
+    current_project_file_ = path;
+    saveProject();
 }
 
 void MainWindow::openExistingFile(const std::string& file_path)
 {
     LUMOS_LOG_INFO() << "Opening project: " << file_path;
-    // TODO: Implement project loading
+    try
+    {
+        ProjectSettings ps(file_path);
+        if (ps.getWindows().empty())
+        {
+            QMessageBox::warning(nullptr, tr("Open Failed"),
+                                 tr("The file does not contain any windows:\n")
+                                 + QString::fromStdString(file_path));
+            return;
+        }
+
+        removeAllWindows();
+        current_project_file_ = QString::fromStdString(file_path);
+        setupWindows(ps);
+
+        if (tray_icon_)
+        {
+            for (auto* w : windows_)
+                tray_icon_->addWindow(w->getName().toStdString());
+        }
+
+        const QString project_name = QFileInfo(current_project_file_).baseName();
+        for (auto* w : windows_)
+        {
+            w->setIsFileSavedForLabel(true);
+            w->setProjectName(project_name);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        LUMOS_LOG_ERROR() << "Failed to load project: " << e.what();
+        QMessageBox::critical(nullptr, tr("Open Failed"),
+                              tr("Failed to load project:\n") + QString::fromStdString(e.what()));
+    }
 }
 
 void MainWindow::newWindow()
@@ -348,12 +663,17 @@ void MainWindow::newWindow()
 
 void MainWindow::newWindowWithoutFileModification()
 {
+    newWindowWithoutFileModification("");
+}
+
+void MainWindow::newWindowWithoutFileModification(const std::string& element_handle_string)
+{
     WindowSettings window_settings;
-    window_settings.name = "window_" + std::to_string(windows_.size());
-    window_settings.x = 100 + windows_.size() * 50;
-    window_settings.y = 100 + windows_.size() * 50;
-    window_settings.width = 1200;
-    window_settings.height = 800;
+    window_settings.name = "Window " + std::to_string(current_window_num_);
+    window_settings.x = 30 + current_window_num_ * 30;
+    window_settings.y = 30 + current_window_num_ * 30;
+    window_settings.width = 900;
+    window_settings.height = 700;
 
     TabSettings tab_settings;
     tab_settings.name = "tab0";
@@ -373,12 +693,63 @@ void MainWindow::newWindowWithoutFileModification()
         notify_main_window_name_changed_,
         notify_main_window_about_modification_);
 
+    connect(window, &GuiWindow::serialConnectRequested, this, &MainWindow::connectSerialPort);
+    connect(window, &GuiWindow::guiElementCreated,     this, &MainWindow::onGuiElementCreated);
+    connect(window, &GuiWindow::newProjectRequested,   this, &MainWindow::newProject);
+    connect(window, &GuiWindow::saveProjectRequested,  this, &MainWindow::saveProject);
+    connect(window, &GuiWindow::saveProjectAsRequested,this, &MainWindow::saveProjectAs);
+    connect(window, &GuiWindow::newWindowRequested,    this, &MainWindow::newWindow);
+    connect(window, &GuiWindow::openProjectRequested,  this, [this]() {
+        const QString path = QFileDialog::getOpenFileName(
+            nullptr, tr("Open Project"), QString(),
+            tr("Duoplot Project (*.dvs);;All Files (*)"));
+        if (!path.isEmpty())
+            openExistingFile(path.toStdString());
+    });
+
     windows_.push_back(window);
     window->show();
     window_callback_id_++;
     current_window_num_++;
 
+    if (tray_icon_)
+        tray_icon_->addWindow(window_settings.name);
+
+    // If a specific element was requested, create a plot pane for it immediately
+    if (!element_handle_string.empty())
+    {
+        window->createNewPlotPane(element_handle_string);
+
+        for (ApplicationGuiElement* element : window->getAllGuiElements())
+        {
+            const std::string handle = element->getHandleString();
+            gui_elements_[handle] = element;
+
+            PlotPane* plot_pane = dynamic_cast<PlotPane*>(element);
+            if (plot_pane != nullptr)
+            {
+                plot_panes_[handle] = plot_pane;
+            }
+        }
+    }
+
     LUMOS_LOG_INFO() << "Created new window: " << window_settings.name;
+}
+
+void MainWindow::handleSerialData()
+{
+    if (serial_interface_ == nullptr)
+    {
+        return;
+    }
+
+    const std::vector<RawDataFrame> frames = serial_interface_->extractRawDataFrames();
+    if (frames.empty())
+    {
+        return;
+    }
+    // TODO Phase 2: feed frames through the subscription system (topic IDs + object types).
+    LUMOS_LOG_DEBUG() << "Received " << frames.size() << " serial frames (not yet processed)";
 }
 
 std::vector<std::string> MainWindow::getAllElementNames() const
@@ -447,6 +818,46 @@ void MainWindow::notifyChildrenOnKeyReleased(const char key)
     {
         window->notifyChildrenOnKeyReleased(key);
     }
+}
+
+void MainWindow::connectSerialPort(const QString& port, int baudrate)
+{
+    // Build platform-specific port path
+    const std::string port_name = port.toStdString();
+    std::string port_path;
+
+#ifdef __APPLE__
+    if (port_name.find("/dev/") == std::string::npos)
+    {
+        port_path = "/dev/tty." + port_name;
+    }
+    else
+    {
+        port_path = port_name;
+    }
+#else
+    if (port_name.find("/dev/") == std::string::npos)
+    {
+        port_path = "/dev/" + port_name;
+    }
+    else
+    {
+        port_path = port_name;
+    }
+#endif
+
+    LUMOS_LOG_INFO() << "Connecting serial port: " << port_path << " @ " << baudrate;
+
+    // Replace previous interface (previous thread runs until process exit).
+    serial_interface_ = new SerialInterface(port_path, static_cast<int32_t>(baudrate));
+    serial_interface_->start();
+}
+
+void MainWindow::onGuiElementCreated(ApplicationGuiElement* element)
+{
+    const std::string handle = element->getHandleString();
+    gui_elements_[handle] = element;
+    LUMOS_LOG_INFO() << "GUI element created and registered: " << handle;
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)

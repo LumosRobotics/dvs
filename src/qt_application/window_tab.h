@@ -27,6 +27,7 @@ private:
     std::function<void(const QPoint& pos, const std::string& elem_name)> notify_parent_window_right_mouse_pressed_;
     std::function<void(const std::string&)> notify_main_window_element_deleted_;
     std::function<void()> notify_main_window_about_modification_;
+    std::function<void(const std::string&)> on_text_output_;
 
     int current_element_idx_;
     RGBTripletf background_color_;
@@ -41,7 +42,8 @@ public:
               const std::function<void(const QPoint& pos, const std::string& elem_name)>&
                   notify_parent_window_right_mouse_pressed,
               const std::function<void(const std::string&)>& notify_main_window_element_deleted,
-              const std::function<void()>& notify_main_window_about_modification);
+              const std::function<void()>& notify_main_window_about_modification,
+              const std::function<void(const std::string&)>& on_text_output);
 
     ~WindowTab();
 
@@ -55,6 +57,19 @@ public:
     void createNewPlotPane();
     void createNewPlotPane(const std::string& element_handle_string);
     void createNewPlotPane(const std::shared_ptr<ElementSettings>& element_settings);
+
+    ApplicationGuiElement* createNewButton(const std::shared_ptr<ButtonSettings>& settings);
+    ApplicationGuiElement* createNewSlider(const std::shared_ptr<SliderSettings>& settings);
+    ApplicationGuiElement* createNewCheckbox(const std::shared_ptr<CheckboxSettings>& settings);
+    ApplicationGuiElement* createNewTextLabel(const std::shared_ptr<TextLabelSettings>& settings);
+    ApplicationGuiElement* createNewEditableText(const std::shared_ptr<EditableTextSettings>& settings);
+    ApplicationGuiElement* createNewDropdownMenu(const std::shared_ptr<DropdownMenuSettings>& settings);
+    ApplicationGuiElement* createNewRadioButtonGroup(const std::shared_ptr<RadioButtonGroupSettings>& settings);
+    ApplicationGuiElement* createNewListBox(const std::shared_ptr<ListBoxSettings>& settings);
+    ApplicationGuiElement* createNewScrollingText(const std::shared_ptr<ScrollingTextSettings>& settings);
+
+    void raiseElement(const std::string& handle_string);
+    void lowerElement(const std::string& handle_string);
 
     void show();
     void hide();

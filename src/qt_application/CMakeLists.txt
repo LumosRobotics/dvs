@@ -38,6 +38,7 @@ set(CPP_SOURCE_FILES
     plot_pane.cpp
     window_tab.cpp
     gui_window.cpp
+    gui_elements.cpp
     plot_data_conversion.cpp
 
     # Communication
@@ -120,6 +121,16 @@ set(CPP_SOURCE_FILES
     color_picker.cpp
     misc/number_formatting.cpp
 
+    # UI Shell (Phase 3)
+    cmdl_output_window.cpp
+    topic_text_output_window.cpp
+    settings_window.cpp
+    help_pane.cpp
+    tray_icon.cpp
+
+    # Edit mode (Phase 5)
+    editing_overlay.cpp
+
     # LumosConfig
     ${REPO_DIR}/third_party/LumosConfig/Settings.cpp
     ${REPO_DIR}/third_party/LumosConfig/src/modules/settings_handler/settings_handler.cpp
@@ -132,6 +143,7 @@ set(HEADER_FILES
     main_window.h
     plot_pane.h
     gui_element.h
+    gui_elements.h
     window_tab.h
     gui_window.h
 )
@@ -144,6 +156,7 @@ target_link_libraries(qt_duoplot
     Qt6::Core
     Qt6::Widgets
     Qt6::OpenGLWidgets
+    Qt6::SerialPort
     ${OPENGL_LIBRARIES}
     ${GLUT_LIBRARY}
     ${REPO_DIR}/src/externals/freetype/build/libfreetype.a

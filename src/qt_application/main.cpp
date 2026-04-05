@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QSurfaceFormat>
 #include <iostream>
 
 #include "lumos/logging/logging.h"
@@ -6,6 +7,17 @@
 
 int main(int argc, char* argv[])
 {
+    // Request OpenGL 3.3 Core Profile globally before creating QApplication.
+    // This is required on macOS (and good practice everywhere): Qt defaults to a
+    // legacy 2.1 context which does not support GLSL #version 330.
+    QSurfaceFormat format;
+    format.setVersion(3, 3);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setSamples(4);
+    QSurfaceFormat::setDefaultFormat(format);
+
     QApplication app(argc, argv);
 
     app.setApplicationName("Duoplot");

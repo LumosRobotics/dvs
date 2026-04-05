@@ -2,7 +2,9 @@
 #define QT_APPLICATION_MAIN_WINDOW_H_
 
 #include <QMainWindow>
+#include <QString>
 #include <QTimer>
+#include <QFileDialog>
 
 #include <atomic>
 #include <functional>
@@ -21,7 +23,9 @@
 #include "input_data.h"
 #include "plot_pane.h"
 #include "project_state/project_settings.h"
+#include "serial_interface/serial_interface.h"
 #include "settings_handler/settings_handler.h"
+#include "tray_icon.h"
 
 class MainWindow : public QMainWindow
 {
@@ -31,8 +35,12 @@ private:
     // Settings
     std::unique_ptr<SettingsHandler> settings_;
 
+    // Tray icon (Phase 3)
+    TrayIcon* tray_icon_{nullptr};
+
     // Communication
     DataReceiver data_receiver_;
+    SerialInterface* serial_interface_;  // null until user selects a port
     std::thread* tcp_receive_thread_;
     std::mutex receive_mtx_;
 
@@ -50,8 +58,14 @@ private:
     std::map<std::string, ApplicationGuiElement*> gui_elements_;  // Map element_name -> GuiElement*
     std::map<std::string, std::queue<std::unique_ptr<InputData>>> queued_data_;  // Per-element data queues
 
+    // Project file path (empty = unsaved new project)
+    QString current_project_file_;
+
     // State
     std::atomic<bool> shutdown_in_progress_;
+    std::atomic<bool> open_project_file_queued_;
+    std::atomic<bool> new_window_queued_;
+    std::string queued_project_file_name_;
     std::string current_element_name_;
     bool window_initialization_in_progress_;
 
@@ -72,6 +86,11 @@ private:
     void manageReceivedData(ReceivedData& received_data);
     void addActionToQueue(ReceivedData& received_data);
     void setActiveView(const ReceivedData& received_data);
+    void handleGuiManipulation(ReceivedData& received_data);
+    void mainWindowFlushMultipleElements(const ReceivedData& received_data);
+    void handleSerialData();
+    void performScreenshot(const std::string& screenshot_base_path);
+    void updateClientApplicationAboutGuiState();
 
     // Window management
     void setupWindows(const ProjectSettings& project_settings);
@@ -92,6 +111,8 @@ private:
 private slots:
     void onReceiveTimer();
     void onRefreshTimer();
+    void connectSerialPort(const QString& port, int baudrate);
+    void onGuiElementCreated(ApplicationGuiElement* element);
 
 public:
     MainWindow(const std::vector<std::string>& cmdl_args);
@@ -102,6 +123,7 @@ public:
 
     void newWindow();
     void newWindowWithoutFileModification();
+    void newWindowWithoutFileModification(const std::string& element_handle_string);
 
 protected:
     void closeEvent(QCloseEvent* event) override;

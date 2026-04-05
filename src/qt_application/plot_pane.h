@@ -50,6 +50,9 @@ private:
     bool shift_pressed_at_mouse_press_;
     bool should_render_point_selection_;
 
+    // Callbacks to parent
+    std::function<void(const QPoint& pos, const QSize& size, bool is_editing)> notify_tab_about_editing_;
+
     // Helper methods
     void initShaders();
     void processActionQueue();
@@ -71,7 +74,10 @@ public:
              const std::shared_ptr<ElementSettings>& element_settings,
              const std::function<void(const char key)>& notify_main_window_key_pressed,
              const std::function<void(const char key)>& notify_main_window_key_released,
-             const std::function<void()>& notify_main_window_about_modification);
+             const std::function<void()>& notify_main_window_about_modification,
+             const std::function<void(const QPoint& pos, const std::string& elem_name)>& notify_parent_right_click,
+             const std::function<void(const QPoint& pos, const QSize& size, bool is_editing)>& notify_tab_about_editing,
+             const std::function<void(const std::string&)>& on_text_output);
     ~PlotPane();
 
     // Data management
