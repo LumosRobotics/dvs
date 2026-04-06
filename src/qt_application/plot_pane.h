@@ -25,6 +25,10 @@ class PlotPane : public QOpenGLWidget, public ApplicationGuiElement, protected Q
     Q_OBJECT
 
 private:
+    // Settings (cast from element_settings_ at construction)
+    std::shared_ptr<PlotPaneSettings> plot_pane_settings_;
+    RGBTripletf tab_background_color_;
+
     // Axes system
     AxesSettings axes_settings_;
     AxesInteractor axes_interactor_;
@@ -72,6 +76,7 @@ private:
 public:
     PlotPane(QWidget* parent,
              const std::shared_ptr<ElementSettings>& element_settings,
+             const RGBTripletf& tab_background_color,
              const std::function<void(const char key)>& notify_main_window_key_pressed,
              const std::function<void(const char key)>& notify_main_window_key_released,
              const std::function<void()>& notify_main_window_about_modification,

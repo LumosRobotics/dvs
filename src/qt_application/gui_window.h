@@ -4,11 +4,12 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QMenu>
-#include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QCloseEvent>
 #include <QResizeEvent>
+
+#include "tab_button.h"
 
 #include <functional>
 #include <map>
@@ -33,8 +34,7 @@ private:
     // Custom tab strip (vertical buttons on the left, hidden when only 1 tab)
     QWidget*     tab_button_panel_;
     QVBoxLayout* tab_button_layout_;
-    std::vector<QPushButton*> tab_buttons_qt_;   // label buttons (checkable)
-    std::vector<QWidget*>     tab_row_widgets_;  // container per tab (label btn + × btn)
+    std::vector<TabButton*> tab_buttons_;
 
     // Content area: parent for all WindowTab element widgets
     QWidget* content_area_;

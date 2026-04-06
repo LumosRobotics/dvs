@@ -128,6 +128,9 @@ set(CPP_SOURCE_FILES
     help_pane.cpp
     tray_icon.cpp
 
+    # Custom tab button
+    tab_button.cpp
+
     # Edit mode (Phase 5)
     editing_overlay.cpp
 

@@ -18,6 +18,7 @@
 
 PlotPane::PlotPane(QWidget* parent,
                    const std::shared_ptr<ElementSettings>& element_settings,
+                   const RGBTripletf& tab_background_color,
                    const std::function<void(const char key)>& notify_main_window_key_pressed,
                    const std::function<void(const char key)>& notify_main_window_key_released,
                    const std::function<void()>& notify_main_window_about_modification,
@@ -31,6 +32,8 @@ PlotPane::PlotPane(QWidget* parent,
                            notify_main_window_about_modification,
                            notify_parent_right_click,
                            on_text_output),
+      plot_pane_settings_(std::dynamic_pointer_cast<PlotPaneSettings>(element_settings)),
+      tab_background_color_(tab_background_color),
       notify_tab_about_editing_(notify_tab_about_editing),
       axes_interactor_(axes_settings_, width(), height()),
       axes_renderer_(nullptr),
@@ -75,8 +78,7 @@ void PlotPane::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    // Set clear color
-    glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+    // Clear color is set per-frame from plot_pane_settings_->background_color
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
@@ -97,17 +99,12 @@ void PlotPane::initializeGL()
     // Initialize shaders
     initShaders();
 
-    // Create default plot pane settings for now
-    // TODO: Make this configurable via MainWindow settings
-    PlotPaneSettings plot_pane_settings;
-    plot_pane_settings.handle_string = "plot_pane";
-    plot_pane_settings.projection_mode = PlotPaneSettings::ProjectionMode::PERSPECTIVE;
-    plot_pane_settings.background_color = RGBTripletf(0.15f, 0.15f, 0.15f);
+    // Use actual PlotPaneSettings from element_settings_ (fallback to defaults if cast fails)
+    static const PlotPaneSettings kDefaultSettings;
+    const PlotPaneSettings& pps = plot_pane_settings_ ? *plot_pane_settings_ : kDefaultSettings;
 
-    RGBTripletf tab_background_color(0.2f, 0.2f, 0.2f);
-
-    // Create axes renderer
-    axes_renderer_ = new AxesRenderer(shader_collection_, plot_pane_settings, tab_background_color);
+    // Create axes renderer with actual settings
+    axes_renderer_ = new AxesRenderer(shader_collection_, pps, tab_background_color_);
 
     // Create plot data handler
     plot_data_handler_ = new PlotDataHandler(shader_collection_);
@@ -129,6 +126,11 @@ void PlotPane::resizeGL(int w, int h)
 
 void PlotPane::paintGL()
 {
+    // Set clear color from settings each frame (matches wx behaviour)
+    static const PlotPaneSettings kDefaultSettings;
+    const RGBTripletf& bg = plot_pane_settings_ ? plot_pane_settings_->background_color
+                                                 : kDefaultSettings.background_color;
+    glClearColor(bg.red, bg.green, bg.blue, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (pending_clear_)

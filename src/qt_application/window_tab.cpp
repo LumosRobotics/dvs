@@ -195,6 +195,7 @@ void WindowTab::createNewPlotPane(const std::shared_ptr<ElementSettings>& elemen
 
     PlotPane* plot_pane = new PlotPane(parent_widget_,
                                        element_settings,
+                                       background_color_,
                                        notify_main_window_key_pressed_,
                                        notify_main_window_key_released_,
                                        notify_main_window_about_modification_,

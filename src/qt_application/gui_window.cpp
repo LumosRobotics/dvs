@@ -117,32 +117,14 @@ GuiWindow::GuiWindow(
 
         tabs_.push_back(tab);
 
-        // Add a tab row (label button + × close button)
-        QWidget* row = new QWidget(tab_button_panel_);
-        QHBoxLayout* row_layout = new QHBoxLayout(row);
-        row_layout->setContentsMargins(0, 0, 0, 0);
-        row_layout->setSpacing(2);
-
-        QPushButton* btn = new QPushButton(QString::fromStdString(tab_settings.name), row);
-        btn->setCheckable(true);
-        const int idx = static_cast<int>(tab_buttons_qt_.size());
-        connect(btn, &QPushButton::clicked, this, [this, idx]() { switchToTab(idx); });
-
-        QPushButton* close_btn = new QPushButton("×", row);
-        close_btn->setFixedSize(16, 16);
-        close_btn->setToolTip(tr("Close tab"));
-        connect(close_btn, &QPushButton::clicked, this, [this, idx]() {
-            switchToTab(idx);
-            onDeleteTab();
-        });
-
-        row_layout->addWidget(btn);
-        row_layout->addWidget(close_btn);
+        // Add custom tab button
+        const int idx = static_cast<int>(tab_buttons_.size());
+        TabButton* btn = new TabButton(tab_settings, idx, tab_button_panel_);
+        connect(btn, &TabButton::tabClicked, this, [this](int i) { switchToTab(i); });
 
         // Insert before the trailing stretch
-        tab_button_layout_->insertWidget(tab_button_layout_->count() - 1, row);
-        tab_buttons_qt_.push_back(btn);
-        tab_row_widgets_.push_back(row);
+        tab_button_layout_->insertWidget(tab_button_layout_->count() - 1, btn);
+        tab_buttons_.push_back(btn);
     }
 
     // Show first tab, hide the rest
@@ -203,8 +185,8 @@ void GuiWindow::updateTabButtonPanel()
     else
     {
         tab_button_panel_->show();
-        for (int i = 0; i < static_cast<int>(tab_buttons_qt_.size()); ++i)
-            tab_buttons_qt_[i]->setChecked(i == current_tab_num_);
+        for (int i = 0; i < static_cast<int>(tab_buttons_.size()); ++i)
+            tab_buttons_[i]->setSelected(i == current_tab_num_);
     }
 }
 
@@ -228,9 +210,9 @@ void GuiWindow::switchToTab(int index)
     content_area_->setAutoFillBackground(true);
     content_area_->setPalette(pal);
 
-    // Update button highlight
-    for (int i = 0; i < static_cast<int>(tab_buttons_qt_.size()); ++i)
-        tab_buttons_qt_[i]->setChecked(i == current_tab_num_);
+    // Update button selection state
+    for (int i = 0; i < static_cast<int>(tab_buttons_.size()); ++i)
+        tab_buttons_[i]->setSelected(i == current_tab_num_);
 
     LUMOS_LOG_DEBUG() << "Switched to tab " << tabs_[current_tab_num_]->getName();
 }
@@ -665,31 +647,12 @@ void GuiWindow::onNewTab()
     current_tab_num_ = static_cast<int>(tabs_.size()) - 1;
     tab->show();
 
-    // Add tab row (label button + × close button)
-    QWidget* row = new QWidget(tab_button_panel_);
-    QHBoxLayout* row_layout = new QHBoxLayout(row);
-    row_layout->setContentsMargins(0, 0, 0, 0);
-    row_layout->setSpacing(2);
-
-    QPushButton* btn = new QPushButton(tab_name, row);
-    btn->setCheckable(true);
-    const int idx = static_cast<int>(tab_buttons_qt_.size());
-    connect(btn, &QPushButton::clicked, this, [this, idx]() { switchToTab(idx); });
-
-    QPushButton* close_btn = new QPushButton("×", row);
-    close_btn->setFixedSize(16, 16);
-    close_btn->setToolTip(tr("Close tab"));
-    connect(close_btn, &QPushButton::clicked, this, [this, idx]() {
-        switchToTab(idx);
-        onDeleteTab();
-    });
-
-    row_layout->addWidget(btn);
-    row_layout->addWidget(close_btn);
-
-    tab_button_layout_->insertWidget(tab_button_layout_->count() - 1, row);
-    tab_buttons_qt_.push_back(btn);
-    tab_row_widgets_.push_back(row);
+    // Add custom tab button
+    const int idx = static_cast<int>(tab_buttons_.size());
+    TabButton* btn = new TabButton(tab_settings, idx, tab_button_panel_);
+    connect(btn, &TabButton::tabClicked, this, [this](int i) { switchToTab(i); });
+    tab_button_layout_->insertWidget(tab_button_layout_->count() - 1, btn);
+    tab_buttons_.push_back(btn);
 
     updateTabButtonPanel();
     notify_main_window_about_modification_();
@@ -713,16 +676,15 @@ void GuiWindow::onDeleteTab()
     delete tabs_[idx];
     tabs_.erase(tabs_.begin() + idx);
 
-    // Remove tab row (deleting the row widget also destroys the child buttons)
-    tab_buttons_qt_.erase(tab_buttons_qt_.begin() + idx);
-    delete tab_row_widgets_[idx];
-    tab_row_widgets_.erase(tab_row_widgets_.begin() + idx);
+    // Remove tab button
+    delete tab_buttons_[idx];
+    tab_buttons_.erase(tab_buttons_.begin() + idx);
 
-    // Reconnect remaining buttons with correct indices
-    for (int i = 0; i < static_cast<int>(tab_buttons_qt_.size()); ++i)
+    // Reconnect remaining tab buttons with correct indices
+    for (int i = 0; i < static_cast<int>(tab_buttons_.size()); ++i)
     {
-        tab_buttons_qt_[i]->disconnect();
-        connect(tab_buttons_qt_[i], &QPushButton::clicked, this, [this, i]() { switchToTab(i); });
+        tab_buttons_[i]->disconnect();
+        connect(tab_buttons_[i], &TabButton::tabClicked, this, [this](int j) { switchToTab(j); });
     }
 
     // Select a valid tab
@@ -750,7 +712,7 @@ void GuiWindow::onEditTabName()
         return;
 
     tabs_[current_tab_num_]->setName(new_name.toStdString());
-    tab_buttons_qt_[current_tab_num_]->setText(new_name);
+    tab_buttons_[current_tab_num_]->setLabel(new_name);
     notify_main_window_about_modification_();
 }
 
