@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
         qt6-base-dev \
         libqt6opengl6-dev \
         qt6-base-dev-tools \
+        qt6-serialport-dev \
         # OpenGL / GLUT / GLFW / GLEW
         libgl1-mesa-dev \
         libglu1-mesa-dev \
@@ -43,10 +44,14 @@ WORKDIR /workspace
 # Build FreeType from the vendored submodule.
 # This must be done before the main CMake configure step because
 # the build links against src/externals/freetype/build/libfreetype.a.
+# Compression features are disabled — only plain TTF files are used,
+# so bzip2/brotli/zlib/png are not needed and simplify the link.
 # Run this inside the container after mounting/cloning the repo:
 #
 #   cd /workspace/src/externals/freetype
-#   cmake -B build -DCMAKE_BUILD_TYPE=Release
+#   cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+#         -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_BROTLI=ON \
+#         -DFT_DISABLE_ZLIB=ON -DFT_DISABLE_PNG=ON
 #   cmake --build build -j$(nproc)
 #
 # Then configure and build the main project:

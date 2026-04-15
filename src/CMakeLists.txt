@@ -48,7 +48,10 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/externals/googletest/googletest/include)
 
 # Qt6
-set(CMAKE_PREFIX_PATH "/usr/local/opt/qt/lib/cmake")
+# On macOS with Homebrew, Qt is not on the default search path.
+if(PLATFORM_APPLE)
+    set(CMAKE_PREFIX_PATH "/usr/local/opt/qt/lib/cmake")
+endif()
 find_package(Qt6 COMPONENTS Core Widgets OpenGL OpenGLWidgets SerialPort QUIET)
 
 # Nlohmann

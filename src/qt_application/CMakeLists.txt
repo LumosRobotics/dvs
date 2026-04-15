@@ -14,16 +14,17 @@ include_directories(${REPO_DIR}/src/common)
 include_directories(${REPO_DIR}/src/externals/glm)
 
 # HarfBuzz headers for the text renderer.
+# FreeType is built with FT_DISABLE_BZIP2/BROTLI/ZLIB/PNG so only HarfBuzz
+# needs to be linked alongside it.
 if(PLATFORM_LINUX)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(HARFBUZZ REQUIRED harfbuzz)
     include_directories(${HARFBUZZ_INCLUDE_DIRS})
-    set(HARFBUZZ_LINK_LIBS ${HARFBUZZ_LIBRARIES} png bz2 brotlidec z)
+    set(HARFBUZZ_LINK_LIBS ${HARFBUZZ_LIBRARIES})
 elseif(PLATFORM_APPLE)
     include_directories(${REPO_DIR}/src/externals/harfbuzz/build/include/harfbuzz)
     set(HARFBUZZ_LINK_LIBS
-        ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a
-        png z bz2)
+        ${REPO_DIR}/src/externals/harfbuzz/build/lib/libharfbuzz.a)
 endif()
 
 # LumosConfig

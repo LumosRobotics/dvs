@@ -12,4 +12,4 @@ target_link_libraries(real-time-gui ${wxWidgets_LIBRARIES}
                                     ${OPENGL_LIBRARIES}
                                     ${GLUT_LIBRARY}
                                     ${PLATFORM_LIBRARIES}
-                                    /Users/danielpi/work/dvs/src/externals/freetype/build/libfreetype.a)
+                                    ${REPO_DIR}/src/externals/freetype/build/libfreetype.a)
