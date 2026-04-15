@@ -74,11 +74,13 @@ bool font_atlas::build_atlas(const std::vector<uint32_t>& glyph_ids)
 
         const auto& bm = ft_face->glyph->bitmap;
         if (bm.width > 0 && bm.rows > 0) {
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, bm.pitch);
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                             x, 0,
                             static_cast<GLsizei>(bm.width),
                             static_cast<GLsizei>(bm.rows),
                             GL_RED, GL_UNSIGNED_BYTE, bm.buffer);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         }
 
         GlyphData gd;

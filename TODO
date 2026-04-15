@@ -21,6 +21,7 @@ Pre release:
 - Lock azimuth or elevation at certain values
 
 Post release:
+- Add some control to do operations on plot objects and elements, save data, maybe python interpreter?
 - Add handle based interface for plot views
 - Finish "APPENDABLE" and "UPDATEABLE" options
 - Template duoplot configurations, with examples to compile and run

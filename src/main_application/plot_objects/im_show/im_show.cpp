@@ -192,6 +192,9 @@ ImShow::ImShow(const CommunicationHeader& hdr,
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     findMinMax();
 }
 
@@ -215,6 +218,7 @@ void ImShow::render()
 
     glBindVertexArray(vertex_array_object_);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 ImShow::~ImShow()

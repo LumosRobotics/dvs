@@ -24,7 +24,7 @@ AxesRenderer::AxesRenderer(const ShaderCollection& shader_collection,
     scale_on_rotation_ = true;
     glEnable(GL_DEPTH_CLAMP);
 
-    initFreetype();
+    text_renderer_.init();
 
     if (plot_pane_settings_.clipping_on)
     {

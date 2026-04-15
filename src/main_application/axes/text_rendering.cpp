@@ -23,8 +23,6 @@ const std::string kFontPath = getResourcesPathString() + "fonts/Roboto-Regular.t
 constexpr char kVertSrc[] = R"glsl(
 #version 330 core
 
-uniform float zoomscale;
-
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec2 origin;
 layout(location = 2) in vec2 textureCoord;
@@ -35,17 +33,7 @@ out vec2 v_textureCoord;
 
 void main()
 {
-    mat4 scalingMatrix = mat4(1.0) * zoomscale;
-    scalingMatrix[3][3] = 1.0;
-
-    vec4 finalPosition   = scalingMatrix * vec4(position, 0.0, 1.0);
-    vec4 finalTextOrigin = scalingMatrix * vec4(origin,   0.0, 1.0);
-
-    vec2 scaled_pt = vec2(finalPosition.x - finalTextOrigin.x,
-                          finalPosition.y - finalTextOrigin.y) / zoomscale;
-
-    gl_Position    = vec4(finalPosition.x + scaled_pt.x,
-                          finalPosition.y + scaled_pt.y, 0.0, 1.0);
+    gl_Position    = vec4(position, 0.0, 1.0);
     v_textureCoord = textureCoord;
     v_textureColor = color;
 }
@@ -85,17 +73,16 @@ GLuint compileShader(GLenum type, const char* src)
 
 }  // namespace
 
-// Static member definitions.
-label_text_store* TextRenderer::s_store_     = nullptr;
-unsigned int      TextRenderer::s_shader_id_ = 0;
-bool              TextRenderer::s_initialized_ = false;
-
 // ---- TextRenderer ----
 
-TextRenderer::TextRenderer() {}
+TextRenderer::TextRenderer()
+    : ctx_(std::make_shared<TextRenderContext>())
+{
+}
 
 TextRenderer::TextRenderer(const TextRenderer& other)
-    : current_color_(other.current_color_)
+    : ctx_(other.ctx_),           // share the same per-context GL state
+      current_color_(other.current_color_)
 {
     // pending_labels_ starts empty — don't copy in-flight labels.
 }
@@ -103,10 +90,47 @@ TextRenderer::TextRenderer(const TextRenderer& other)
 TextRenderer& TextRenderer::operator=(const TextRenderer& other)
 {
     if (this != &other) {
+        ctx_           = other.ctx_;
         current_color_ = other.current_color_;
         pending_labels_.clear();
     }
     return *this;
+}
+
+bool TextRenderer::init()
+{
+    if (ctx_->initialized) return true;
+
+    ctx_->store = new label_text_store();
+    if (!ctx_->store->main_font.init(kFontPath, 68)) {
+        std::cerr << "TextRenderer::init: failed to load font: " << kFontPath << "\n";
+        delete ctx_->store;
+        ctx_->store = nullptr;
+        return false;
+    }
+
+    // Compile and link the text shader.
+    GLuint vs = compileShader(GL_VERTEX_SHADER,   kVertSrc);
+    GLuint fs = compileShader(GL_FRAGMENT_SHADER, kFragSrc);
+    ctx_->shader_id = glCreateProgram();
+    glAttachShader(ctx_->shader_id, vs);
+    glAttachShader(ctx_->shader_id, fs);
+    glLinkProgram(ctx_->shader_id);
+
+    GLint success = 0;
+    glGetProgramiv(ctx_->shader_id, GL_LINK_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetProgramInfoLog(ctx_->shader_id, 512, nullptr, log);
+        std::cerr << "Text shader link error: " << log << "\n";
+        ctx_->shader_id = 0;
+    }
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    ctx_->initialized = (ctx_->shader_id != 0);
+    return ctx_->initialized;
 }
 
 void TextRenderer::setColor(float r, float g, float b)
@@ -137,7 +161,7 @@ void TextRenderer::renderTextFromLeftCenter(const std::string_view& text,
                                             float scale,
                                             float axes_width, float axes_height)
 {
-    if (!s_initialized_ || text.empty()) return;
+    if (!ctx_->initialized || text.empty()) return;
 
     const float x_scale = scale * kTextScaleParameter / axes_width;
     const float y_scale = scale * kTextScaleParameter / axes_height;
@@ -155,23 +179,24 @@ void TextRenderer::renderTextFromLeftCenter(const std::string_view& text,
 
 void TextRenderer::flush()
 {
-    if (!s_initialized_ || pending_labels_.empty()) return;
+    if (!ctx_->initialized || pending_labels_.empty()) return;
 
-    s_store_->labels.clear();
+    ctx_->store->labels.clear();
     for (const auto& lbl : pending_labels_) {
-        s_store_->add_text(lbl.text, lbl.loc, lbl.color, 0.0f, lbl.x_scale, lbl.y_scale);
+        ctx_->store->add_text(lbl.text, lbl.loc, lbl.color, 0.0f, lbl.x_scale, lbl.y_scale);
     }
-    s_store_->set_buffers();
+    ctx_->store->set_buffers();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
-    glUseProgram(s_shader_id_);
-    glUniform1i(glGetUniformLocation(s_shader_id_, "u_Texture"), 0);
-    glUniform1f(glGetUniformLocation(s_shader_id_, "zoomscale"), 1.0f);
+    glUseProgram(ctx_->shader_id);
+    glUniform1i(glGetUniformLocation(ctx_->shader_id, "u_Texture"), 0);
 
-    s_store_->paint_text();
+    glDisable(GL_DEPTH_TEST);
+    ctx_->store->paint_text();
+    glEnable(GL_DEPTH_TEST);
 
     glUseProgram(0);
     glDisable(GL_BLEND);
@@ -179,56 +204,18 @@ void TextRenderer::flush()
     pending_labels_.clear();
 }
 
-// ---- Free functions ----
-
-bool initFreetype()
+Vec2f TextRenderer::calculateStringSize(const std::string_view& text,
+                                        const float scale,
+                                        const float axes_width,
+                                        const float axes_height) const
 {
-    if (TextRenderer::s_initialized_) return true;
-
-    TextRenderer::s_store_ = new label_text_store();
-    if (!TextRenderer::s_store_->main_font.init(kFontPath, 68)) {
-        std::cerr << "initFreetype: failed to load font: " << kFontPath << "\n";
-        delete TextRenderer::s_store_;
-        TextRenderer::s_store_ = nullptr;
-        return false;
-    }
-
-    // Compile and link the text shader.
-    GLuint vs = compileShader(GL_VERTEX_SHADER,   kVertSrc);
-    GLuint fs = compileShader(GL_FRAGMENT_SHADER, kFragSrc);
-    TextRenderer::s_shader_id_ = glCreateProgram();
-    glAttachShader(TextRenderer::s_shader_id_, vs);
-    glAttachShader(TextRenderer::s_shader_id_, fs);
-    glLinkProgram(TextRenderer::s_shader_id_);
-
-    GLint success = 0;
-    glGetProgramiv(TextRenderer::s_shader_id_, GL_LINK_STATUS, &success);
-    if (!success) {
-        char log[512];
-        glGetProgramInfoLog(TextRenderer::s_shader_id_, 512, nullptr, log);
-        std::cerr << "Text shader link error: " << log << "\n";
-        TextRenderer::s_shader_id_ = 0;
-    }
-
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-
-    TextRenderer::s_initialized_ = (TextRenderer::s_shader_id_ != 0);
-    return TextRenderer::s_initialized_;
-}
-
-Vec2f calculateStringSize(const std::string_view& text,
-                          const float scale,
-                          const float axes_width,
-                          const float axes_height)
-{
-    if (!TextRenderer::s_initialized_ || text.empty()) return Vec2f(0.0f, 0.0f);
+    if (!ctx_->initialized || text.empty()) return Vec2f(0.0f, 0.0f);
 
     const std::string str(text);
     hb_buffer_t* hb_buf = hb_buffer_create();
     hb_buffer_add_utf8(hb_buf, str.c_str(), -1, 0, -1);
     hb_buffer_guess_segment_properties(hb_buf);
-    hb_shape(TextRenderer::s_store_->main_font.hb_font, hb_buf, nullptr, 0);
+    hb_shape(ctx_->store->main_font.hb_font, hb_buf, nullptr, 0);
 
     unsigned int         glyph_count = 0;
     hb_glyph_position_t* glyph_pos   = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
@@ -242,15 +229,13 @@ Vec2f calculateStringSize(const std::string_view& text,
     const float x_scale = scale * kTextScaleParameter / axes_width;
     const float y_scale = scale * kTextScaleParameter / axes_height;
 
-    // The vertex shader (zoomscale=1) doubles offsets from the text origin.
-    // Account for that here so centering math is consistent.
-    const float width  = total_advance * x_scale * 2.0f;
+    const float width  = total_advance * x_scale;
 
     // Approximate height from the font's ascender value.
-    const float ascender = TextRenderer::s_store_->main_font.ft_face
-                               ? (TextRenderer::s_store_->main_font.ft_face->ascender / 64.0f)
+    const float ascender = ctx_->store->main_font.ft_face
+                               ? (ctx_->store->main_font.ft_face->ascender / 64.0f)
                                : 0.0f;
-    const float height = ascender * y_scale * 2.0f;
+    const float height = ascender * y_scale;
 
     return Vec2f(width, height);
 }
